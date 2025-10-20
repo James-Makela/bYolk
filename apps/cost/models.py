@@ -1,5 +1,5 @@
 from django.db import models
-from apps.core import User
+from apps.core.models import User
 
 
 class Category(models.Model):
