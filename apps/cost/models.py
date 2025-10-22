@@ -9,7 +9,7 @@ class Category(models.Model):
         verbose_name_plural = 'Categories'
 
     def __str__(self):
-        return self.name
+        return f'{self.name}'
 
 
 # Create your models here.
@@ -20,4 +20,4 @@ class Cost(models.Model):
     frequency = models.DurationField()
 
     def __str__(self):
-        return self.name
+        return f'{self.name}'
