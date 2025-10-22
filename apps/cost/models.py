@@ -14,10 +14,19 @@ class Category(models.Model):
 
 # Create your models here.
 class Cost(models.Model):
+    FREQUENCY_UNITS = [
+        ('days', 'Days'),
+        ('weeks', 'Weeks'),
+        ('months', 'Months'),
+        ('years', 'Years'),
+    ]
+
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     name = models.CharField(max_length=255)
     amount = models.DecimalField(max_digits=10, decimal_places=2)
-    frequency = models.DurationField()
+    category = models.ForeignKey(Category, null=True, on_delete=models.SET_NULL)
+    frequency_number = models.IntegerField()
+    frequency_unit = models.CharField(max_length=50, choices=FREQUENCY_UNITS)
 
     def __str__(self):
         return f'{self.name}'
