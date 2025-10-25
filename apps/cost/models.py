@@ -6,19 +6,19 @@ class Category(models.Model):
     name = models.CharField(max_length=50, unique=True)
 
     class Meta:
-        verbose_name_plural = 'Categories'
+        verbose_name_plural = "Categories"
 
     def __str__(self):
-        return f'{self.name}'
+        return f"{self.name}"
 
 
 # Create your models here.
 class Cost(models.Model):
     FREQUENCY_UNITS = [
-        ('days', 'Days'),
-        ('weeks', 'Weeks'),
-        ('months', 'Months'),
-        ('years', 'Years'),
+        ("days", "Days"),
+        ("weeks", "Weeks"),
+        ("months", "Months"),
+        ("years", "Years"),
     ]
 
     user = models.ForeignKey(User, on_delete=models.CASCADE)
@@ -29,4 +29,5 @@ class Cost(models.Model):
     frequency_unit = models.CharField(max_length=50, choices=FREQUENCY_UNITS)
 
     def __str__(self):
-        return f'{self.name}'
+        return f"{self.name}, ${self.amount} every {self.frequency_number} \
+    {self.frequency_unit}"

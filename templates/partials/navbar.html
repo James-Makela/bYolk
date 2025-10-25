@@ -1,0 +1,10 @@
+{% load static %}
+<nav>
+  <div>
+    {% if user.is_authenticated %}
+      <li>
+        <a href="{% url 'costs-list' %}">Costs</a>
+      </li>
+    {% endif %}
+  </div>
+</nav>
