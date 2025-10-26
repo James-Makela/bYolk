@@ -7,6 +7,7 @@ with pkgs;
 mkShell {
   packages = packages ++ [
   direnv
+  nodejs
   python3.pkgs.black
   python3.pkgs.django
   python3.pkgs.django-filter

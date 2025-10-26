@@ -2,15 +2,23 @@
 
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>bYolk</title>
-    <link href="css/style.css" rel="stylesheet">
-  </head>
-  <body>
-    {% include "./partials/navbar.html" %}
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>bYolk</title>
+        <link href="{% static "css/style.css" %}" rel="stylesheet">
 
-    {% block content %}{% endblock content %}
-  </body>
+
+        <!-- HTMX -->
+        <script src="https://unpkg.com/htmx.org@1.9.10" integrity="sha384-D1Kt99CQMDuVetoL1lrYwg5t+9QdHe7NLX/SoJYkXDFfX37iInKRy5xLSi8nO7UC" crossorigin="anonymous"></script>
+
+        <!-- Tailwindcss and DaisyUI -->
+        <link href="https://cdn.jsdelivr.net/npm/daisyui@5" rel="stylesheet" type="text/css" />
+        <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    </head>
+    <body>
+        {% include "./partials/navbar.html" %}
+
+        {% block content %}{% endblock content %}
+    </body>
 </html>

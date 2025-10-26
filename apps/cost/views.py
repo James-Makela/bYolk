@@ -4,7 +4,7 @@ from apps.cost.models import Cost
 
 
 # Create your views here.
-def index(request):
+def costs_page(request):
     return render(request, 'cost/index.html')
 
 
@@ -12,4 +12,4 @@ def index(request):
 def costs_list(request):
     costs = Cost.objects.filter(user=request.user)
     context = {'costs': costs}
-    return render(request, 'apps/cost/costs-list.html', context)
+    return render(request, 'cost/costs-list.html', context)
