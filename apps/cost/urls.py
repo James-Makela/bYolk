@@ -3,5 +3,5 @@ from django.urls import path
 
 urlpatterns = [
     # path('', views.index, name='index'),
-    path('', views.costs_page, name='costs-page')
+    path('', views.costs_list, name='costs-page')
 ]

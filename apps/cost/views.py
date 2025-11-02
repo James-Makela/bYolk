@@ -1,5 +1,6 @@
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
+from apps.cost.filters import CostFilter
 from apps.cost.models import Cost
 
 
@@ -10,6 +11,9 @@ def costs_page(request):
 
 @login_required
 def costs_list(request):
-    costs = Cost.objects.filter(user=request.user)
-    context = {'costs': costs}
-    return render(request, 'cost/costs-list.html', context)
+    cost_filter = CostFilter(
+        request.GET,
+        queryset=Cost.objects.filter(user=request.user)
+    )
+    context = {'filter': cost_filter}
+    return render(request, 'cost/index.html', context)

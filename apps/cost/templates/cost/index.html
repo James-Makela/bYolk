@@ -1,7 +1,12 @@
 {% extends 'base.html' %}
 
 {% block content %}
-  <h1>
-    Costs Page
-  </h1>
+  <div class="p-4">
+    <h1 class="text-3xl">
+      Costs Page
+    </h1>
+  </div>
+
+  {% include "cost/partials/costs-container.html" %}
+
 {% endblock content %}

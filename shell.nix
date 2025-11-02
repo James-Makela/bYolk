@@ -10,6 +10,7 @@ mkShell {
   nodejs
   python3.pkgs.black
   python3.pkgs.django
+  python3.pkgs.django-htmx
   python3.pkgs.django-filter
   python3.pkgs.django-stubs
   python3.pkgs.mypy
