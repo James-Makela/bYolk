@@ -1,13 +1,13 @@
 {% load static %}
 <nav>
-    <div class="navbar bg-primary shadow-sm">
+    <div class="navbar bg-primary shadow-sm backdrop-blur-sm">
         <a class="btn text-xl m-2" href="{% url 'home' %}">Home</a>
         {% if user.is_authenticated %}
             <a class="btn btn-ghost text-xl m-2" href="{% url 'costs-page' %}">Budget</a>
 
             <a class="btn btn-ghost text-xl m-2" href="{% url 'costs-page' %}">Costs</a>
 
-            <a class="btn btn-ghost text-xl m-2" href="{% url 'costs-page' %}">Transactions</a>
+            <a class="btn btn-ghost text-xl m-2" href="{% url 'transactions-page' %}">Transactions</a>
         {% endif %}
     </div>
 </nav>

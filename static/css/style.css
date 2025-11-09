@@ -2,5 +2,5 @@
 
 :root {
       /* override DaisyUI colors */
-      --color-primary: #FBBD18;
+      --color-primary: rgba(051, 189, 24, 0.8);
 }
