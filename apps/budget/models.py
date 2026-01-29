@@ -29,3 +29,10 @@ class Budget(models.Model):
             anchor_date__gte=self.start_date,
             anchor_date__lte=self.end_date
         )
+
+    @property
+    def total_costs(self):
+        total = 0
+        for cost in self.costs:
+            total += cost.amount
+        return total

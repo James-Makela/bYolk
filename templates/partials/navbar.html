@@ -3,7 +3,7 @@
     <div class="navbar fixed bg-primary shadow-sm backdrop-blur-[3px] z-50">
         <a class="btn text-xl m-2" href="{% url 'home' %}">Home</a>
         {% if user.is_authenticated %}
-            <a class="btn btn-ghost text-xl m-2" href="{% url 'costs-page' %}">Budget</a>
+            <a class="btn btn-ghost text-xl m-2" href="{% url 'budgets-page' %}">Budget</a>
 
             <a class="btn btn-ghost text-xl m-2" href="{% url 'costs-page' %}">Costs</a>
 
