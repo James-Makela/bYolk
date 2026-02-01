@@ -14,8 +14,10 @@
                 <tbody>
                     {% for budget in filter.qs %}
                         <tr class="hover:sky-950">
-                          <td>{{ budget.start_date }} - {{ budget.end_date }}</td>
-                          <td>{{ budget.total_costs }}</td>
+                            <td>{{ budget.start_date }} - {{ budget.end_date }}</td>
+                            <td>{{ budget.total_costs }}</td>
+                            <td><a class="btn btn-xs" href="{% url
+                                'budgets-page' %}">View</a></td>
                         </tr>
                     {% endfor %}
                 </tbody>
