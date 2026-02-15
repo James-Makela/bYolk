@@ -4,13 +4,22 @@
             <table class="table">
                 <thead class="text-xs uppercase">
                     <tr>
-                        <th class="px-6 py-3">Date Range</th>
-                        <th class="px-6 py-3">Total Costs</th>
+                        <th class="px-6 py-3">Item</th>
+                        <th class="px-6 py-3">Cost</th>
+                        <th class="px-6 py-3">Paid</th>
+                        <th class="px-6 py-3">Outstanding</th>
                     </tr>
                 </thead>
 
                 <tbody>
-                  {{ budget.costs }}
+                  {% for cost in budget.costs %}
+                        <tr class="hover:sky-950">
+                            <td>{{ cost.name }}</td>
+                            <td>${{ cost.amount }}</td>
+                            <td>{{ cost.name }}</td>
+                            <td>{{ cost.name }}</td>
+                        </tr>
+                    {% endfor %}
                 </tbody>
             </table>
     </div>
