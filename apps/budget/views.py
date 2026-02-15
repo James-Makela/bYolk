@@ -1,5 +1,5 @@
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import render
+from django.shortcuts import get_object_or_404, render
 from apps.budget.filters import BudgetFilter
 from apps.budget.models import Budget
 from django.http import HttpResponse, Http404
@@ -21,8 +21,5 @@ def budgets_list(request):
 
 @login_required
 def budget_detail(request, budget_id):
-    try:
-        budget = Budget.objects.get(pk=budget_id)
-    except Budget.DoesNotExist:
-        raise Http404("Budget does not exist")
+    budget = get_object_or_404(Budget, pk=budget_id)
     return render(request, "budget/detail.html", {"budget": budget})
