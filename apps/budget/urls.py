@@ -2,5 +2,6 @@ from apps.budget import views
 from django.urls import path
 
 urlpatterns = [
-    path('', views.budgets_list, name='budgets-page')
+    path('', views.budgets_list, name='budgets-page'),
+    path("<int:budget_id>/", views.budget_detail, name="detail")
 ]

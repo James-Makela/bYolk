@@ -1,8 +1,6 @@
 <div class="flex flex-col-reverse" id="budget-container">
 
     <div class="overflow-x-auto rounded-box border border-base-content/5 bg-base-100 m-5">
-        {% if filter.qs %}
-
             <table class="table">
                 <thead class="text-xs uppercase">
                     <tr>
@@ -12,22 +10,8 @@
                 </thead>
 
                 <tbody>
-                    {% for budget in filter.qs %}
-                        <tr class="hover:sky-950">
-                            <td>{{ budget.start_date }} - {{ budget.end_date }}</td>
-                            <td>{{ budget.total_costs }}</td>
-                            <td><a class="btn btn-xs" href="{% url
-                                'budgets-page' %}">View</a></td>
-                        </tr>
-                    {% endfor %}
+                  {{ budget.costs }}
                 </tbody>
             </table>
-
-        {% else %}
-
-            <p class="text-2xl">
-                No budgets found
-            </p>
-        {% endif %}
     </div>
 </div>

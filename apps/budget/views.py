@@ -2,6 +2,7 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
 from apps.budget.filters import BudgetFilter
 from apps.budget.models import Budget
+from django.http import HttpResponse, Http404
 
 
 # Create your views here.
@@ -17,3 +18,11 @@ def budgets_list(request):
     )
     context = {'filter': budget_filter}
     return render(request, 'budget/index.html', context)
+
+@login_required
+def budget_detail(request, budget_id):
+    try:
+        budget = Budget.objects.get(pk=budget_id)
+    except Budget.DoesNotExist:
+        raise Http404("Budget does not exist")
+    return render(request, "budget/detail.html", {"budget": budget})
