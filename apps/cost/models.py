@@ -5,6 +5,7 @@ from datetime import date
 from apps.cost.managers import CostQuerySet
 
 
+# TODO: Category needs to be its own thing so it can be a foreign key for both costs and transactions
 class Category(models.Model):
     name = models.CharField(max_length=50, unique=True)
 
@@ -17,7 +18,7 @@ class Category(models.Model):
 
 # Create your models here.
 class Cost(models.Model):
-    FREQUENCY_UNITS = [
+    FREQUENCY_UNIT_CHOICES = [
         ("days", "Days"),
         ("weeks", "Weeks"),
         ("months", "Months"),
@@ -29,8 +30,8 @@ class Cost(models.Model):
     amount = models.DecimalField(max_digits=10, decimal_places=2)
     category = models.ForeignKey(Category, null=True, on_delete=models.SET_NULL)
     frequency_number = models.IntegerField()
-    frequency_unit = models.CharField(max_length=50, choices=FREQUENCY_UNITS)
-    anchor_date = models.DateField(default=date.today)
+    frequency_unit = models.CharField(max_length=50, choices=FREQUENCY_UNIT_CHOICES)
+    last_paid_date = models.DateField(null=True)
 
     objects = CostQuerySet.as_manager()
 
