@@ -26,8 +26,8 @@ class Budget(models.Model):
     def costs(self):
         """We want all the costs that fit within the budget dates"""
         return Cost.objects.filter(
-            anchor_date__gte=self.start_date,
-            anchor_date__lte=self.end_date
+            last_paid_date__gte=self.start_date,
+            last_paid_date__lte=self.end_date
         )
 
     @property
