@@ -8,13 +8,14 @@ mkShell {
   packages = packages ++ [
   direnv
   nodejs
-  python3.pkgs.black
-  python3.pkgs.django
-  python3.pkgs.django-htmx
-  python3.pkgs.django-filter
-  python3.pkgs.django-stubs
-  python3.pkgs.mypy
-  python3.pkgs.pytest
+  sqlite
+  python314.pkgs.black
+  python314.pkgs.django
+  python314.pkgs.django-htmx
+  python314.pkgs.django-filter
+  # python314.pkgs.django-stubs
+  python314.pkgs.mypy
+  python314.pkgs.pytest
   ruff
   ];
 }
