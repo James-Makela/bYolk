@@ -1,11 +1,9 @@
 {% extends 'base.html' %}
 
+{% block title %}Transactions{% endblock %}
+{% block navbar_title %}Transactions{% endblock %}
+
 {% block content %}
-  <div class="p-4">
-    <h1 class="text-3xl">
-      Transactions Page
-    </h1>
-  </div>
 
   {% include "transaction/partials/transactions-container.html" %}
 

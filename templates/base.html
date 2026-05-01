@@ -1,26 +1,137 @@
-{% load static %}
-
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <title>bYolk</title>
-        <link href="{% static "css/style.css" %}" rel="stylesheet">
+<head>
+  {% load static %}
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{% block title %}My App{% endblock %}</title>
+  <link rel="stylesheet" href="{% static 'css/output.css' %}">
+</head>
+<body class="min-h-screen">
 
+<div class="drawer lg:drawer-open">
+  <input id="main-drawer" type="checkbox" class="drawer-toggle" checked />
 
-        <!-- HTMX -->
-        <script src="https://unpkg.com/htmx.org@1.9.10" integrity="sha384-D1Kt99CQMDuVetoL1lrYwg5t+9QdHe7NLX/SoJYkXDFfX37iInKRy5xLSi8nO7UC" crossorigin="anonymous"></script>
+  <div class="drawer-content flex flex-col">
+    <!-- Navbar -->
+    <nav class="navbar w-full bg-base-300 shadow-sm sticky top-0 z-30">
+      <label for="main-drawer" aria-label="open sidebar" class="btn btn-square btn-ghost">
+        <svg id="drawer-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
+             stroke-linejoin="round" stroke-linecap="round" stroke-width="2"
+             fill="none" stroke="currentColor"
+             class="my-1.5 inline-block size-5 transition-transform duration-200">
+          <path d="M4 4m0 2a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v12a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2z"/>
+          <path d="M9 4v16"/>
+          <path d="M14 10l2 2l-2 2"/>
+        </svg>
+      </label>
+      <div class="px-4 text-xl font-semibold flex-1">{% block navbar_title %}My App{% endblock %}</div>
+    </nav>
 
-        <!-- Tailwindcss and DaisyUI -->
-        <link href="https://cdn.jsdelivr.net/npm/daisyui@5" rel="stylesheet" type="text/css" />
-        <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
-    </head>
-    <body>
-        {% include "./partials/navbar.html" %}
+    <!-- Page content -->
+    <main class="p-4 flex-1">
+      {% block content %}{% endblock %}
+    </main>
+  </div>
 
-        <div class='pt-16'>
-          {% block content %}{% endblock content %}
-        </div>
-    </body>
+  <div class="drawer-side is-drawer-close:overflow-visible z-40">
+    <label for="main-drawer" aria-label="close sidebar" class="drawer-overlay"></label>
+
+    <div class="flex min-h-full flex-col items-start bg-base-200 is-drawer-close:w-14 is-drawer-open:w-64 transition-all duration-200">
+      <ul class="menu w-full grow pt-2">
+        <!-- Home -->
+        <li>
+          <a href="{% url 'home' %}"
+             class="is-drawer-close:tooltip is-drawer-close:tooltip-right"
+             data-tip="Home">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
+                 stroke-linejoin="round" stroke-linecap="round" stroke-width="2"
+                 fill="none" stroke="currentColor" class="my-1.5 inline-block size-5 shrink-0">
+              <path d="M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8"/>
+              <path d="M3 10a2 2 0 0 1 .709-1.528l7-5.999a2 2 0 0 1 2.582 0l7 5.999A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+            </svg>
+            <span class="is-drawer-close:hidden">Home</span>
+          </a>
+        </li>
+
+        {% if user.is_authenticated %}
+
+        <!-- Budget - Dollar bill -->
+        <li>
+          <a href="{% url 'budgets-page' %}"
+             class="is-drawer-close:tooltip is-drawer-close:tooltip-right"
+             data-tip="Budget">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
+                 stroke-linejoin="round" stroke-linecap="round" stroke-width="2"
+                 fill="none" stroke="currentColor" class="my-1.5 inline-block size-5 shrink-0">
+              <rect x="2" y="6" width="20" height="12" rx="2"/>
+              <circle cx="12" cy="12" r="2"/>
+              <path d="M6 12h.01M18 12h.01"/>
+            </svg>
+            <span class="is-drawer-close:hidden">Budget</span>
+          </a>
+        </li>
+
+        <!-- Costs - Coin -->
+        <li>
+          <a href="{% url 'costs-page' %}"
+             class="is-drawer-close:tooltip is-drawer-close:tooltip-right"
+             data-tip="Costs">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
+                 stroke-linejoin="round" stroke-linecap="round" stroke-width="2"
+                 fill="none" stroke="currentColor" class="my-1.5 inline-block size-5 shrink-0">
+              <circle cx="12" cy="12" r="9"/>
+              <path d="M14.8 9A2 2 0 0 0 13 8h-2a2 2 0 0 0 0 4h2a2 2 0 0 1 0 4h-2a2 2 0 0 1-1.8-1"/>
+              <path d="M12 6v2m0 8v2"/>
+            </svg>
+            <span class="is-drawer-close:hidden">Costs</span>
+          </a>
+        </li>
+
+        <!-- Transactions - Bank card -->
+        <li>
+          <a href="{% url 'transactions-page' %}"
+             class="is-drawer-close:tooltip is-drawer-close:tooltip-right"
+             data-tip="Transactions">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
+                 stroke-linejoin="round" stroke-linecap="round" stroke-width="2"
+                 fill="none" stroke="currentColor" class="my-1.5 inline-block size-5 shrink-0">
+              <rect x="2" y="5" width="20" height="14" rx="2"/>
+              <path d="M2 10h20"/>
+              <path d="M6 15h2m4 0h2"/>
+            </svg>
+            <span class="is-drawer-close:hidden">Transactions</span>
+          </a>
+        </li>
+
+        {% endif %}
+  
+      </ul>
+    </div>
+  </div>
+
+</div>
+
+<!-- Hacky script to persist drawer state -->
+<script>
+  const drawer = document.getElementById('main-drawer');
+  const icon = document.getElementById('drawer-icon');
+
+  function updateIcon() {
+    icon.style.transform = drawer.checked ? 'rotate(180deg)' : 'rotate(0deg)';
+  }
+
+  const saved = localStorage.getItem('drawer');
+  if (saved !== null) {
+    drawer.checked = saved === 'true';
+  }
+  updateIcon();
+
+  drawer.addEventListener('change', () => {
+    localStorage.setItem('drawer', drawer.checked);
+    updateIcon();
+  });
+</script>
+
+</body>
 </html>
