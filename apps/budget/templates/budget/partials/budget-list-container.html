@@ -1,32 +1,28 @@
-<div class="flex flex-col-reverse" id="budget-container">
+<div class="overflow-x-auto rounded-lg border border-base-300">
+    {% if filter.qs %}
+        <table class="table w-full">
+            <thead class="bg-base-200 text-base-content">
+                <tr>
+                    <th class="px-6 py-3">Date Range</th>
+                    <th class="px-6 py-3">Total Costs</th>
+                    <th class="px-6 py-3">View Budget</th>
+                </tr>
+            </thead>
 
-    <div class="overflow-x-auto rounded-box border border-base-content/5 bg-base-100 m-5">
-        {% if filter.qs %}
-
-            <table class="table">
-                <thead class="text-xs uppercase">
-                    <tr>
-                        <th class="px-6 py-3">Date Range</th>
-                        <th class="px-6 py-3">Total Costs</th>
+            <tbody>
+                {% for budget in filter.qs %}
+                    <tr class="hover:sky-950">
+                        <td>{{ budget.start_date }} - {{ budget.end_date }}</td>
+                        <td>{{ budget.total_costs }}</td>
+                        <td><a class="btn btn-xs" href="/budgets/{{ budget.id }}">View</a></td>
                     </tr>
-                </thead>
+                {% endfor %}
+            </tbody>
+        </table>
 
-                <tbody>
-                    {% for budget in filter.qs %}
-                        <tr class="hover:sky-950">
-                            <td>{{ budget.start_date }} - {{ budget.end_date }}</td>
-                            <td>{{ budget.total_costs }}</td>
-                            <td><a class="btn btn-xs" href="/budgets/{{ budget.id }}">View</a></td>
-                        </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-
-        {% else %}
-
-            <p class="text-2xl m-4">
-                No budgets found
-            </p>
-        {% endif %}
-    </div>
+    {% else %}
+        <p class="text-2xl m-4">
+            No budgets found
+        </p>
+    {% endif %}
 </div>
