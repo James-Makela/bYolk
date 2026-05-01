@@ -3,6 +3,12 @@
 {% block title %}Transactions{% endblock %}
 {% block navbar_title %}Transactions{% endblock %}
 
+{% block navbar_actions %}
+  <a href="" class="btn btn-primary btn-sm mr-8">
+      + Upload transactions .csv
+  </a>
+{% endblock %}
+
 {% block content %}
 
   {% include "transaction/partials/transactions-container.html" %}

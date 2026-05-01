@@ -3,6 +3,18 @@
 {% block title %}Budgets{% endblock %}
 {% block navbar_title %}Budgets{% endblock %}
 
+{% block navbar_actions %}
+  {% if filter.qs %}
+    <a href="" class="btn btn-primary btn-sm mr-8">
+        + Generate next Budget
+    </a>
+  {% else %}
+    <a href="" class="btn btn-primary btn-sm mr-8">
+        + Create first Budget
+    </a>
+  {% endif %}
+{% endblock %}
+
 {% block content %}
 
   {% include "budget/partials/budget-list-container.html" %}
