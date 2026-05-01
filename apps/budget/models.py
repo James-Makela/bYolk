@@ -19,6 +19,9 @@ class BudgetPeriod(models.Model):
     )
     notes = models.CharField(max_length=250, blank=True)
 
+    def __str__(self):
+        return f"Budget {self.id} {self.start_date} -> {self.end_date}"
+
 class CostAllocationManager(models.Manager):
     def create_from_period(self, budget_period, user):
         costs = Cost.objects.filter(
@@ -63,3 +66,6 @@ class CostAllocation(models.Model):
             self.cost_name = self.cost.name
             self.cost_amount = self.cost.amount
         super().save(*args, **kwargs)
+
+    def __str__(self):
+        return f"{self.cost_name} ${self.cost_amount} for Budget {self.budget_period_id}"
