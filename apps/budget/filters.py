@@ -1,15 +1,8 @@
 import django_filters
-from apps.budget.models import Budget
+from apps.budget.models import BudgetPeriod
 
 
-class BudgetFilter(django_filters.FilterSet):
-    start_date = django_filters.ChoiceFilter(
-        choices=Budget.objects.all,
-        field_name='start_date',
-        lookup_expr='iexact',
-        empty_label='All',
-    )
-
+class BudgetPeriodFilter(django_filters.FilterSet):
     class Meta:
-        model = Budget
-        fields = ('start_date',)
+        model = BudgetPeriod
+        fields = ('start_date', 'status')
