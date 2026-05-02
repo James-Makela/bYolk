@@ -10,6 +10,7 @@ mkShell {
   nodejs
   sqlite
   python314.pkgs.black
+  python314.pkgs.pandas
   python314.pkgs.django
   python314.pkgs.django-htmx
   python314.pkgs.django-filter
