@@ -44,7 +44,7 @@ def process_transaction_upload(user, csv_file):
         hash = generate_unique_hash(row['Description'], amount, row['Balance'])
         vendor, purchase_type, receipt_details = process_description(row['Description'])
 
-        if not Transaction.objects.filter(unique_hash=hash).exists():
+        if not Transaction.objects.filter(unique_hash=hash).exists() and "Internal" not in vendor:
             transactions_to_create.append(
                 Transaction(
                     user=user,
