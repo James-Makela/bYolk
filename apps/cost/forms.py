@@ -1,0 +1,15 @@
+from django import forms
+from .models import Cost
+
+class CostForm(forms.ModelForm):
+    class Meta:
+        model = Cost
+        fields = ['name', 'amount', 'category', 'frequency_number', 'frequency_unit', 'last_paid_date']
+        widgets = {
+            'name': forms.TextInput(attrs={'class': 'input input-bordered w-full'}),
+            'amount': forms.NumberInput(attrs={'class': 'grow w-full', 'step': '0.01', 'placeholder': '0.00'}),
+            'category': forms.Select(attrs={'class': 'select select-bordered w-full'}),
+            'frequency_number': forms.NumberInput(attrs={'class': 'input grow w-full'}),
+            'frequency_unit': forms.Select(attrs={'class': 'select select-bordered w-full'}),
+            'last_paid_date': forms.DateInput(attrs={'class': 'input input-bordered w-full', 'type': 'date'}),
+        }

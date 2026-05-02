@@ -136,5 +136,26 @@
     });
 </script>
 
+{% if messages %}
+  <div class="toast toast-top toast-center z-[100]">
+    {% for message in messages %}
+      <div class="alert {% if message.tags == 'success' %}alert-success{% elif message.tags == 'error' %}alert-error{% else %}alert-info{% endif %} shadow-lg">
+        <div>
+          <span>{{ message }}</span>
+        </div>
+        <!-- Optional: Close button if you want to dismiss early -->
+        <button class="btn btn-ghost btn-xs" onclick="this.parentElement.parentElement.remove()">✕</button>
+      </div>
+    {% endfor %}
+  </div>
+
+  <!-- Auto-hide script so the toast disappears after 5 seconds -->
+  <script>
+    setTimeout(() => {
+      const toasts = document.querySelectorAll('.toast');
+      toasts.forEach(t => t.remove());
+    }, 5000);
+  </script>
+{% endif %}
 </body>
 </html>

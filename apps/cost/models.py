@@ -31,7 +31,7 @@ class Cost(models.Model):
     category = models.ForeignKey(Category, null=True, on_delete=models.SET_NULL)
     frequency_number = models.IntegerField()
     frequency_unit = models.CharField(max_length=50, choices=FREQUENCY_UNIT_CHOICES)
-    last_paid_date = models.DateField(null=True)
+    last_paid_date = models.DateField(null=True, blank=True)
 
     objects = CostQuerySet.as_manager()
 
