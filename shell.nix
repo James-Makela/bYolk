@@ -9,14 +9,14 @@ mkShell {
   direnv
   nodejs
   sqlite
-  python314.pkgs.black
-  python314.pkgs.pandas
-  python314.pkgs.django
-  python314.pkgs.django-htmx
-  python314.pkgs.django-filter
-  # python314.pkgs.django-stubs
-  python314.pkgs.mypy
-  python314.pkgs.pytest
+  djhtml
+  python313.pkgs.black
+  python313.pkgs.pandas
+  python313.pkgs.django
+  python313.pkgs.django-htmx
+  python313.pkgs.django-filter
+  python313.pkgs.mypy
+  python313.pkgs.pytest
   ruff
   ];
 }

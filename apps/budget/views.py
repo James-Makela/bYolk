@@ -1,9 +1,12 @@
 from django.contrib.auth.decorators import login_required
+from django.contrib import messages
+from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render
 from apps.budget.filters import BudgetPeriodFilter
 from apps.budget.models import BudgetPeriod, CostAllocation
 from apps.transaction.models import Transaction
 from django.http import HttpResponse, Http404
+from .services import generate_next_budget_period
 
 
 @login_required
@@ -29,3 +32,10 @@ def budget_detail(request, budget_id):
         "allocations": allocations,
         "matching_transactions": matching_transactions,
     })
+
+@login_required
+def start_next_budget(request):
+    print(f"User: {request.user}")
+    generate_next_budget_period(request.user)
+    messages.success(request, "Next budget period generated")
+    return HttpResponseRedirect("/budgets/")

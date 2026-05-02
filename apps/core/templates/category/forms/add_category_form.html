@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+
+{% block title %}Add a Category{% endblock %}
+{% block navbar_title %}Add a Category{% endblock %}
+
+{% block navbar_actions %}
+  <a href="{% url 'categories-page' %}" class="btn btn-primary btn-sm mr-8">
+    Cancel
+  </a>
+{% endblock %}
+
+{% block content %}
+  <div class="p-10 max-w-lg mx-auto">
+    <form action="{% url 'add-category' %}" method="post" class="space-y-4">
+      {% csrf_token %}
+
+      <fieldset class="fieldset w-max-500 bg-base-200 border border-base-300 p-4 rounded-box overflow-visible">
+        <legend class="fieldset-legend text-l">Category Details</legend>
+
+        {% for field in form %}
+          <div class="form-control relative z-10">
+            <label class="fieldset-label w-full">
+              {{ field.label }}
+              {% if field.field.required %}<span class="text-error">*</span>{% endif %}
+            </label>
+
+            {{ field }}
+
+            {% if field.help_text %}
+              <p class="fieldset-label text-xs opacity-50">{{ field.help_text }}</p>
+            {% endif %}
+
+            {% if field.errors %}
+              <p class="text-error text-xs">{{ field.errors.0 }}</p>
+            {% endif %}
+          </div>
+        {% endfor %}
+
+        <button type="submit" class="btn btn-primary mt-4">Save Category</button>
+      </fieldset>
+    </form>
+  </div>
+{% endblock content %}

@@ -23,7 +23,7 @@ def costs_list(request):
     return render(request, 'cost/index.html', context)
 
 @login_required
-def get_cost(request):
+def create_cost(request):
     if request.method == "POST":
         # Create a form instance and populate it with data from the rrequest
         form = CostForm(request.POST)
