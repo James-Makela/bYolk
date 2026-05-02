@@ -5,46 +5,46 @@
 
 {% block navbar_actions %}
   <a href="{% url 'costs-page' %}" class="btn btn-primary btn-sm mr-8">
-      Cancel
+    Cancel
   </a>
 {% endblock %}
 
 {% block content %}
-<div class="p-10 max-w-lg mx-auto">
-  <form action="{% url 'add-cost' %}" method="post" class="space-y-4">
-    {% csrf_token %}
+  <div class="p-10 max-w-lg mx-auto">
+    <form action="{% url 'add-cost' %}" method="post" class="space-y-4">
+      {% csrf_token %}
 
-    <fieldset class="fieldset w-max-500 bg-base-200 border border-base-300 p-4 rounded-box overflow-visible">
-      <legend class="fieldset-legend text-l">Cost Details</legend>
+      <fieldset class="fieldset w-max-500 bg-base-200 border border-base-300 p-4 rounded-box overflow-visible">
+        <legend class="fieldset-legend text-l">Cost Details</legend>
 
-      {% for field in form %}
-        <div class="form-control relative z-10">
-          <label class="fieldset-label w-full">
-            {{ field.label }}
-            {% if field.field.required %}<span class="text-error">*</span>{% endif %}
-          </label>
-
-          {% if field.name == 'amount' %}
-            <label class="input input-bordered flex items-center gap-0 p-0 overflow-hidden w-full">
-              <span class="pl-3 pr-2 opacity-70 flex-none">$</span>
-              {{ field }}
+        {% for field in form %}
+          <div class="form-control relative z-10">
+            <label class="fieldset-label w-full">
+              {{ field.label }}
+              {% if field.field.required %}<span class="text-error">*</span>{% endif %}
             </label>
-          {% else %}
-            {{ field }}
-          {% endif %}
 
-          {% if field.help_text %}
-            <p class="fieldset-label text-xs opacity-50">{{ field.help_text }}</p>
-          {% endif %}
+            {% if field.name == 'amount' %}
+              <label class="input input-bordered flex items-center gap-0 p-0 overflow-hidden w-full">
+                <span class="pl-3 pr-2 opacity-70 flex-none">$</span>
+                {{ field }}
+              </label>
+            {% else %}
+              {{ field }}
+            {% endif %}
 
-          {% if field.errors %}
-            <p class="text-error text-xs">{{ field.errors.0 }}</p>
-          {% endif %}
-        </div>
-      {% endfor %}
+            {% if field.help_text %}
+              <p class="fieldset-label text-xs opacity-50">{{ field.help_text }}</p>
+            {% endif %}
 
-      <button type="submit" class="btn btn-primary mt-4">Save Cost</button>
-    </fieldset>
-  </form>
-</div>
+            {% if field.errors %}
+              <p class="text-error text-xs">{{ field.errors.0 }}</p>
+            {% endif %}
+          </div>
+        {% endfor %}
+
+        <button type="submit" class="btn btn-primary mt-4">Save Cost</button>
+      </fieldset>
+    </form>
+  </div>
 {% endblock content %}

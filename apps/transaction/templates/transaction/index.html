@@ -4,23 +4,23 @@
 {% block navbar_title %}Transactions{% endblock %}
 
 {% block navbar_actions %}
-<form action="{% url 'upload-csv' %}" method="post" enctype="multipart/form-data" id="csv-form">
-    {% csrf_token %}
-    <label class="btn btn-primary btn-sm font-bold mr-8">
-        <span>+ Upload transactions .csv</span>
-        <input 
-            type="file" 
-            name="csv_file" 
-            class="hidden" 
-            accept=".csv" 
-            onchange="document.getElementById('csv-form').submit();"
-        >
-    </label>
-</form>
+    <form action="{% url 'upload-csv' %}" method="post" enctype="multipart/form-data" id="csv-form">
+        {% csrf_token %}
+        <label class="btn btn-primary btn-sm font-bold mr-8">
+            <span>+ Upload transactions .csv</span>
+            <input
+                type="file"
+                name="csv_file"
+                class="hidden"
+                accept=".csv"
+                onchange="document.getElementById('csv-form').submit();"
+            >
+        </label>
+    </form>
 {% endblock %}
 
 {% block content %}
 
-  {% include "transaction/partials/transactions-container.html" %}
+    {% include "transaction/partials/transactions-container.html" %}
 
 {% endblock content %}

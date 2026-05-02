@@ -1,20 +1,20 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<div class="card justify-center">
-  <form method=post>
-    {% csrf_token %}
-    <fieldset class="fieldset bg-base-200 border-base-300 rounded-box w-xs border p-4">
-      <legend class="fieldset-legend">Login</legend>
+  <div class="card justify-center">
+    <form method=post>
+      {% csrf_token %}
+      <fieldset class="fieldset bg-base-200 border-base-300 rounded-box w-xs border p-4">
+        <legend class="fieldset-legend">Login</legend>
 
-      <label class="label">Username</label>
-      <input type="username" class="input" placeholder="Username" />
+        <label class="label">Username</label>
+        <input type="username" class="input" placeholder="Username" />
 
-      <label class="label">Password</label>
-      <input type="password" class="input" placeholder="Password" />
+        <label class="label">Password</label>
+        <input type="password" class="input" placeholder="Password" />
 
-      <button class="btn btn-neutral mt-4">Login</button>
-    </fieldset>
-  </form>
-</div>
+        <button class="btn btn-neutral mt-4">Login</button>
+      </fieldset>
+    </form>
+  </div>
 {% endblock content %}
