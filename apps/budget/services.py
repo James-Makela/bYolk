@@ -1,7 +1,7 @@
 from datetime import timedelta, date
 from dateutil.relativedelta import relativedelta
 from .models import BudgetPeriod
-from apps.core.models import User  # Import the User class directly
+from apps.core.models import User, FrequencyUnit
 
 def generate_next_budget_period(user):
     latest_budget = BudgetPeriod.objects.filter(user=user).order_by('-end_date').first()
@@ -13,11 +13,11 @@ def generate_next_budget_period(user):
         start_date = date.today()
 
     # Access the Choices from the User CLASS, not the instance
-    if user.budget_type == User.PayFrequency.DAYS:
-        end_date = start_date + timedelta(days=user.budget_interval_value - 1)
+    if user.budget_type == FrequencyUnit.DAY:
+        end_date = start_date + timedelta(days=user.budget_interval - 1)
         
-    elif user.budget_type == User.PayFrequency.MONTHLY:
-        target_day = user.budget_interval_value
+    elif user.budget_type == FrequencyUnit.MONTH:
+        target_day = user.budget_interval
         
         next_month_date = start_date + relativedelta(months=1)
         try:
