@@ -3,11 +3,12 @@ import pandas as pd
 
 from .models import Transaction
 
-def generate_unique_hash(description, amount):
+def generate_unique_hash(description, amount, balance):
     receipt_number = re.findall(r"(?<=Receipt )\d{4,6}", description)
     stripped_amount = str(amount).replace(".", "_")
+    stripped_balance = str(balance).replace(".", "_")
     if not receipt_number:
-        return f"000000_{stripped_amount}"
+        return f"000000_{stripped_amount}{stripped_balance}"
     else:
         return f"{receipt_number[0]}_{stripped_amount}"
 
@@ -40,7 +41,7 @@ def process_transaction_upload(user, csv_file):
     transactions_to_create = []
     for _, row in df.iterrows():
         amount=row['Credit'] if pd.notnull(row.get('Credit')) else row.get('Debit', 0)
-        hash = generate_unique_hash(row['Description'], amount)
+        hash = generate_unique_hash(row['Description'], amount, row['Balance'])
         vendor, purchase_type, receipt_details = process_description(row['Description'])
 
         if not Transaction.objects.filter(unique_hash=hash).exists():
