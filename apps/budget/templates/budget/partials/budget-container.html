@@ -5,15 +5,15 @@
             <tr>
                 <th class="font-bold">Cost Name</th>
                 <th class="font-bold text-right">Amount</th>
-                <th class="font-bold text-center">Paid</th>
+                <th class="font-bold text-right">Paid</th>
             </tr>
         </thead>
         <tbody>
             {% for allocation in allocations %}
                 <tr class="hover:sky-950">
                     <td>{{ allocation.cost_name }}</td>
-                    <td>${{ allocation.cost_amount }}</td>
-                    <td>${{ allocation.paid_amount }}</td>
+                    <td class="text-right">${{ allocation.cost_amount }}</td>
+                    <td class="text-right">${{ allocation.paid_amount }}</td>
                 </tr>
             {% empty %}
                 <tr>

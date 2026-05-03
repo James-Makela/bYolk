@@ -1,19 +1,17 @@
 from django.db import models
-from apps.core.models import User, Category, FrequencyUnit
+from apps.core.models import User, Category, FrequencyMixin
 from datetime import date
 
 from apps.cost.managers import CostQuerySet
 
 
 # Create your models here.
-class Cost(models.Model):
+class Cost(FrequencyMixin, models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     name = models.CharField(max_length=255)
     amount = models.DecimalField(max_digits=10, decimal_places=2)
     category = models.ForeignKey(Category, null=True, on_delete=models.SET_NULL)
-    frequency_value = models.IntegerField()
-    frequency_unit = models.CharField(max_length=50, choices=FrequencyUnit.choices)
-    last_paid_date = models.DateField(null=True, blank=True)
+    start_date = models.DateField()
 
     objects = CostQuerySet.as_manager()
 
