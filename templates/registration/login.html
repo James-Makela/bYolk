@@ -1,20 +1,62 @@
 {% extends 'base.html' %}
 
 {% block content %}
-  <div class="card justify-center">
-    <form method=post>
-      {% csrf_token %}
-      <fieldset class="fieldset bg-base-200 border-base-300 rounded-box w-xs border p-4">
-        <legend class="fieldset-legend">Login</legend>
+<div class="flex justify-center mt-10 w-full px-4">
+  <form method="post" class="w-full max-w-sm">
+    {% csrf_token %}
+    
+    <fieldset class="fieldset bg-base-200 border-base-300 rounded-box border p-6">
+      <legend class="fieldset-legend">Login</legend>
 
-        <label class="label">Username</label>
-        <input type="username" class="input" placeholder="Username" />
+      {% if form.non_field_errors %}
+        <div class="alert alert-error mb-4 shadow-sm py-2">
+          <span class="text-sm">{{ form.non_field_errors|striptags }}</span>
+        </div>
+      {% endif %}
 
-        <label class="label">Password</label>
-        <input type="password" class="input" placeholder="Password" />
+      {# Username Field #}
+      <div class="form-control">
+        <label class="label" for="{{ form.username.id_for_label }}">
+          <span class="label-text">Username</span>
+        </label>
+        <input 
+          type="text" 
+          name="username" 
+          id="{{ form.username.id_for_label }}"
+          class="input w-full {% if form.username.errors %}input-error{% endif %}" 
+          placeholder="Username"
+          value="{{ form.username.value|default:'' }}"
+          required 
+        />
+        {% if form.username.errors %}
+          <label class="label"><span class="label-text-alt text-error">{{ form.username.errors.0 }}</span></label>
+        {% endif %}
+      </div>
 
-        <button class="btn btn-neutral mt-4">Login</button>
-      </fieldset>
-    </form>
-  </div>
+      {# Password Field #}
+      <div class="form-control mt-2">
+        <label class="label" for="{{ form.password.id_for_label }}">
+          <span class="label-text">Password</span>
+        </label>
+        <input 
+          type="password" 
+          name="password" 
+          id="{{ form.password.id_for_label }}"
+          class="input w-full {% if form.password.errors %}input-error{% endif %}" 
+          placeholder="Password" 
+          required 
+        />
+        {% if form.password.errors %}
+          <label class="label"><span class="label-text-alt text-error">{{ form.password.errors.0 }}</span></label>
+        {% endif %}
+      </div>
+
+      <button type="submit" class="btn btn-neutral mt-6 w-full">Login</button>
+      <div class="text-center mt-4">
+        <span class="text-sm opacity-70">Don't have an account?</span>
+        <a href="{% url 'register' %}" class="link link-primary text-sm ml-1">Sign Up</a>
+      </div>
+    </fieldset>
+  </form>
+</div>
 {% endblock content %}

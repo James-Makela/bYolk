@@ -117,7 +117,12 @@
                                   <span class="is-drawer-close:hidden">Categories</span>
                                 </a>
                             </li>
-
+                            <div class="mt-auto">
+                              <form method="post" action="{% url 'logout' %}" class="inline">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-soft btn-error btn-wide">Logout</button>
+                              </form>
+                            </div>
                         {% endif %}
 
                     </ul>
