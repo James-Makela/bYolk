@@ -1,7 +1,8 @@
 from datetime import timedelta, date
 from dateutil.relativedelta import relativedelta
-from .models import BudgetPeriod
+from .models import BudgetPeriod, CostAllocation
 from apps.core.models import User, FrequencyUnit
+from apps.cost.models import Cost
 
 def generate_next_budget_period(user):
     latest_budget = BudgetPeriod.objects.filter(user=user).order_by('-end_date').first()
@@ -33,3 +34,24 @@ def generate_next_budget_period(user):
         start_date=start_date,
         end_date=end_date,
     )
+
+def populate_from_costs(budget_period, user):
+    costs = Cost.objects.filter(user=user)
+    cost_allocations_to_create = []
+    for cost in costs:
+        print(cost)
+        print(f"User budget type: {user.budget_type}, Cost type: {cost.frequency_unit}")
+        print(f"User budget interval: {user.budget_interval}, Cost interval: {cost.frequency_value}")
+        if cost.frequency_value == user.budget_interval and cost.frequency_unit == user.budget_type:
+            cost_allocations_to_create.append(CostAllocation(
+                user=user,
+                budget_period=budget_period,
+                cost=cost,
+                cost_name=cost.name,
+                cost_amount=cost.amount,
+            ))
+    return CostAllocation.objects.bulk_create(
+        cost_allocations_to_create,
+        ignore_conflicts=True
+    )
+

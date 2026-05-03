@@ -22,30 +22,8 @@ class BudgetPeriod(models.Model):
     def __str__(self):
         return f"Budget {self.id} {self.start_date} -> {self.end_date}"
 
-class CostAllocationManager(models.Manager):
-    def create_from_period(self, budget_period, user):
-        costs = Cost.objects.filter(
-            date__gte=budget_period.start_date,
-            date__lte=budget_period.end_date,
-        )
-
-        allocations = [
-            CostAllocation(
-                user=user,
-                budget_period=budget_period,
-                cost=cost,
-                cost_name=cost.name,
-                cost_amount=cost.amount,
-                paid_amount=0,
-            )
-            for cost in costs
-        ]
-        
-        return self.bulk_create(allocations)
 
 class CostAllocation(models.Model):
-    objects = CostAllocationManager()
-
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     budget_period = models.ForeignKey(
         BudgetPeriod,
@@ -60,6 +38,15 @@ class CostAllocation(models.Model):
     cost_name = models.CharField(max_length=50)
     cost_amount = models.DecimalField(max_digits=10, decimal_places=2)
     paid_amount = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=["budget_period", "cost"],
+                name="unique_cost_per_budget")
+        ]
+
 
     def save(self, *args, **kwargs):
         if self.cost and not self.cost_name:

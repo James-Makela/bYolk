@@ -4,7 +4,7 @@
 {% block navbar_title %}Budget for {{ budget.start_date }} -> {{ budget.end_date }}{% endblock %}
 
 {% block navbar_actions %}
-  <a href="" class="btn btn-primary btn-sm mr-8">
+  <a href="{% url 'populate-costs' budget.id %}" class="btn btn-primary btn-sm mr-8">
       Populate from costs
     </a>
 {% endblock %}
