@@ -23,12 +23,12 @@
             {% endfor %}
         </tbody>
         <tfoot>
-                <tr class="bg-base-200/50 font-bold">
-                    <td colspan="2" class="text-right">Total Costs:</td>
-                    <td class="text-right text-error">
-                        ${{ budget.get_total_costs|floatformat:2 }}
-                    </td>
-                </tr>
+            <tr class="bg-base-200/50 font-bold">
+                <td colspan="2" class="text-right">Total Costs:</td>
+                <td class="text-right text-error">
+                    ${{ budget.get_total_costs|floatformat:2 }}
+                </td>
+            </tr>
         </tfoot>
     </table>
 </div>

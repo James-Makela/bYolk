@@ -1,0 +1,55 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ title }}{% endblock %}
+{% block navbar_title %}{{ title }}{% endblock %}
+
+{% block navbar_actions %}
+  <a href="{% url 'costs-page' %}" class="btn btn-primary btn-sm mr-8">
+    Cancel
+  </a>
+{% endblock %}
+
+{% block content %}
+  <div class="p-10 max-w-lg mx-auto">
+    {# Removed action so it posts to the current URL (Edit or Add) #}
+    <form method="post" class="space-y-4">
+      {% csrf_token %}
+
+      <fieldset class="fieldset bg-base-200 border border-base-300 p-4 rounded-box overflow-visible max-w-[500px]">
+        <legend class="fieldset-legend text-l">{{ title|default:"Cost Details" }}</legend>
+
+        {% for field in form %}
+          <div class="form-control relative z-10">
+            <label class="fieldset-label w-full" for="{{ field.id_for_label }}">
+              {{ field.label }}
+              {% if field.field.required %}<span class="text-error">*</span>{% endif %}
+            </label>
+
+            {% if field.name == 'amount' %}
+              <div class="input input-bordered flex items-center gap-0 p-0 overflow-hidden w-full {% if field.errors %}input-error{% endif %}">
+                <span class="pl-3 opacity-70 flex-none">$</span>
+                <input
+                  type="number"
+                  step="0.01"
+                  name="{{ field.html_name }}"
+                  id="{{ field.id_for_label }}"
+                  {# Use 'value' but ensure we handle None safely #}
+                  value="{{ field.value|default_if_none:'' }}"
+                  class="grow bg-transparent h-full px-2 outline-none"
+                />
+              </div>
+            {% else %}
+              {{ field }}
+            {% endif %}
+
+            {% if field.errors %}
+              <p class="text-error text-xs mt-1">{{ field.errors.0 }}</p>
+            {% endif %}
+          </div>
+        {% endfor %}
+
+        <button type="submit" class="btn btn-primary mt-6 w-full">Save Cost</button>
+      </fieldset>
+    </form>
+  </div>
+{% endblock content %}

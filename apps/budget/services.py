@@ -1,6 +1,6 @@
 from datetime import timedelta, date
 from dateutil.relativedelta import relativedelta
-from .models import BudgetPeriod, CostAllocation
+from apps.budget.models import BudgetPeriod, CostAllocation
 from apps.core.models import User
 from apps.cost.models import Cost
 
@@ -36,7 +36,6 @@ def populate_from_costs(budget_period, user):
             if current_occurrence >= budget_period.start_date:
                 cost_allocations_to_create.append(
                     CostAllocation(
-                        user=user,
                         budget_period=budget_period,
                         cost=cost,
                         cost_name=cost.name,
