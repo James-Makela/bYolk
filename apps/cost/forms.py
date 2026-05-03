@@ -13,3 +13,9 @@ class CostForm(forms.ModelForm):
             'frequency_unit': forms.Select(attrs={'class': 'select select-bordered w-full'}),
             'start_date': forms.DateInput(attrs={'class': 'input input-bordered w-full', 'type': 'date'}),
         }
+
+    def __init__(self, *args, **kwargs):
+        user = kwargs.pop('user', None)
+        super().__init__(*args, **kwargs)
+        if user and hasattr(user, 'preferences'):
+            self.fields['start_date'].initial = user.preferences.first_pay_date

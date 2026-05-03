@@ -36,7 +36,7 @@ def create_cost(request):
 
     # If a GET or any other method create a blank form
     else:
-        form = CostForm()
+        form = CostForm(user=request.user)
 
     return render(request, "cost/forms/add_cost_form.html", {"form": form})
 

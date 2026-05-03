@@ -21,9 +21,9 @@ class Cost(FrequencyMixin, models.Model):
 
     def frequency_string(self):
         if self.frequency_value > 1:
-            return f"Every {self.frequency_value} {self.frequency_unit.capitalize()}s"
-        else:
             return f"Every {self.frequency_value} {self.frequency_unit.capitalize()}"
+        else:
+            return f"Every {self.frequency_value} {self.frequency_unit.capitalize().rstrip('s')}"
 
 
     class Meta():

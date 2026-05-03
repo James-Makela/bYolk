@@ -30,7 +30,7 @@ class FrequencyMixin(models.Model):
         kwargs = {self.frequency_unit: self.frequency_value}
         return relativedelta(**kwargs)
 
-    def __eq__(self, other):
+    def matches_frequency(self, other):
         if not hasattr(other, 'get_delta'):
             return False
         return self.get_delta() == other.get_delta()
