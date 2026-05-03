@@ -1,6 +1,7 @@
 from django.db import models
 from django.db.models import Sum, Q, OuterRef, Subquery, Value, DecimalField
 from django.db.models.functions import Coalesce, Abs
+from django.utils import timezone
 from apps.core.models import User
 from apps.cost.models import Cost
 
@@ -70,6 +71,13 @@ class BudgetPeriod(models.Model):
 
     def __str__(self):
         return f"Budget {self.id} {self.start_date} -> {self.end_date}"
+
+    @property
+    def is_current(self):
+        now = timezone.now().date()
+        if now >= self.start_date and now <= self.end_date:
+            return True
+        return False
 
     def get_total_costs(self):
         result = self.allocations.aggregate(total=Sum('cost_amount'))

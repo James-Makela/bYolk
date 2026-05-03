@@ -13,7 +13,11 @@
 
             <tbody>
                 {% for budget in filter.qs %}
+                  {% if budget.is_current %}
+                    <tr class="bg-accent-content">
+                  {% else %}
                     <tr class="hover:bg-base-300">
+                  {% endif %}
                         <td>{{ budget.start_date }} - {{ budget.end_date }}</td>
                         <td>${{ budget.get_total_costs|floatformat:2 }}</td>
                         <td class="text-error">${{ budget.annotated_spend|floatformat:2 }}</td>
