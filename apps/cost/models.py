@@ -1,7 +1,6 @@
 from django.db import models
-from apps.core.models import User, Category, FrequencyMixin
-from datetime import date
 
+from apps.core.models import Category, FrequencyMixin, User
 from apps.cost.managers import CostQuerySet
 
 
@@ -12,7 +11,9 @@ class Cost(FrequencyMixin, models.Model):
     amount = models.DecimalField(max_digits=10, decimal_places=2)
     category = models.ForeignKey(Category, null=True, on_delete=models.SET_NULL)
     start_date = models.DateField()
-    keywords = models.CharField(max_length=500, blank=True, help_text="Comma-separated list")
+    keywords = models.CharField(
+        max_length=500, blank=True, help_text="Comma-separated list"
+    )
 
     objects = CostQuerySet.as_manager()
 
@@ -24,8 +25,8 @@ class Cost(FrequencyMixin, models.Model):
         if self.frequency_value > 1:
             return f"Every {self.frequency_value} {self.frequency_unit.capitalize()}"
         else:
-            return f"Every {self.frequency_value} {self.frequency_unit.capitalize().rstrip('s')}"
+            return f"Every {self.frequency_value}\
+            {self.frequency_unit.capitalize().rstrip('s')}"
 
-
-    class Meta():
-        ordering = ['-amount']
+    class Meta:
+        ordering = ["-amount"]

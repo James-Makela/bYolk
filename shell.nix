@@ -10,6 +10,7 @@ mkShell {
   nodejs
   sqlite
   djhtml
+  pre-commit
   python313.pkgs.black
   python313.pkgs.pandas
   python313.pkgs.django

@@ -1,18 +1,18 @@
-from datetime import timedelta, date
-from dateutil.relativedelta import relativedelta
+from datetime import date, timedelta
+
 from apps.budget.models import BudgetPeriod, CostAllocation
-from apps.core.models import User
 from apps.cost.models import Cost
+
 
 def generate_next_budget_period(user):
     # Get the latest budget period
-    latest_budget = BudgetPeriod.objects.filter(user=user).order_by('-end_date').first()
-    
+    latest_budget = BudgetPeriod.objects.filter(user=user).order_by("-end_date").first()
+
     # Determine the start date
     if latest_budget:
         start_date = latest_budget.end_date + timedelta(days=1)
     else:
-        start_date = getattr(user.preferences, 'first_pay_date', date.today())
+        start_date = getattr(user.preferences, "first_pay_date", date.today())
 
     delta = user.preferences.get_delta()
 
@@ -23,6 +23,7 @@ def generate_next_budget_period(user):
         start_date=start_date,
         end_date=end_date,
     )
+
 
 def populate_from_costs(budget_period, user):
     costs = Cost.objects.filter(user=user)
@@ -48,7 +49,5 @@ def populate_from_costs(budget_period, user):
                 break
 
     return CostAllocation.objects.bulk_create(
-        cost_allocations_to_create,
-        ignore_conflicts=True
+        cost_allocations_to_create, ignore_conflicts=True
     )
-

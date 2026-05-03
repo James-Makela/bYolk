@@ -1,7 +1,8 @@
-from django.contrib.auth.decorators import login_required
 from django.contrib import messages
+from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseRedirect
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import get_object_or_404, render
+
 from apps.cost.filters import CostFilter
 from apps.cost.models import Cost
 
@@ -10,17 +11,17 @@ from .forms import CostForm
 
 # Create your views here.
 def costs_page(request):
-    return render(request, 'cost/index.html')
+    return render(request, "cost/index.html")
 
 
 @login_required
 def costs_list(request):
     cost_filter = CostFilter(
-        request.GET,
-        queryset=Cost.objects.filter(user=request.user)
+        request.GET, queryset=Cost.objects.filter(user=request.user)
     )
-    context = {'filter': cost_filter}
-    return render(request, 'cost/index.html', context)
+    context = {"filter": cost_filter}
+    return render(request, "cost/index.html", context)
+
 
 @login_required
 def cost_edit(request, pk=None):
@@ -47,10 +48,15 @@ def cost_edit(request, pk=None):
     else:
         form = CostForm(instance=cost, user=request.user)
 
-    return render(request, "cost/forms/cost_form.html", {
-        "form": form,
-        "title": title,
-    })
+    return render(
+        request,
+        "cost/forms/cost_form.html",
+        {
+            "form": form,
+            "title": title,
+        },
+    )
+
 
 @login_required
 def delete_cost(request, pk):
@@ -59,6 +65,5 @@ def delete_cost(request, pk):
     if request.method == "POST":
         cost.delete()
         messages.success(request, "Cost deleted")
-    
-    return HttpResponseRedirect("/costs/")
 
+    return HttpResponseRedirect("/costs/")
