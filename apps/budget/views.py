@@ -12,26 +12,26 @@ from .services import generate_next_budget_period, populate_from_costs
 
 @login_required
 def budgets_list(request):
-    budget_filter = BudgetPeriodFilter(
-        request.GET,
-        queryset=BudgetPeriod.objects.filter(user=request.user).order_by('-start_date')
-    )
+    qs = BudgetPeriod.objects.filter(
+        user=request.user
+    ).with_transaction_stats().order_by('-start_date')
+
+    budget_filter = BudgetPeriodFilter(request.GET, queryset=qs)
     context = {'filter': budget_filter}
     return render(request, 'budget/index.html', context)
 
 @login_required
 def budget_detail(request, budget_id):
-    budget = get_object_or_404(BudgetPeriod, pk=budget_id, user=request.user)
+    budget = get_object_or_404(
+        BudgetPeriod.objects.with_transaction_stats(),
+        pk=budget_id,
+        user=request.user
+    )
     allocations = CostAllocation.objects.filter(budget_period=budget)
-    matching_transactions = Transaction.objects.filter(
-        user=request.user,
-        date__range=[budget.start_date, budget.end_date]
-    ).exclude(purchase_type__iexact="Internal Transfer").order_by('-date')
 
     return render(request, "budget/detail.html", {
         "budget": budget,
         "allocations": allocations,
-        "matching_transactions": matching_transactions,
     })
 
 @login_required

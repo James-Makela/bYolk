@@ -45,7 +45,7 @@ def populate_from_costs(budget_period, user):
                 )
 
             current_occurrence += delta
-            if not delta:
+            if not any([delta.years, delta.months, delta.weeks, delta.days]):
                 break
 
     return CostAllocation.objects.bulk_create(

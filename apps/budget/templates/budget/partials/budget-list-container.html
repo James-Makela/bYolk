@@ -5,15 +5,19 @@
                 <tr>
                     <th class="px-6 py-3">Date Range</th>
                     <th class="px-6 py-3">Total Costs</th>
+                    <th class="px-6 py-3">Total Spent</th>
+                    <th class="px-6 py-3">Total Income</th>
                     <th class="px-6 py-3">View Budget</th>
                 </tr>
             </thead>
 
             <tbody>
                 {% for budget in filter.qs %}
-                    <tr class="hover:sky-950">
+                    <tr class="hover:bg-base-300">
                         <td>{{ budget.start_date }} - {{ budget.end_date }}</td>
-                        <td>{{ budget.total_costs }}</td>
+                        <td>${{ budget.get_total_costs|floatformat:2 }}</td>
+                        <td class="text-error">${{ budget.annotated_spend|floatformat:2 }}</td>
+                        <td class="text-success">${{ budget.annotated_income|floatformat:2 }}</td>
                         <td><a class="btn btn-xs" href="/budgets/{{ budget.id }}">View</a></td>
                     </tr>
                 {% endfor %}

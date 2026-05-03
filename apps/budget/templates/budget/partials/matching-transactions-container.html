@@ -1,27 +1,70 @@
-<div class="overflow-x-auto rounded-lg border border-base-300 mt-5" id="transactions-container">
-    {% if matching_transactions %}
+<div id="transactions-container" class="mt-2 space-y-8">
+  {% with tx_data=budget.get_categorised_transactions %}
+    {% if tx_data.incoming or tx_data.outgoing %}
 
-        <table class="table">
+      <h2 class="text-xl font-bold">Income</h3>
+      <div class="overflow-x-auto rounded-lg border border-base-300" id="transactions-container">
+        <table class="table table-fixed">
             <thead class="bg-base-200 text-base-content">
                 <tr>
-                    <th class="px-6 py-3">Date</th>
-                    <th class="px-6 py-3">Vendor</th>
-                    <th class="px-6 py-3">Purchase Type</th>
-                    <th class="px-6 py-3">Amount</th>
+                    <th class="w-1/6">Date</th>
+                    <th class="w-2/6">Vendor</th>
+                    <th class="w-2/6">Purchase Type</th>
+                    <th class="w-1/6">Amount</th>
                 </tr>
             </thead>
-
             <tbody>
-                {% for transaction in matching_transactions %}
-                    <tr class="hover:sky-950">
+                {% for transaction in tx_data.incoming %}
+                    <tr class="hover:bg-base-300">
                         <td>{{ transaction.date }}</td>
                         <td>{{ transaction.vendor }}</td>
                         <td>{{ transaction.purchase_type }}</td>
-                        <td>${{ transaction.amount|default_if_none:"-" }}</td>
+                        <td class="text-success">${{ transaction.amount|default_if_none:"-" }}</td>
                     </tr>
                 {% endfor %}
             </tbody>
+            <tfoot>
+                <tr class="bg-base-200/50 font-bold">
+                    <td colspan="3" class="text-right">Total Income:</td>
+                    <td class="text-right text-success">
+                        ${{ budget.annotated_income|floatformat:2 }}
+                    </td>
+                </tr>
+            </tfoot>
         </table>
+      </div>
+
+      <h2 class="text-xl font-bold">Outgoing</h3>
+      <div class="overflow-x-auto rounded-lg border border-base-300" id="transactions-container">
+        <table class="table table-fixed">
+            <thead class="bg-base-200 text-base-content">
+                <tr>
+                    <th class="w-1/6">Date</th>
+                    <th class="w-2/6">Vendor</th>
+                    <th class="w-2/6">Purchase Type</th>
+                    <th class="w-1/6">Amount</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for transaction in tx_data.outgoing %}
+                    <tr class="hover:bg-base-300">
+                        <td>{{ transaction.date }}</td>
+                        <td>{{ transaction.vendor }}</td>
+                        <td>{{ transaction.purchase_type }}</td>
+                        <td class="text-error">${{ transaction.amount|default_if_none:"-" }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+            <tfoot>
+                <tr class="bg-base-200/50 font-bold">
+                    <td colspan="3" class="text-right">Total Expenses:</td>
+                    <td class="text-right text-error">
+                        ${{ budget.annotated_spend|floatformat:2 }}
+                    </td>
+                </tr>
+            </tfoot>
+        </table>
+      </div>
 
     {% else %}
 
@@ -29,4 +72,5 @@
             No transactions found
         </p>
     {% endif %}
+  {% endwith %}
 </div>
