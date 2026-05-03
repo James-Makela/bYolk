@@ -28,3 +28,8 @@ class Cost(FrequencyMixin, models.Model):
 
     class Meta():
         ordering = ['-amount']
+
+
+class CostKeywords(models.Model):
+    cost = models.ForeignKey(Cost, related_name='keywords', null=True, blank=True, on_delete=models.CASCADE)
+    keyword = models.CharField(max_length=50)

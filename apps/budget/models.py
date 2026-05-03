@@ -108,7 +108,6 @@ class BudgetPeriod(models.Model):
 
 
 class CostAllocation(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
     budget_period = models.ForeignKey(
         BudgetPeriod,
         on_delete=models.CASCADE,
