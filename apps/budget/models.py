@@ -95,9 +95,11 @@ class BudgetPeriod(models.Model):
             .order_by("-date")
         )
 
-        transaction_types = {"outgoing": [], "incoming": []}
+        transaction_types = {"outgoing": [], "incoming": [], "unallocated": []}
 
         for transaction in all_transactions:
+            if transaction.cost_allocation_id is None:
+                transaction_types["unallocated"].append(transaction)
             if transaction.amount < 0:
                 transaction_types["outgoing"].append(transaction)
             else:
@@ -129,6 +131,12 @@ class CostAllocation(models.Model):
             self.cost_name = self.cost.name
             self.cost_amount = self.cost.amount
         super().save(*args, **kwargs)
+
+    def total_paid(self):
+        return sum(transaction.amount for transaction in self.transactions.all())
+
+    def remaining_balance(self):
+        return self.cost_amount - self.total_paid()
 
     def __str__(self):
         return (

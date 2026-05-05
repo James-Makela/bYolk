@@ -1,6 +1,7 @@
 from django.db import models
 
 from apps.core.models import User
+from apps.budget.models import CostAllocation
 
 
 # Create your models here.
@@ -13,3 +14,13 @@ class Transaction(models.Model):
     amount = models.DecimalField(max_digits=10, decimal_places=2)
     processed = models.BooleanField(default=False)
     unique_hash = models.CharField(max_length=30, unique=True, db_index=True)
+    cost_allocation = models.ForeignKey(
+        CostAllocation,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="transactions",
+    )
+
+    def __str__(self):
+        return f"{self.date}, {self.vendor}"

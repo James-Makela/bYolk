@@ -7,4 +7,6 @@ urlpatterns = [
     path("generate/", views.start_next_budget, name="generate-budget"),
     path("<int:budget_id>/", views.budget_detail, name="detail"),
     path("<int:budget_id>/populate", views.populate_costs, name="populate-costs"),
+    path('allocation/<int:allocation_id>/picker/', views.get_allocation_picker, name='get_allocation_picker'),
+    path('allocation/<int:allocation_id>/save/', views.save_allocations, name='save_allocations'),
 ]

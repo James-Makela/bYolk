@@ -7,6 +7,7 @@
                 <th class="font-bold">Cost Name</th>
                 <th class="font-bold text-right">Amount</th>
                 <th class="font-bold text-right">Paid</th>
+                <th class="font-bold">Allocate</th>
             </tr>
         </thead>
         <tbody>
@@ -14,7 +15,16 @@
                 <tr class="hover:bg-base-300">
                     <td>{{ allocation.cost_name }}</td>
                     <td class="text-right">${{ allocation.cost_amount }}</td>
-                    <td class="text-right">${{ allocation.paid_amount }}</td>
+                    <td class="text-right">${{ allocation.total_paid }}</td>
+                    <td>
+                      <button 
+                          class="btn btn-xs btn-soft"
+                          hx-get="{% url 'get_allocation_picker' allocation.id %}"
+                          hx-target="#modal_container"
+                          onclick="allocation_modal.showModal()">
+                          Allocate
+                      </button>
+                    </td>
                 </tr>
             {% empty %}
                 <tr>
@@ -24,7 +34,7 @@
         </tbody>
         <tfoot>
             <tr class="bg-base-200/50 font-bold">
-                <td colspan="2" class="text-right">Total Costs:</td>
+                <td colspan="3" class="text-right">Total Costs:</td>
                 <td class="text-right text-error">
                     ${{ budget.get_total_costs|floatformat:2 }}
                 </td>

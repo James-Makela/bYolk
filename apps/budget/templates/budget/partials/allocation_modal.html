@@ -1,0 +1,42 @@
+<form hx-post="{% url 'save_allocations' allocation.id %}" hx-target="#modal_container">
+    {% csrf_token %}
+    <h3 class="font-bold text-lg mb-4">Link Transactions to {{ allocation.cost_name }}</h3>
+    
+    <div class="max-h-96 overflow-y-auto rounded-lg border border-base-300">
+        <table class="table w-full">
+            <thead class="bg-base-200 text-base-content">
+                <tr>
+                    <th></th>
+                    <th>Date</th>
+                    <th>Vendor</th>
+                    <th>Amount</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for tx in eligible_transactions %}
+                <tr class={% if tx.is_match  %}bg-primary/10{% endif %}>
+                    <td>
+                        <input 
+                              type="checkbox"
+                              name="transaction_ids"
+                              value="{{ tx.id }}"
+                              class="checkbox checkbox-md checkbox-accent"
+                              {% if tx.is_match  %}checked{% endif %}
+                        />
+                    </td>
+                    <td>{{ tx.date }}</td>
+                    <td>{{ tx.vendor }}</td>
+                    <td>${{ tx.amount }}</td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="4" class="text-center py-4">No unallocated transactions found for this period.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <div class="modal-action">
+        <button type="submit" class="btn btn-primary">Link Selected</button>
+        <button type="button" class="btn" onclick="allocation_modal.close()">Cancel</button>
+    </div>
+</form>
