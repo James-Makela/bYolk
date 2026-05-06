@@ -25,21 +25,30 @@ def budgets_list(request):
 
 
 @login_required
-def budget_detail(request, budget_id):
+def budget_detail(request, id):
     budget = get_object_or_404(
-        BudgetPeriod.objects.with_transaction_stats(), pk=budget_id, user=request.user
+        BudgetPeriod.objects.with_transaction_stats(), pk=id, user=request.user
     )
     allocations = CostAllocation.objects.filter(budget_period=budget).prefetch_related(
         "transactions"
     )
+    context = {
+        "budget": budget,
+        "allocations": allocations,
+        "previous": BudgetPeriod.objects.filter(id__lt=id)
+        .order_by("-id")
+        .only("id")
+        .first(),
+        "next": BudgetPeriod.objects.filter(id__gt=id)
+        .order_by("id")
+        .only("id")
+        .first(),
+    }
 
     return render(
         request,
         "budget/detail.html",
-        {
-            "budget": budget,
-            "allocations": allocations,
-        },
+        context,
     )
 
 
@@ -52,11 +61,11 @@ def start_next_budget(request):
 
 
 @login_required
-def populate_costs(request, budget_id):
-    budget_period = get_object_or_404(BudgetPeriod, pk=budget_id, user=request.user)
+def populate_costs(request, id):
+    budget_period = get_object_or_404(BudgetPeriod, pk=id, user=request.user)
     populate_from_costs(budget_period, request.user)
     messages.success(request, "Costs populated")
-    return HttpResponseRedirect(reverse("detail", args=[budget_id]))
+    return HttpResponseRedirect(reverse("detail", args=[id]))
 
 
 @login_required
