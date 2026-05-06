@@ -8,6 +8,7 @@ from apps.budget.filters import BudgetPeriodFilter
 from apps.budget.models import BudgetPeriod, CostAllocation
 from apps.transaction.models import Transaction
 
+from .forms import CostAllocationForm
 from .services import generate_next_budget_period, populate_from_costs
 
 
@@ -81,7 +82,7 @@ def get_allocation_picker(request, allocation_id):
     transactions = allocation.budget_period.get_categorised_transactions()
     unallocated = list(transactions["unallocated"])
 
-    if len(allocation.cost.keywords) == 0:
+    if not allocation.cost or len(allocation.cost.keywords) == 0:
         keywords = None
     else:
         keywords = allocation.cost.keywords.split(",")
@@ -129,3 +130,33 @@ def save_allocations(request, allocation_id):
         response = HttpResponse("Saved")
         response["HX-Refresh"] = "true"
         return response
+
+
+@login_required
+def add_single_allocation(request, budget_id):
+    budget_period = get_object_or_404(BudgetPeriod, id=budget_id)
+
+    if request.method == "POST":
+        form = CostAllocationForm(request.POST)
+        if form.is_valid():
+            new_allocation = form.save(commit=False)
+            new_allocation.budget_period = budget_period
+            new_allocation.save()
+            messages.success(request, "Cost added!")
+            return HttpResponseRedirect(f"/budgets/{budget_id}")
+
+        else:
+            messages.error(request, "Unable to save cost.")
+            return HttpResponseRedirect(f"/budgets/{budget_id}")
+
+    else:
+        form = CostAllocationForm()
+
+    return render(
+        request,
+        "budget/forms/add_allocation_form.html",
+        {
+            "budget_id ": budget_id,
+            "form": form,
+        },
+    )

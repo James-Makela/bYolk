@@ -17,4 +17,9 @@ urlpatterns = [
         views.save_allocations,
         name="save_allocations",
     ),
+    path(
+        "add-cost-allocation/<int:budget_id>",
+        views.add_single_allocation,
+        name="add-cost-allocation",
+    ),
 ]

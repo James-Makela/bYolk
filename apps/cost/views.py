@@ -35,7 +35,6 @@ def cost_edit(request, pk=None):
         message = "Cost saved!"
 
     if request.method == "POST":
-        # Create a form instance and populate it with data from the rrequest
         form = CostForm(request.POST, instance=cost)
         if form.is_valid():
             cost_item = form.save(commit=False)
@@ -44,7 +43,6 @@ def cost_edit(request, pk=None):
             messages.success(request, message)
             return HttpResponseRedirect(f"/costs/?updated={cost_item.id}")
 
-    # If a GET or any other method create a blank form
     else:
         form = CostForm(instance=cost, user=request.user)
 
