@@ -7,7 +7,8 @@
                 <th class="font-bold">Cost Name</th>
                 <th class="font-bold text-right">Amount</th>
                 <th class="font-bold text-right">Paid</th>
-                <th class="font-bold">Allocate</th>
+                <th></th>
+                <th></th>
             </tr>
         </thead>
         <tbody>
@@ -25,6 +26,24 @@
                           Allocate
                       </button>
                     </td>
+                    <td>
+                        <div class="dropdown">
+                                <div tabindex="0" role="button" class="btn btn-xs btn-soft">Actions</div>
+                                <ul tabindex="-1" class="dropdown-content menu bg-base-100 rounded-box z-1 w-42 p-2 shadow-sm">
+                                <li>
+                                  <a href="{% url 'move-cost-allocation' allocation.id next.id %}" class="flex justify-between items-center hover:text-primary">
+                                        Move to next Budget
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="{% url 'move-cost-allocation' allocation.id previous.id %}" class="flex justify-between items-center hover:text-primary">
+                                        Move to previous Budget
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </td>
+
                 </tr>
             {% empty %}
                 <tr>

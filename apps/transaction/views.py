@@ -17,7 +17,8 @@ def transactions_page(request):
 @login_required
 def transaction_list(request):
     transaction_filter = TransactionFilter(
-        request.GET, queryset=Transaction.objects.filter(user=request.user)
+        request.GET,
+        queryset=Transaction.objects.filter(user=request.user).order_by("-date"),
     )
     context = {"filter": transaction_filter}
     return render(request, "transaction/index.html", context)

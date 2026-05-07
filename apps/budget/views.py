@@ -160,3 +160,30 @@ def add_single_allocation(request, budget_id):
             "form": form,
         },
     )
+
+
+@login_required
+def move_cost_allocation(request, allocation_id, budget_id):
+    allocation = get_object_or_404(
+        CostAllocation.objects.select_related("budget_period"),
+        pk=allocation_id,
+        budget_period__user=request.user,
+    )
+
+    current_budget = allocation.budget_period.id
+    try:
+        budget_to_assign = BudgetPeriod.objects.get(pk=budget_id)
+    except BudgetPeriod.DoesNotExist:
+        budget_to_assign = None
+
+    if not budget_to_assign:
+        messages.error(
+            request,
+            "The budget you are trying to move this allocation to does not exist.",
+        )
+    else:
+        allocation.budget_period = budget_to_assign
+        allocation.save()
+        messages.success(request, "Allocation moved successfully.")
+
+    return HttpResponseRedirect(f"/budgets/{current_budget}")
