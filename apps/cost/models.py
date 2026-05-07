@@ -1,7 +1,6 @@
 from django.db import models
 
 from apps.core.models import Category, FrequencyMixin, User
-from apps.cost.managers import CostQuerySet
 
 
 # Create your models here.
@@ -14,8 +13,6 @@ class Cost(FrequencyMixin, models.Model):
     keywords = models.CharField(
         max_length=500, blank=True, help_text="Comma-separated list"
     )
-
-    objects = CostQuerySet.as_manager()
 
     def __str__(self):
         return f"{self.name}, ${self.amount} every {self.frequency_value} \
