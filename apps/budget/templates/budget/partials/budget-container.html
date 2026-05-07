@@ -14,8 +14,8 @@
         <tbody>
             {% for allocation in allocations %}
                 <tr class="hover:bg-base-300">
-                    <td>{{ allocation.cost_name }}</td>
-                    <td class="text-right">${{ allocation.cost_amount }}</td>
+                    <td>{{ allocation.dynamic_cost_name }}</td>
+                    <td class="text-right">${{ allocation.dynamic_cost_amount }}</td>
                     <td class="text-right">${{ allocation.total_paid }}</td>
                     <td>
                       <button 
@@ -53,11 +53,16 @@
         </tbody>
         <tfoot>
             <tr class="bg-base-200/50 font-bold">
-                <td colspan="3" class="text-right">Total Costs:</td>
+                <td colspan="4" class="text-right">Total Costs:</td>
                 <td class="text-right text-error">
                     ${{ budget.get_total_costs|floatformat:2 }}
                 </td>
             </tr>
         </tfoot>
     </table>
+</div>
+<div class="mt-4 mb-4">
+  <hr>
+  <h2 class="text-xl">Net Savings for this budget period:</h2>
+  <hr>
 </div>

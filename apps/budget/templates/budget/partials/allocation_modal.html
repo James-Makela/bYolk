@@ -1,6 +1,6 @@
 <form hx-post="{% url 'save_allocations' allocation.id %}" hx-target="#modal_container">
     {% csrf_token %}
-    <h3 class="font-bold text-lg mb-4">Link Transactions to {{ allocation.cost_name }}</h3>
+    <h3 class="font-bold text-lg mb-4">Link Transactions to {{ allocation.dynamic_cost_name }}</h3>
     
     <div class="max-h-96 overflow-y-auto rounded-lg border border-base-300">
         <table class="table w-full">

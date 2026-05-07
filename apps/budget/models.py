@@ -98,7 +98,7 @@ class BudgetPeriod(models.Model):
         transaction_types = {"outgoing": [], "incoming": [], "unallocated": []}
 
         for transaction in all_transactions:
-            if transaction.cost_allocation_id is None:
+            if transaction.cost_allocation_id is None and transaction.amount < 50:
                 transaction_types["unallocated"].append(transaction)
             if transaction.amount < 0:
                 transaction_types["outgoing"].append(transaction)
@@ -128,6 +128,20 @@ class CostAllocation(models.Model):
                 fields=["budget_period", "cost"], name="unique_cost_per_budget"
             )
         ]
+
+    @property
+    def dynamic_cost_name(self):
+        if self.cost:
+            return self.cost.name
+        else:
+            return self.cost_name
+
+    @property
+    def dynamic_cost_amount(self):
+        if self.cost:
+            return self.cost.amount
+        else:
+            return self.cost_amount
 
     def save(self, *args, **kwargs):
         if self.cost and not self.cost_name:
