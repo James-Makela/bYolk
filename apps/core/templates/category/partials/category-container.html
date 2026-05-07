@@ -1,42 +1,42 @@
 <div class="overflow-show rounded-lg border border-base-300" id="categories-container">
-    {% if categories %}
+  {% if categories %}
 
-        <table class="table">
-            <thead class="bg-base-200 text-base-content">
-                <tr>
-                    <th class="px-6 py-3">Category</th>
-                    <th class="px-6 py-3"></th>
-                </tr>
-            </thead>
+    <table class="table">
+      <thead class="bg-base-200 text-base-content">
+        <tr>
+          <th class="px-6 py-3">Category</th>
+          <th class="px-6 py-3"></th>
+        </tr>
+      </thead>
 
-            <tbody>
-                {% for category in categories %}
-                    <tr class="hover:bg-base-300">
-                        <td>{{ category.name }}</td>
-                        <td>
-                            <div class="dropdown">
-                                <div tabindex="0" role="button" class="btn btn-sm">Actions</div>
-                                <ul tabindex="-1" class="dropdown-content menu bg-base-100 rounded-box z-1 w-42 p-2 shadow-sm">
-                                    <form action="{% url 'delete-category' category.pk %}" method="post" onsubmit="return confirm('Are you sure?')">
-                                        {% csrf_token %}
-                                        <button type="submit" class="text-error flex justify-between">
-                                            Delete
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                                        </svg>
-                                    </button>
-                                </form>
-                            </ul>
-                        </div>
-                    </td>
-                    </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+      <tbody>
+        {% for category in categories %}
+          <tr class="hover:bg-base-300">
+            <td>{{ category.name }}</td>
+            <td>
+              <div class="dropdown">
+                <div tabindex="0" role="button" class="btn btn-sm">Actions</div>
+                <ul tabindex="-1" class="dropdown-content menu bg-base-100 rounded-box z-1 w-42 p-2 shadow-sm">
+                  <form action="{% url 'delete-category' category.pk %}" method="post" onsubmit="return confirm('Are you sure?')">
+                    {% csrf_token %}
+                    <button type="submit" class="text-error flex justify-between">
+                      Delete
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                    </svg>
+                  </button>
+                </form>
+              </ul>
+            </div>
+          </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
 
-    {% else %}
+  {% else %}
 
-        <p class="text-2xl">
-            No categories found
-        </p>
-    {% endif %}
+    <p class="text-2xl">
+      No categories found
+    </p>
+  {% endif %}
 </div>

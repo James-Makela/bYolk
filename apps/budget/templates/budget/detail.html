@@ -2,7 +2,7 @@
 
 {% block title %}{{ budget.start_date }}{% endblock %}
 {% block navbar_title %}
-<a href="/budgets/{{ previous.id }}" class="btn btn-xs btn-primary btn-soft" {% if not previous %}disabled="disabled"{% endif %}>&larr; Previous</a>
+  <a href="/budgets/{{ previous.id }}" class="btn btn-xs btn-primary btn-soft" {% if not previous %}disabled="disabled"{% endif %}>&larr; Previous</a>
   Budget for {{ budget.start_date }} -> {{ budget.end_date }}
   <a href="/budgets/{{ next.id }}" class="btn btn-xs btn-primary btn-soft" {% if not next %}disabled="disabled"{% endif %}>Next &rarr;</a>
 {% endblock %}
@@ -21,13 +21,13 @@
   {% include "budget/partials/budget-container.html" %}
   {% include "budget/partials/matching-transactions-container.html" %}
 
-<dialog id="allocation_modal" class="modal">
-  <div id="modal_container" class="modal-box w-11/12 max-w-3xl">
+  <dialog id="allocation_modal" class="modal">
+    <div id="modal_container" class="modal-box w-11/12 max-w-3xl">
     <!-- HTMX injects content here -->
-  </div>
-  <form method="dialog" class="modal-backdrop">
-    <button>close</button>
-  </form>
-</dialog>
+    </div>
+    <form method="dialog" class="modal-backdrop">
+      <button>close</button>
+    </form>
+  </dialog>
 {% endblock content %}
 

@@ -28,8 +28,18 @@ def budget_detail(request, id):
     budget = get_object_or_404(
         BudgetPeriod.objects.with_transaction_stats(), pk=id, user=request.user
     )
-    previous = BudgetPeriod.objects.filter(id__lt=id).order_by("-id").only("id").first()
-    next = BudgetPeriod.objects.filter(id__gt=id).order_by("id").only("id").first()
+    previous = (
+        BudgetPeriod.objects.filter(id__lt=id, user=request.user)
+        .order_by("-id")
+        .only("id")
+        .first()
+    )
+    next = (
+        BudgetPeriod.objects.filter(id__gt=id, user=request.user)
+        .order_by("id")
+        .only("id")
+        .first()
+    )
     allocations = CostAllocation.objects.filter(budget_period=budget).prefetch_related(
         "transactions"
     )

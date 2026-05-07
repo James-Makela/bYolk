@@ -1,33 +1,33 @@
 <div class="overflow-x-auto rounded-lg border border-base-300" id="transactions-container">
 
-    {% if transactions %}
+  {% if transactions %}
 
-        <table class="table">
-            <thead class="bg-base-200 text-base-content">
-                <tr>
-                    <th class="px-6 py-3">Date</th>
-                    <th class="px-6 py-3">Vendor</th>
-                    <th class="px-6 py-3">Purchase Type</th>
-                    <th class="px-6 py-3">Amount</th>
-                </tr>
-            </thead>
+    <table class="table">
+      <thead class="bg-base-200 text-base-content">
+        <tr>
+          <th class="px-6 py-3">Date</th>
+          <th class="px-6 py-3">Vendor</th>
+          <th class="px-6 py-3">Purchase Type</th>
+          <th class="px-6 py-3">Amount</th>
+        </tr>
+      </thead>
 
-            <tbody>
-                {% for transaction in transactions %}
-                    <tr class="hover:bg-base-300">
-                        <td>{{ transaction.date }}</td>
-                        <td>{{ transaction.vendor }}</td>
-                        <td>{{ transaction.purchase_type }}</td>
-                        <td>${{ transaction.amount|default_if_none:"-" }}</td>
-                    </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+      <tbody>
+        {% for transaction in transactions %}
+          <tr class="hover:bg-base-300">
+            <td>{{ transaction.date }}</td>
+            <td>{{ transaction.vendor }}</td>
+            <td>{{ transaction.purchase_type }}</td>
+            <td>${{ transaction.amount|default_if_none:"-" }}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
 
-    {% else %}
+  {% else %}
 
-        <p class="text-2xl">
-            No transactions found
-        </p>
-    {% endif %}
+    <p class="text-2xl">
+      No transactions found
+    </p>
+  {% endif %}
 </div>

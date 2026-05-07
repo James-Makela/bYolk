@@ -1,36 +1,36 @@
 <div class="overflow-x-auto rounded-lg border border-base-300">
-    {% if budget_periods %}
-        <table class="table w-full">
-            <thead class="bg-base-200 text-base-content">
-                <tr>
-                    <th class="px-6 py-3">Date Range</th>
-                    <th class="px-6 py-3">Total Costs</th>
-                    <th class="px-6 py-3">Total Spent</th>
-                    <th class="px-6 py-3">Total Income</th>
-                    <th class="px-6 py-3">View Budget</th>
-                </tr>
-            </thead>
+  {% if budget_periods %}
+    <table class="table w-full">
+      <thead class="bg-base-200 text-base-content">
+        <tr>
+          <th class="px-6 py-3">Date Range</th>
+          <th class="px-6 py-3">Total Costs</th>
+          <th class="px-6 py-3">Total Spent</th>
+          <th class="px-6 py-3">Total Income</th>
+          <th class="px-6 py-3">View Budget</th>
+        </tr>
+      </thead>
 
-            <tbody>
-                {% for budget in budget_periods %}
-                    {% if budget.is_current %}
-                        <tr class="bg-accent-content">
-                    {% else %}
-                        <tr class="hover:bg-base-300">
-                    {% endif %}
-                    <td>{{ budget.start_date }} - {{ budget.end_date }}</td>
-                    <td>${{ budget.get_total_costs|floatformat:2 }}</td>
-                    <td class="text-error">${{ budget.annotated_spend|floatformat:2 }}</td>
-                    <td class="text-success">${{ budget.annotated_income|floatformat:2 }}</td>
-                    <td><a class="btn btn-xs btn-soft" href="/budgets/{{ budget.id }}">View</a></td>
-                    </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+      <tbody>
+        {% for budget in budget_periods %}
+          {% if budget.is_current %}
+            <tr class="bg-accent-content">
+          {% else %}
+            <tr class="hover:bg-base-300">
+          {% endif %}
+          <td>{{ budget.start_date }} - {{ budget.end_date }}</td>
+          <td>${{ budget.get_total_costs|floatformat:2 }}</td>
+          <td class="text-error">${{ budget.annotated_spend|floatformat:2 }}</td>
+          <td class="text-success">${{ budget.annotated_income|floatformat:2 }}</td>
+          <td><a class="btn btn-xs btn-soft" href="/budgets/{{ budget.id }}">View</a></td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
 
-    {% else %}
-        <p class="text-2xl m-4">
-            No budgets found
-        </p>
-    {% endif %}
+  {% else %}
+    <p class="text-2xl m-4">
+      No budgets found
+    </p>
+  {% endif %}
 </div>
