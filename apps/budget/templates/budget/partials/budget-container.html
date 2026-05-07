@@ -38,8 +38,8 @@
                             <div class="dropdown dropdown-end">
                                 <div tabindex="0" role="button" class="btn btn-xs btn-soft">Actions</div>
                                 <ul tabindex="-1" class="dropdown-content menu bg-base-100 rounded-box z-[100] w-52 shadow-xl border border-base-200 mt-2">
-                                    <li class="z-top"><a href="{% url 'move-cost-allocation' allocation.id next.id %}">Move to next Budget</a></li>
-                                    <li><a href="{% url 'move-cost-allocation' allocation.id previous.id %}">Move to previous Budget</a></li>
+                                  <li class="z-top"><a href="{% if next %}{% url 'move-cost-allocation' allocation.id next.id %}{% endif %}">Move to next Budget</a></li>
+                                  <li><a href="{% if previous %}{% url 'move-cost-allocation' allocation.id previous.id %}{% endif %}">Move to previous Budget</a></li>
                                 </ul>
                             </div>
                         </div>
@@ -88,9 +88,4 @@
         </tr>
     </tfoot>
 </table>
-</div>
-<div class="mt-4 mb-4">
-  <hr>
-  <h2 class="text-xl">Net Savings for this budget period:</h2>
-  <hr>
 </div>
