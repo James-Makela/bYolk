@@ -4,7 +4,7 @@
 {% block navbar_title %}Budgets{% endblock %}
 
 {% block navbar_actions %}
-  {% if filter.qs %}
+  {% if budget_periods %}
     <a href="{% url 'generate-budget' %}" class="btn btn-primary btn-sm mr-8">
       + Generate next Budget
     </a>
