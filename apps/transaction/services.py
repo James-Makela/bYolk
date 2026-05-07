@@ -6,11 +6,11 @@ import pandas as pd
 from .models import Transaction
 
 
-def generate_unique_hash(description, amount, balance, user_id):
+def generate_unique_hash(description, amount, balance, user_name):
     receipt_number = re.findall(r"(?<=Receipt )\d{4,6}", description)
-    stripped_amount = str(amount).replace(".", "_")
-    stripped_balance = str(balance).replace(".", "_")
-    hashed_user = hash(user_id)
+    stripped_amount = str(amount).replace(".", "_").strip("-")
+    stripped_balance = str(balance).replace(".", "_").strip("-")
+    hashed_user = hash(user_name)
     if not receipt_number:
         return f"000000_{stripped_amount}{stripped_balance}{hashed_user}"
     else:
@@ -51,9 +51,11 @@ def get_actual_date(description):
         r"(\d+)[\s]+(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[\s]+(\d{4})",
         description,
     )
-    if actual_date and len(actual_date[0]) == 4:
+    print(actual_date)
+    if actual_date and len(actual_date[0]) == 3:
         try:
-            return datetime.strptime(actual_date[0][0], "%d %b %Y").date()
+            date_string = " ".join(actual_date[0])
+            return datetime.strptime(date_string, "%d %b %Y").date()
         except Exception:
             return None
 
@@ -65,7 +67,9 @@ def process_transaction_upload(user, csv_file):
     transactions_to_create = []
     for _, row in df.iterrows():
         amount = row["Credit"] if pd.notnull(row.get("Credit")) else row.get("Debit", 0)
-        hash = generate_unique_hash(row["Description"], amount, row["Balance"], user.id)
+        hash = generate_unique_hash(
+            row["Description"], amount, row["Balance"], user.username
+        )
         vendor, purchase_type, receipt_details = process_description(row["Description"])
         date = get_actual_date(row["Description"])
         if not date:
