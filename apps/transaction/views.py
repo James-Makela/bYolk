@@ -3,7 +3,6 @@ from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
 
-from apps.transaction.filters import TransactionFilter
 from apps.transaction.models import Transaction
 
 from .services import process_transaction_upload
@@ -16,11 +15,9 @@ def transactions_page(request):
 
 @login_required
 def transaction_list(request):
-    transaction_filter = TransactionFilter(
-        request.GET,
-        queryset=Transaction.objects.filter(user=request.user).order_by("-date"),
-    )
-    context = {"filter": transaction_filter}
+    transactions = Transaction.objects.filter(user=request.user).order_by("-date")
+
+    context = {"transactions": transactions}
     return render(request, "transaction/index.html", context)
 
 

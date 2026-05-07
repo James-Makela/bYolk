@@ -4,7 +4,6 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render
 from django.urls import reverse
 
-from apps.budget.filters import BudgetPeriodFilter
 from apps.budget.models import BudgetPeriod, CostAllocation
 from apps.transaction.models import Transaction
 
@@ -14,14 +13,13 @@ from .services import generate_next_budget_period, populate_from_costs
 
 @login_required
 def budgets_list(request):
-    qs = (
+    budget_periods = (
         BudgetPeriod.objects.filter(user=request.user)
         .with_transaction_stats()
         .order_by("-start_date")
     )
 
-    budget_filter = BudgetPeriodFilter(request.GET, queryset=qs)
-    context = {"filter": budget_filter}
+    context = {"budget_periods": budget_periods}
     return render(request, "budget/index.html", context)
 
 
@@ -30,20 +28,16 @@ def budget_detail(request, id):
     budget = get_object_or_404(
         BudgetPeriod.objects.with_transaction_stats(), pk=id, user=request.user
     )
+    previous = BudgetPeriod.objects.filter(id__lt=id).order_by("-id").only("id").first()
+    next = BudgetPeriod.objects.filter(id__gt=id).order_by("id").only("id").first()
     allocations = CostAllocation.objects.filter(budget_period=budget).prefetch_related(
         "transactions"
     )
     context = {
         "budget": budget,
         "allocations": allocations,
-        "previous": BudgetPeriod.objects.filter(id__lt=id)
-        .order_by("-id")
-        .only("id")
-        .first(),
-        "next": BudgetPeriod.objects.filter(id__gt=id)
-        .order_by("id")
-        .only("id")
-        .first(),
+        "previous": previous,
+        "next": next,
     }
 
     return render(

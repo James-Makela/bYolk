@@ -1,6 +1,6 @@
 <div class="overflow-x-auto rounded-lg border border-base-300" id="transactions-container">
 
-    {% if filter.qs %}
+    {% if transactions %}
 
         <table class="table">
             <thead class="bg-base-200 text-base-content">
@@ -13,7 +13,7 @@
             </thead>
 
             <tbody>
-                {% for transaction in filter.qs %}
+                {% for transaction in transactions %}
                     <tr class="hover:bg-base-300">
                         <td>{{ transaction.date }}</td>
                         <td>{{ transaction.vendor }}</td>

@@ -9,6 +9,7 @@ mkShell {
   direnv
   nodejs
   sqlite
+  python314.pkgs.pandas
   python314
   ];
 }

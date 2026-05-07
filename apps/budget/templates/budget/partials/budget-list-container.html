@@ -1,5 +1,5 @@
 <div class="overflow-x-auto rounded-lg border border-base-300">
-    {% if filter.qs %}
+    {% if budget_periods %}
         <table class="table w-full">
             <thead class="bg-base-200 text-base-content">
                 <tr>
@@ -12,7 +12,7 @@
             </thead>
 
             <tbody>
-                {% for budget in filter.qs %}
+                {% for budget in budget_periods %}
                     {% if budget.is_current %}
                         <tr class="bg-accent-content">
                     {% else %}
