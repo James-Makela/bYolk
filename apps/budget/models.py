@@ -3,7 +3,7 @@ from django.db.models import DecimalField, OuterRef, Subquery, Sum, Value
 from django.db.models.functions import Abs, Coalesce
 from django.utils import timezone
 
-from apps.core.models import User
+from apps.core.models import Category, User
 from apps.cost.models import Cost
 
 
@@ -118,6 +118,9 @@ class CostAllocation(models.Model):
     cost_name = models.CharField(max_length=50)
     cost_amount = models.DecimalField(max_digits=10, decimal_places=2)
     paid_amount = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    category = models.ForeignKey(
+        Category, on_delete=models.SET_NULL, null=True, blank=True
+    )
 
     class Meta:
         constraints = [
@@ -130,6 +133,7 @@ class CostAllocation(models.Model):
         if self.cost and not self.cost_name:
             self.cost_name = self.cost.name
             self.cost_amount = self.cost.amount
+            self.category = self.cost.category
         super().save(*args, **kwargs)
 
     def total_paid(self):

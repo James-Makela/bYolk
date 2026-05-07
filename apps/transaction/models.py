@@ -1,7 +1,7 @@
 from django.db import models
 
-from apps.core.models import User
 from apps.budget.models import CostAllocation
+from apps.core.models import User
 
 
 # Create your models here.
