@@ -22,5 +22,12 @@ class Transaction(models.Model):
         related_name="transactions",
     )
 
+    @property
+    def is_positive(self):
+        if self.amount > 0:
+            return True
+        else:
+            return False
+
     def __str__(self):
         return f"{self.date}, {self.vendor}"

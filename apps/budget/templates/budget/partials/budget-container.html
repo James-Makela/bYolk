@@ -61,7 +61,7 @@
                                             <tr class="border-base-200">
                                                 <td>{{ tx.date }}</td>
                                                 <td>{{ tx.vendor }}</td>
-                                                <td class="text-right font-semibold">${{ tx.amount }}</td>
+                                                <td class="text-right font-semibold {% if tx.is_positive %}text-success{% else %}text-error{% endif %}">${{ tx.amount }}</td>
                                             </tr>
                                         {% endfor %}
                                     </tbody>
