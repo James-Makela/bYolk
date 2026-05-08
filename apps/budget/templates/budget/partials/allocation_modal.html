@@ -14,7 +14,7 @@
       </thead>
       <tbody>
         {% for tx in eligible_transactions %}
-          <tr class={% if tx.is_match  %}bg-primary/10{% endif %}>
+          <tr class="has-[:checked]:bg-primary/10">
             <td>
               <input
                 type="checkbox"
@@ -35,7 +35,9 @@
     </table>
   </div>
 
-  <div class="modal-action">
+  <div class="modal-action w-full flex">
+    <input type="checkbox" class="checkbox chackbox-xs checkbox-accent" name="update_amount"/>
+    <p class="mr-auto">Update Allocated amount</p>
     <button type="submit" class="btn btn-primary">Link Selected</button>
     <button type="button" class="btn" onclick="allocation_modal.close()">Cancel</button>
   </div>

@@ -27,4 +27,9 @@ urlpatterns = [
         views.move_cost_allocation,
         name="move-cost-allocation",
     ),
+    path(
+        "create_allocation_with_transactions/<int:budget_id>",
+        views.add_allocation_with_transactions,
+        name="allocation-with-transactions",
+    ),
 ]

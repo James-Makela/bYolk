@@ -34,39 +34,73 @@
         </table>
       </div>
 
-      <h2 class="text-xl font-bold">Un-allocated Transactions</h3>
-      <div class="overflow-x-auto rounded-lg border border-base-300" id="outgoing-transactions-container">
-        <table class="table table-fixed">
-          <thead class="bg-base-200 text-base-content">
-            <tr>
-              <th class="w-1/6">Date</th>
-              <th class="w-2/6">Vendor</th>
-              <th class="w-2/6">Purchase Type</th>
-              <th class="w-1/6">Amount</th>
-            </tr>
-          </thead>
-          <tbody>
-            {% for transaction in tx_data.unallocated %}
-              <tr class="hover:bg-base-300">
-                <td>{{ transaction.date }}</td>
-                <td>{{ transaction.vendor }}</td>
-                <td>{{ transaction.purchase_type }}</td>
-                <td class="text-error">${{ transaction.amount|default_if_none:"-" }}</td>
+      <form type="submit" method="get" action={% url 'allocation-with-transactions' budget.id %}>
+        <div class="flex w-full mb-5">
+          <h2 class="text-xl font-bold">Un-allocated Transactions</h3>
+          <button class="btn btn-sm btn-primary ml-auto">Create Allocation from Selected</button>
+        </div>
+        <div class="overflow-x-auto rounded-lg border border-base-300" id="outgoing-transactions-container">
+          <table class="table w-full">
+            <thead class="bg-base-200 text-base-content">
+              <tr>
+                <th class="w-12">Select</th>
+                <th class="">Date</th>
+                <th class="">Vendor</th>
+                <th class="">Purchase Type</th>
+                <th class="">Amount</th>
               </tr>
-            {% empty %}
-              <tr><td colspan="4" class="text-center text-xl font-bold py-4">No uncategorised transactions :)</td></tr>
-            {% endfor %}
-          </tbody>
-          <tfoot>
-            <tr class="bg-base-200/50 font-bold">
-              <td colspan="3" class="text-right">Total Expenses:</td>
-              <td class="text-right text-error">
-                ${{ budget.annotated_spend|floatformat:2 }}
-              </td>
-            </tr>
-          </tfoot>
-        </table>
-      </div>
+            </thead>
+            <tbody>
+              {% for transaction in tx_data.unallocated %}
+                <tr class="hover:bg-base-300 has-[:checked]:bg-primary/10 cursor-pointer">
+                  <td class="p-0"> <label for="check-{{ transaction.id }}" class="block">
+                    <input
+                      type="checkbox"
+                      id="check-{{ transaction.id }}"
+                      name="transaction_ids"
+                      value="{{ transaction.id }}"
+                      class="transaction-checkbox checkbox checkbox-md checkbox-accent m-3"
+                    >
+                  </label>
+                  </td>
+
+                  <td class="p-0">
+                    <label for="check-{{ transaction.id }}" class="block p-3 select-none">
+                      {{ transaction.date }}
+                    </label>
+                  </td>
+
+                  <td class="p-0">
+                    <label for="check-{{ transaction.id }}" class="block p-3 select-none">
+                      {{ transaction.vendor }}
+                    </label>
+                  </td>
+                  <td class="p-0">
+                    <label for="check-{{ transaction.id }}" class="block p-3 select-none">
+                      {{ transaction.purchase_type }}
+                    </label>
+                  </td>
+                  <td class="p-0">
+                    <label for="check-{{ transaction.id }}" class="block p-3 select-none">
+                      {{ transaction.amount|default_if_none:"-" }}
+                    </label>
+                  </td>
+                </tr>
+              {% empty %}
+                <tr><td colspan="4" class="text-center text-xl font-bold py-4">No uncategorised transactions :)</td></tr>
+              {% endfor %}
+            </tbody>
+            <tfoot>
+              <tr class="bg-base-200/50 font-bold">
+                <td colspan="3" class="text-right">Total Expenses:</td>
+                <td class="text-right text-error">
+                  ${{ budget.annotated_spend|floatformat:2 }}
+                </td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+      </form>
 
     {% else %}
 

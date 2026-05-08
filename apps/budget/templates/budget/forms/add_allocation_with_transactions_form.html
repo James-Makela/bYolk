@@ -1,0 +1,139 @@
+{% extends 'base.html' %}
+
+{% block title %}Add a One-off Cost with Transactions{% endblock %}
+{% block navbar_title %}Add a One-off Cost with Transactions{% endblock %}
+
+{% block navbar_actions %}
+  <a href="/budgets/{{ budget_id }}" class="btn btn-primary btn-sm mr-8">
+    Cancel
+  </a>
+{% endblock %}
+
+{% block content %}
+  <div class="p-10 max-w-xl mx-auto">
+    <form method="post" class="space-y-4">
+      {% csrf_token %}
+
+      <fieldset class="fieldset w-max-500 bg-base-200 border border-base-300 p-4 rounded-box overflow-visible">
+        <legend class="fieldset-legend text-l">Cost Details</legend>
+        {% for field in form %}
+          <div class="form-control relative z-10">
+            <label class="fieldset-label w-full" for="{{ field.id_for_label }}">
+              {{ field.label }}
+              {% if field.field.required %}<span class="text-error">*</span>{% endif %}
+            </label>
+
+            {% if field.name == 'cost_amount' %}
+              <div class="input input-bordered flex items-center gap-0 p-0 overflow-hidden w-full {% if field.errors %}input-error{% endif %}">
+                <span class="pl-3 opacity-70 flex-none">$</span>
+                <input
+                  type="number"
+                  step="0.01"
+                  name="{{ field.html_name }}"
+                  id="{{ field.id_for_label }}"
+                  {# Use 'value' but ensure we handle None safely #}
+                  value="{{ field.value|default_if_none:'' }}"
+                  class="cost-amount-input grow bg-transparent h-full px-2 outline-none"
+                />
+              </div>
+            {% else %}
+              {{ field }}
+            {% endif %}
+
+            {% if field.errors %}
+              <p class="text-error text-xs mt-1">{{ field.errors.0 }}</p>
+            {% endif %}
+          </div>
+        {% endfor %}
+        <div class="max-h-96 overflow-y-auto rounded-lg border border-base-300">
+          <table class="table w-full">
+            <thead class="bg-base-200 text-base-content">
+              <tr>
+                <th></th>
+                <th>Date</th>
+                <th>Vendor</th>
+                <th>Amount</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for tx in selected_transactions %}
+                <tr class="has-[:checked]:bg-primary/10">
+                  <td>
+                    <input
+                      type="checkbox"
+                      name="transaction_ids"
+                      value="{{ tx.id }}"
+                      data-amount="{{ tx.amount }}"
+                      class="transaction-checkbox checkbox checkbox-md checkbox-accent"
+                      checked="checked"
+                    />
+                  </td>
+                  <td>{{ tx.date }}</td>
+                  <td>{{ tx.vendor }}</td>
+                  <td>${{ tx.amount }}</td>
+                </tr>
+              {% empty %}
+                <tr><td colspan="4" class="text-center py-4">No unallocated transactions found for this period.</td></tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+
+
+        <button type="submit" class="btn btn-primary mt-4">Save Cost with selected Transactions</button>
+      </fieldset>
+    </form>
+  </div>
+  {% block extra_js %}
+    <script>
+      document.addEventListener('DOMContentLoaded', function () {
+        // 1. Grab the elements
+        // Django usually prefixes field IDs with "id_"
+        const amountInput = document.querySelector('.cost-amount-input');
+        const checkboxes = document.querySelectorAll('.transaction-checkbox');
+
+        function updateTotal() {
+          let total = 0;
+
+          checkboxes.forEach(cb => {
+            if (cb.checked) {
+                    // 2. Extract the amount from the data attribute
+                    // parseFloat converts text "11.40" to a number
+                    // Math.abs ensures it's positive
+              const val = Math.abs(parseFloat(cb.dataset.amount)) || 0;
+              total += val;
+            }
+          });
+
+            // 3. Update the input field
+            // toFixed(2) ensures we see $10.50 instead of $10.5
+          if (amountInput) {
+            amountInput.value = total.toFixed(2);
+          }
+        }
+
+        // 4. Attach the "Listener" to every checkbox
+        checkboxes.forEach(cb => {
+          cb.addEventListener('change', updateTotal);
+        });
+      });
+
+      document.addEventListener('DOMContentLoaded', function () {
+        const categoryField = document.getElementById('id_category');
+        const costForm = document.querySelector('form');
+
+        if (categoryField && costForm) {
+          categoryField.addEventListener('keydown', function (e) {
+                // Check if the key pressed is Enter
+            if (e.key === 'Enter') {
+                    // Prevent the dropdown from just closing/reopening
+              e.preventDefault();
+                    // Fire the form submission
+              costForm.submit();
+            }
+          });
+        }
+      });
+    </script>
+  {% endblock extra_js %}
+{% endblock content %}
