@@ -151,6 +151,7 @@ class CostAllocation(models.Model):
             self.category = self.cost.category
         super().save(*args, **kwargs)
 
+    @property
     def total_paid(self):
         return sum(transaction.amount for transaction in self.transactions.all())
 

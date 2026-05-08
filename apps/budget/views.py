@@ -1,5 +1,6 @@
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.db.models import Count
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render
 from django.urls import reverse
@@ -43,9 +44,33 @@ def budget_detail(request, id):
     allocations = CostAllocation.objects.filter(budget_period=budget).prefetch_related(
         "transactions"
     )
+    duplicate_names = (
+        allocations.values("cost_name")
+        .annotate(count=Count("id"))
+        .filter(count__gt=1)
+        .values_list("cost_name", flat=True)
+    )
+
+    grouped_allocations = []
+    for name in duplicate_names:
+        items_list = allocations.filter(cost_name=name)
+        grouped_allocations.append(
+            {
+                "name": name,
+                "all_dates": [item.expected_date for item in items_list],
+                "total_amount": sum(item.cost_amount for item in items_list),
+                "total_paid": sum(item.total_paid for item in items_list),
+                "original_items": items_list,
+            }
+        )
+
+    ungrouped_allocations = allocations.exclude(cost_name__in=duplicate_names)
+    print(ungrouped_allocations)
+
     context = {
         "budget": budget,
-        "allocations": allocations,
+        "allocations": ungrouped_allocations,
+        "grouped_allocations": grouped_allocations,
         "previous": previous,
         "next": next,
     }
@@ -154,7 +179,7 @@ def add_single_allocation(request, budget_id):
             return HttpResponseRedirect(f"/budgets/{budget_id}")
 
     else:
-        form = CostAllocationForm()
+        form = CostAllocationForm(user=request.user)
 
     return render(
         request,

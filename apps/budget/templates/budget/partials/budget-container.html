@@ -2,43 +2,138 @@
 <div class="overflow-visible rounded-lg border border-base-300 mt-2">
   <table class="table w-full">
     <!-- Header -->
-    <thead class="bg-base-200 text-base-content">
-      <tr>
-        <th class="font-bold w-auto">Cost Name</th>
-        <th class="font-bold w-auto">Expected date</th>
-        <th class="font-bold text-right w-32">Amount</th>
-        <th class="font-bold text-right w-32">Paid</th>
-        <th class="w-28"></th>
-        <th class="w-28"></th>
-      </tr>
-    </thead>
+    <div class="w-full bg-base-200 text-base-content rounded-t-lg">
+      <div class="grid grid-cols-10 w-full px-4 py-3 text-xs font-bold uppercase tracking-wider opacity-70">
+        <div class="font-bold col-span-4">Cost Name</div>
+        <div class="font-bold text-left col-span-2">Expected date</div>
+        <div class="font-bold text-right col-span-1">Amount</div>
+        <div class="font-bold text-right col-span-1">Paid</div>
+        <div class="col-span-2"></div>
+      </div>
+    </div>
     <tbody>
+      {% for group in grouped_allocations %}
+        <tr class="hover:bg-base-300 relative">
+          <td colspan="6" class="p-0">
+            <div class="collapse collapse-plus rounded-none border-b border-base-200 has-[:checked]:relative has-[:checked]:z-50 has-[:checked]:overflow-visible">
+              <input type="checkbox" id="group_{{ forloop.counter }}" class="peer hidden" />
+
+              <label for="group_{{ forloop.counter }}" class="collapse-title flex items-center w-full py-3 px-4 cursor-pointer">
+                <div class="grid grid-cols-10 items-center w-full">
+                  <div class="font-bold col-span-4">{{ group.name }} ({{ group.original_items|length }})</div>
+                  <div class="col-span-2"></div>
+                  <div class="text-right col-span-1">${{ group.total_amount }}</div>
+                  <div class="text-right font-bold col-span-1">${{ group.total_paid }}</div>
+                  <div class="col-span-2"></div>
+                </div>
+              </label>
+
+              <div class="collapse-content p-0">
+                <table class="table w-full bg-base-200/30">
+                  <tbody>
+                    {% for allocation in group.original_items %}
+                      <tr class="hover:bg-base-300 hover:z-50 focus-within:z-50 relative overflow-hidden">
+                        <td colspan="6" class="p-0 border-none">
+                          <div class="collapse rounded-none overflow-visible">
+                            <input type="checkbox" id="toggle_{{ allocation.id }}" class="peer hidden" />
+
+                            <div class="collapse-title grid grid-cols-10 w-full gap-2 py-3 px-4 border-b border-base-200 relative z-10">
+
+                              <label for="toggle_{{ allocation.id }}" class="grid grid-cols-8 col-span-8 w-full cursor-pointer overflow-hidden">
+                                <div class="font-medium truncate col-span-4">{{ allocation.dynamic_cost_name }}</div>
+                                <div class="font-medium col-span-2">{{ allocation.expected_date }}</div>
+                                <div class="text-right text-base-content/70 col-span-1">${{ allocation.dynamic_cost_amount }}</div>
+                                <div class="text-right font-semibold col-span-1">${{ allocation.total_paid }}</div>
+                              </label>
+
+                              <div class="grid grid-cols-2 w-full gap-2 col-span-2">
+                                <button
+                                  class="btn btn-xs btn-soft col-span-1 w-full"
+                                  hx-get="{% url 'get_allocation_picker' allocation.id %}"
+                                  hx-target="#modal_container"
+                                  onclick="allocation_modal.showModal()">
+                                  Allocate
+                                </button>
+
+                                <div class="dropdown dropdown-end col-span-1 w-full z-50">
+                                  <div tabindex="0" role="button" class="btn btn-xs btn-soft w-full">Actions</div>
+                                  <ul tabindex="-1" class="dropdown-content menu bg-base-100 rounded-box z-[100] w-52 shadow-xl border border-base-200 mt-2">
+                                    <li class="z-top"><a href="{% if next %}{% url 'move-cost-allocation' allocation.id next.id %}{% else %}" class="hidden{% endif %}">Move to next Budget</a></li>
+                                    <li><a href="{% if previous %}{% url 'move-cost-allocation' allocation.id previous.id %}{% else %}" class="hidden{% endif %}">Move to previous Budget</a></li>
+                                  </ul>
+                                </div>
+                              </div>
+                            </div>
+
+                            <div class="collapse-content relative z-0 overflow-hidden">
+                              <div class="mt-4">
+                                <div class="overflow-hidden rounded-lg border border-base-300">
+                                  <table class="table w-full bg-base-100 border-hidden">
+                                    {% if allocation.transactions.all %}
+                                      <thead class="bg-base-200/50">
+                                        <tr class="text-xs uppercase opacity-60">
+                                          <th>Date</th>
+                                          <th>Vendor</th>
+                                          <th class="text-right">Amount</th>
+                                        </tr>
+                                      </thead>
+                                      <tbody class="[&_tr:last-child]:border-none">
+                                        {% for tx in allocation.transactions.all %}
+                                          <tr class="border-base-200">
+                                            <td>{{ tx.date }}</td>
+                                            <td>{{ tx.vendor }}</td>
+                                            <td class="text-right font-semibold {% if tx.is_positive %}text-success{% else %}text-error{% endif %}">${{ tx.amount }}</td>
+                                          </tr>
+                                        {% endfor %}
+                                      </tbody>
+                                    {% else %}
+                                      <tbody>
+                                        <tr>
+                                          <td class="text-center py-2">No assigned transactions for this cost allocation.</td>
+                                        </tr>
+                                      </tbody>
+                                    {% endif %}
+                                  </table>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </td>
+                      </tr>
+                    {% endfor %}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </td>
+        </tr>
+      {% endfor %}
       {% for allocation in allocations %}
-        <tr class="hover:bg-base-300 hover:z-50 focus-within:z-50 relative">
+        <tr class="hover:bg-base-300 hover:z-40 focus-within:z-40 relative">
           <td colspan="6" class="p-0 border-none">
             <div class="collapse rounded-none overflow-visible">
               <input type="checkbox" id="toggle_{{ allocation.id }}" class="peer hidden" />
 
-              <div class="flex items-center w-full py-3 px-4 border-b border-base-200 relative z-10">
+              <div class="collapse-title grid grid-cols-10 gap-2 items-center w-full py-3 px-4 border-b border-base-200 relative z-10">
 
-                <label for="toggle_{{ allocation.id }}" class="flex-1 grid grid-cols-[1fr_1fr_12rem_12rem] items-center cursor-pointer">
-                  <div class="font-medium truncate">{{ allocation.dynamic_cost_name }}</div>
-                  <div class="font-medium text-center">{{ allocation.expected_date }}</div>
-                  <div class="text-right text-base-content/70">${{ allocation.dynamic_cost_amount }}</div>
-                  <div class="text-right font-semibold">${{ allocation.total_paid }}</div>
+                <label for="toggle_{{ allocation.id }}" class="grid grid-cols-8 col-span-8 cursor-pointer w-full gap-2">
+                  <div class="font-medium truncate col-span-4">{{ allocation.dynamic_cost_name }}</div>
+                  <div class="font-medium col-span-2">{{ allocation.expected_date }}</div>
+                  <div class="text-right text-base-content/70 col-span-1">${{ allocation.dynamic_cost_amount }}</div>
+                  <div class="text-right font-semibold col-span-1">${{ allocation.total_paid }}</div>
                 </label>
 
-                <div class="flex items-center gap-2 ml-16">
+                <div class="grid grid-cols-2 w-full gap-2 col-span-2">
                   <button
-                    class="btn btn-xs btn-soft"
+                    class="btn btn-xs btn-soft col-span-1 w-full"
                     hx-get="{% url 'get_allocation_picker' allocation.id %}"
                     hx-target="#modal_container"
                     onclick="allocation_modal.showModal()">
                     Allocate
                   </button>
 
-                  <div class="dropdown dropdown-end">
-                    <div tabindex="0" role="button" class="btn btn-xs btn-soft">Actions</div>
+                  <div class="dropdown dropdown-end col-span-1 w-full">
+                    <div tabindex="0" role="button" class="btn btn-xs btn-soft w-full">Actions</div>
                     <ul tabindex="-1" class="dropdown-content menu bg-base-100 rounded-box z-[100] w-52 shadow-xl border border-base-200 mt-2">
                       <li class="z-top"><a href="{% if next %}{% url 'move-cost-allocation' allocation.id next.id %}{% else %}" class="hidden{% endif %}">Move to next Budget</a></li>
                       <li><a href="{% if previous %}{% url 'move-cost-allocation' allocation.id previous.id %}{% else %}" class="hidden{% endif %}">Move to previous Budget</a></li>
@@ -47,8 +142,8 @@
                 </div>
               </div>
 
-              <div class="collapse-content peer-checked:block hidden p-0 m-2 relative z-0">
-                <div class="pb-0 pt-0">
+              <div class="collapse-content relative z-0 overflow-hidden">
+                <div class="mt-4">
                   <div class="overflow-hidden rounded-lg border border-base-300">
                     <table class="table w-full bg-base-100 border-hidden">
                       {% if allocation.transactions.all %}
@@ -78,19 +173,19 @@
           </div>
         </td>
         </tr>
-      {% empty %}
-        <tr>
-          <td colspan="6" class="text-center py-8">No cost allocations for this period.</td>
-        </tr>
+        {% if not allocations and not grouped_allocations %}
+          <tr>
+            <td class="text-center py-8 col-span-15">No cost allocations for this period.</td>
+          </tr>
+        {% endif %}
       {% endfor %}
     </tbody>
     <tfoot>
       <tr class="bg-base-200/50 font-bold text-base-content">
-        <td colspan="3" class="text-right">Total Costs:</td>
-        <td class="text-right text-error">
+        <td class="text-right col-span-10">Total Costs:</td>
+        <td class="text-right text-error col-span-3">
           ${{ budget.get_total_costs|floatformat:2 }}
         </td>
-        <td colspan="3"></td>
       </tr>
     </tfoot>
   </table>
