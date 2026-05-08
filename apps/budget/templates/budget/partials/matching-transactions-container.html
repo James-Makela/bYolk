@@ -47,7 +47,7 @@
                 <th class="">Date</th>
                 <th class="">Vendor</th>
                 <th class="">Purchase Type</th>
-                <th class="">Amount</th>
+                <th class="text-right">Amount</th>
               </tr>
             </thead>
             <tbody>
@@ -81,7 +81,7 @@
                     </label>
                   </td>
                   <td class="p-0">
-                    <label for="check-{{ transaction.id }}" class="block p-3 select-none">
+                    <label for="check-{{ transaction.id }}" class="block p-3 select-none text-right text-error">
                       {{ transaction.amount|default_if_none:"-" }}
                     </label>
                   </td>
@@ -92,7 +92,7 @@
             </tbody>
             <tfoot>
               <tr class="bg-base-200/50 font-bold">
-                <td colspan="3" class="text-right">Total Expenses:</td>
+                <td colspan="4" class="text-right">Total Expenses:</td>
                 <td class="text-right text-error">
                   ${{ budget.annotated_spend|floatformat:2 }}
                 </td>

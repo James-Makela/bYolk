@@ -164,8 +164,9 @@ class CostAllocation(models.Model):
     def total_paid(self):
         return sum(transaction.amount for transaction in self.transactions.all())
 
-    def remaining_balance(self):
-        return self.cost_amount - self.total_paid()
+    @property
+    def dynamic_remaining_spend(self):
+        return self.dynamic_cost_amount + self.total_paid
 
     def __str__(self):
         return (

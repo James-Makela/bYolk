@@ -8,7 +8,8 @@
           <th class="px-6 py-3">Date</th>
           <th class="px-6 py-3">Vendor</th>
           <th class="px-6 py-3">Purchase Type</th>
-          <th class="px-6 py-3">Amount</th>
+          <th class="px-6 py-3">Receipt Details</th>
+          <th class="px-6 py-3 text-right">Amount</th>
         </tr>
       </thead>
 
@@ -18,7 +19,8 @@
             <td>{{ transaction.date }}</td>
             <td>{{ transaction.vendor }}</td>
             <td>{{ transaction.purchase_type }}</td>
-            <td>${{ transaction.amount|default_if_none:"-" }}</td>
+            <td>{{ transaction.receipt_details }}</td>
+            <td class="text-right font-semibold {% if tx.is_positive %}text-success{% else %}text-error{% endif %}">${{ transaction.amount }}</td>
           </tr>
         {% endfor %}
       </tbody>

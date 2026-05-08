@@ -4,8 +4,9 @@
     <!-- Header -->
     <div class="w-full bg-base-200 text-base-content rounded-t-lg">
       <div class="grid grid-cols-10 w-full px-4 py-3 text-xs font-bold uppercase tracking-wider opacity-70">
-        <div class="font-bold col-span-4">Cost Name</div>
+        <div class="font-bold col-span-3">Cost Name</div>
         <div class="font-bold text-left col-span-2">Expected date</div>
+        <div class="font-bold text-right col-span-1">Remaining</div>
         <div class="font-bold text-right col-span-1">Amount</div>
         <div class="font-bold text-right col-span-1">Paid</div>
         <div class="col-span-2"></div>
@@ -20,8 +21,9 @@
 
               <label for="group_{{ forloop.counter }}" class="collapse-title flex items-center w-full py-3 px-4 cursor-pointer">
                 <div class="grid grid-cols-10 items-center w-full">
-                  <div class="font-bold col-span-4">{{ group.name }} ({{ group.original_items|length }})</div>
+                  <div class="font-bold col-span-3">{{ group.name }} ({{ group.original_items|length }})</div>
                   <div class="col-span-2"></div>
+                  <div class="text-right font-bold col-span-1{% if group.remaining_spend > 0 %}text-success{% else %}text-error{% endif %}">${{ group.remaining_spend }}</div>
                   <div class="text-right col-span-1">${{ group.total_amount }}</div>
                   <div class="text-right font-bold col-span-1">${{ group.total_paid }}</div>
                   <div class="col-span-2"></div>
@@ -40,8 +42,9 @@
                             <div class="collapse-title grid grid-cols-10 w-full gap-2 py-3 px-4 border-b border-base-200 relative z-10">
 
                               <label for="toggle_{{ allocation.id }}" class="grid grid-cols-8 col-span-8 w-full cursor-pointer overflow-hidden">
-                                <div class="font-medium truncate col-span-4">{{ allocation.dynamic_cost_name }}</div>
+                                <div class="font-medium truncate col-span-3">{{ allocation.dynamic_cost_name }}</div>
                                 <div class="font-medium col-span-2">{{ allocation.expected_date }}</div>
+                                <div class="text-right font-semibold col-span-1 {% if allocation.dynamic_remaining_spend >= 0 %}text-success{% else %}text-error{% endif %}">${{ allocation.dynamic_remaining_spend }}</div>
                                 <div class="text-right text-base-content/70 col-span-1">${{ allocation.dynamic_cost_amount }}</div>
                                 <div class="text-right font-semibold col-span-1">${{ allocation.total_paid }}</div>
                               </label>
@@ -74,6 +77,8 @@
                                         <tr class="text-xs uppercase opacity-60">
                                           <th>Date</th>
                                           <th>Vendor</th>
+                                          <th>Transaction Type</th>
+                                          <th>Receipt Details</th>
                                           <th class="text-right">Amount</th>
                                         </tr>
                                       </thead>
@@ -82,6 +87,8 @@
                                           <tr class="border-base-200">
                                             <td>{{ tx.date }}</td>
                                             <td>{{ tx.vendor }}</td>
+                                            <td>{{ tx.purchase_type }}</td>
+                                            <td>{{ tx.receipt_details }}</td>
                                             <td class="text-right font-semibold {% if tx.is_positive %}text-success{% else %}text-error{% endif %}">${{ tx.amount }}</td>
                                           </tr>
                                         {% endfor %}
@@ -117,10 +124,11 @@
               <div class="collapse-title grid grid-cols-10 gap-2 items-center w-full py-3 px-4 border-b border-base-200 relative z-10">
 
                 <label for="toggle_{{ allocation.id }}" class="grid grid-cols-8 col-span-8 cursor-pointer w-full gap-2">
-                  <div class="font-medium truncate col-span-4">{{ allocation.dynamic_cost_name }}</div>
+                  <div class="font-medium truncate col-span-3 font-semibold">{{ allocation.dynamic_cost_name }}</div>
                   <div class="font-medium col-span-2">{{ allocation.expected_date }}</div>
+                  <div class="text-right font-semibold col-span-1 {% if allocation.dynamic_remaining_spend >= 0 %}text-success{% else %}text-error{% endif %}">${{ allocation.dynamic_remaining_spend }}</div>
                   <div class="text-right text-base-content/70 col-span-1">${{ allocation.dynamic_cost_amount }}</div>
-                  <div class="text-right font-semibold col-span-1">${{ allocation.total_paid }}</div>
+                  <div class="text-right col-span-1">${{ allocation.total_paid }}</div>
                 </label>
 
                 <div class="grid grid-cols-2 w-full gap-2 col-span-2">
@@ -151,6 +159,8 @@
                           <tr class="text-xs uppercase opacity-60">
                             <th>Date</th>
                             <th>Vendor</th>
+                            <th>Transaction Type</th>
+                            <th>Receipt Details</th>
                             <th class="text-right">Amount</th>
                           </tr>
                         </thead>
@@ -159,6 +169,8 @@
                             <tr class="border-base-200">
                               <td>{{ tx.date }}</td>
                               <td>{{ tx.vendor }}</td>
+                              <td>{{ tx.purchase_type }}</td>
+                              <td>{{ tx.receipt_details }}</td>
                               <td class="text-right font-semibold {% if tx.is_positive %}text-success{% else %}text-error{% endif %}">${{ tx.amount }}</td>
                             </tr>
                           {% endfor %}
