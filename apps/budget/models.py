@@ -123,7 +123,9 @@ class CostAllocation(models.Model):
     )
     cost = models.ForeignKey(Cost, on_delete=models.SET_NULL, null=True, blank=True)
     cost_name = models.CharField(max_length=50)
-    cost_amount = models.DecimalField(max_digits=10, decimal_places=2)
+    cost_amount = models.DecimalField(
+        max_digits=10, decimal_places=2, null=True, blank=True
+    )
     expected_date = models.DateField(null=True, blank=True)
     category = models.ForeignKey(
         Category, on_delete=models.SET_NULL, null=True, blank=True
@@ -146,10 +148,10 @@ class CostAllocation(models.Model):
 
     @property
     def dynamic_cost_amount(self):
-        if self.cost:
-            return self.cost.amount
-        else:
+        if self.cost_amount:
             return self.cost_amount
+        else:
+            return self.cost.amount
 
     def save(self, *args, **kwargs):
         if self.cost and not self.cost_name:
