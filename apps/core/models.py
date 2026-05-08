@@ -56,10 +56,15 @@ class UserPreferences(FrequencyMixin, models.Model):
 
 class Category(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    name = models.CharField(max_length=50, unique=True)
+    name = models.CharField(max_length=50)
 
     class Meta:
         verbose_name_plural = "Categories"
+        constraints = [
+            models.UniqueConstraint(
+                fields=["user", "name"], name="unique_category_per_user"
+            )
+        ]
 
     def __str__(self):
         return f"{self.name}"

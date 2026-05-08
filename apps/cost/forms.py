@@ -1,5 +1,7 @@
 from django import forms
 
+from apps.core.models import Category
+
 from .models import Cost
 
 
@@ -38,6 +40,9 @@ class CostForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         user = kwargs.pop("user", None)
-        super().__init__(*args, **kwargs)
+        super(CostForm, self).__init__(*args, **kwargs)
         if user and hasattr(user, "preferences"):
             self.fields["start_date"].initial = user.preferences.first_pay_date
+
+        if user:
+            self.fields["category"].queryset = Category.objects.filter(user=user)

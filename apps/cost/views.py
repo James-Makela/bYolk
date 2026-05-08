@@ -33,7 +33,7 @@ def cost_edit(request, pk=None):
         message = "Cost saved!"
 
     if request.method == "POST":
-        form = CostForm(request.POST, instance=cost)
+        form = CostForm(request.POST, instance=cost, user=request.user)
         if form.is_valid():
             cost_item = form.save(commit=False)
             cost_item.user = request.user

@@ -5,10 +5,11 @@
     <thead class="bg-base-200 text-base-content">
       <tr>
         <th class="font-bold w-auto">Cost Name</th>
+        <th class="font-bold w-auto">Expected date</th>
         <th class="font-bold text-right w-32">Amount</th>
         <th class="font-bold text-right w-32">Paid</th>
-        <th class="w-32"></th>
-        <th class="w-32"></th>
+        <th class="w-28"></th>
+        <th class="w-28"></th>
       </tr>
     </thead>
     <tbody>
@@ -20,8 +21,9 @@
 
               <div class="flex items-center w-full py-3 px-4 border-b border-base-200 relative z-10">
 
-                <label for="toggle_{{ allocation.id }}" class="flex-1 grid grid-cols-[1fr_12rem_12rem] items-center cursor-pointer">
+                <label for="toggle_{{ allocation.id }}" class="flex-1 grid grid-cols-[1fr_1fr_12rem_12rem] items-center cursor-pointer">
                   <div class="font-medium truncate">{{ allocation.dynamic_cost_name }}</div>
+                  <div class="font-medium text-center">{{ allocation.expected_date }}</div>
                   <div class="text-right text-base-content/70">${{ allocation.dynamic_cost_amount }}</div>
                   <div class="text-right font-semibold">${{ allocation.total_paid }}</div>
                 </label>
