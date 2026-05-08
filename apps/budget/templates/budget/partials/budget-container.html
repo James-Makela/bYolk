@@ -107,10 +107,6 @@
             </div>
           </td>
         </tr>
-      {% empty %}
-        <tr>
-          <td colspan="6" class="text-center py-8">No cost allocations for this period.</td>
-        </tr>
       {% endfor %}
       {% for allocation in allocations %}
         <tr class="hover:bg-base-300 hover:z-40 focus-within:z-40 relative">
