@@ -1,6 +1,7 @@
 from django import forms
 
 from apps.budget.models import CostAllocation
+from apps.core.models import Category
 
 
 class CostAllocationForm(forms.ModelForm):
@@ -16,3 +17,9 @@ class CostAllocationForm(forms.ModelForm):
             ),
             "category": forms.Select(attrs={"class": "select select-bordered w-full"}),
         }
+
+    def __init__(self, *args, **kwargs):
+        user = kwargs.pop("user", None)
+        super(CostAllocationForm, self).__init__(*args, **kwargs)
+        if user:
+            self.fields["category"].queryset = Category.objects.filter(user=user)
