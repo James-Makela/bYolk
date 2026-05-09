@@ -2,6 +2,7 @@ from django.db import models
 from django.db.models import DecimalField, OuterRef, Subquery, Sum, Value
 from django.db.models.functions import Abs, Coalesce
 from django.utils import timezone
+from django.utils.functional import cached_property
 
 from apps.core.models import Category, User
 from apps.cost.models import Cost
@@ -81,13 +82,19 @@ class BudgetPeriod(models.Model):
             return True
         return False
 
+    @cached_property
     def get_total_costs(self):
         result = self.costallocation_set.aggregate(total=Sum("amount"))
         return result["total"] or 0
 
+    @cached_property
     def get_total_income(self):
         result = self.incomeallocation_set.aggregate(total=Sum("amount"))
         return result["total"] or 0
+
+    @cached_property
+    def balance(self):
+        return self.get_total_income - self.get_total_costs
 
     def get_categorised_transactions(self):
         from apps.transaction.models import Transaction
@@ -110,7 +117,10 @@ class BudgetPeriod(models.Model):
         for transaction in all_transactions:
             if transaction.cost_allocation_id is None and transaction.amount < 50:
                 transaction_types["unallocated"].append(transaction)
-            if transaction.cost_allocation_id is None:
+            if (
+                transaction.cost_allocation_id is None
+                and transaction.income_allocation_id is None
+            ):
                 transaction_types["allocatable"].append(transaction)
             if transaction.amount < 0:
                 transaction_types["outgoing"].append(transaction)

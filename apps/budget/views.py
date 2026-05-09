@@ -59,7 +59,7 @@ def budget_detail(request, id):
     for name in duplicate_names:
         items_list = allocations.filter(name=name)
         total_paid = sum(item.total_paid for item in items_list)
-        total_amount = sum(item.dynamic_cost_amount for item in items_list)
+        total_amount = sum(item.amount for item in items_list)
         remaining_spend = total_amount - total_paid
         grouped_allocations.append(
             {

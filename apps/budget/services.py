@@ -1,7 +1,8 @@
 from datetime import date, timedelta
 
-from apps.budget.models import BudgetPeriod, CostAllocation
+from apps.budget.models import BudgetPeriod, CostAllocation, IncomeAllocation
 from apps.cost.models import Cost
+from apps.income.models import Income
 
 
 def generate_next_budget_period(user):
@@ -27,7 +28,9 @@ def generate_next_budget_period(user):
 
 def populate_from_costs(budget_period, user):
     costs = Cost.objects.filter(user=user)
-    cost_allocations_to_create = []
+    incomes = Income.objects.filter(user=user)
+    cost_data = []
+    income_data = []
 
     for cost in costs:
         delta = cost.get_delta()
@@ -35,7 +38,7 @@ def populate_from_costs(budget_period, user):
 
         while current_occurrence <= budget_period.end_date:
             if current_occurrence >= budget_period.start_date:
-                cost_allocations_to_create.append(
+                cost_data.append(
                     CostAllocation(
                         budget_period=budget_period,
                         cost=cost,
@@ -49,6 +52,34 @@ def populate_from_costs(budget_period, user):
             if not any([delta.years, delta.months, delta.weeks, delta.days]):
                 break
 
-    return CostAllocation.objects.bulk_create(
-        cost_allocations_to_create, ignore_conflicts=True
+    for income in incomes:
+        delta = income.get_delta()
+        current_occurrence = income.start_date
+
+        while current_occurrence <= budget_period.end_date:
+            if current_occurrence >= budget_period.start_date:
+                income_data.append(
+                    IncomeAllocation(
+                        budget_period=budget_period,
+                        income=income,
+                        name=income.name,
+                        amount=income.amount,
+                        expected_date=current_occurrence,
+                    )
+                )
+
+            current_occurrence += delta
+            if not any([delta.years, delta.months, delta.weeks, delta.days]):
+                break
+
+    cost_allocations = CostAllocation.objects.bulk_create(
+        cost_data, ignore_conflicts=True
     )
+    income_allocations = IncomeAllocation.objects.bulk_create(
+        income_data, ignore_conflicts=True
+    )
+
+    return {
+        "cost": cost_allocations,
+        "income": income_allocations,
+    }
