@@ -116,7 +116,7 @@ class BudgetPeriod(models.Model):
         for transaction in all_transactions:
             if (
                 transaction.cost_allocation_id is None
-                and transaction.cost_allocation_id is None
+                and transaction.income_allocation_id is None
             ):
                 transaction_types["unallocated"].append(transaction)
             if transaction.amount < 0:
