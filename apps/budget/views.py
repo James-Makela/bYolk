@@ -274,3 +274,16 @@ def move_cost_allocation(request, allocation_id, budget_id):
         messages.success(request, "Allocation moved successfully.")
 
     return HttpResponseRedirect(f"/budgets/{current_budget}")
+
+
+@login_required
+def delete_allocation(request, pk, budget_id):
+    allocation = get_object_or_404(
+        CostAllocation, pk=pk, budget_period__user=request.user
+    )
+
+    if request.method == "POST":
+        allocation.delete()
+        messages.success(request, "Allocation deleted")
+
+    return HttpResponseRedirect(f"/budgets/{budget_id}")

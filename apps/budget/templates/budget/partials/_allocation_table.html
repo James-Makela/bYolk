@@ -1,7 +1,7 @@
 <table class="table w-full bg-base-200/30">
   <tbody>
     {% for allocation in allocations %}
-      <tr class="hover:bg-base-300 hover:z-50 focus-within:z-50 relative overflow-hidden">
+      <tr class="hover:bg-base-300 focus-within:z-50 relative overflow-hidden">
         <td colspan="10" class="p-0 border-none">
           <div class="collapse rounded-none overflow-visible">
             <input type="checkbox" id="toggle_{{ allocation.id }}" class="peer hidden" />
@@ -26,6 +26,14 @@
                   <ul tabindex="-1" class="dropdown-content menu bg-base-100 rounded-box z-[100] w-52 shadow-xl border border-base-200 mt-2">
                     <li class="z-top"><a href="{% if next %}{% url 'move-cost-allocation' allocation.id next.id %}{% else %}" class="hidden{% endif %}">Move to next Budget</a></li>
                     <li><a href="{% if previous %}{% url 'move-cost-allocation' allocation.id previous.id %}{% else %}" class="hidden{% endif %}">Move to previous Budget</a></li>
+                    <li>
+                      <form action="{% url 'delete-allocation' allocation.id budget.id %}" method="post" onsubmit="return confirm('Are you sure?')">
+                        {% csrf_token %}
+                        <button type="submit" class="text-error cursor-pointer">
+                          Delete allocation
+                        </button>
+                      </form>
+                    </li>
                   </ul>
                 </div>
               </div>

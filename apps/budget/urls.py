@@ -28,8 +28,13 @@ urlpatterns = [
         name="move-cost-allocation",
     ),
     path(
-        "create_allocation_with_transactions/<int:budget_id>",
+        "create-allocation-with-transactions/<int:budget_id>",
         views.add_allocation_with_transactions,
         name="allocation-with-transactions",
+    ),
+    path(
+        "delete-allocation/<int:pk>/<int:budget_id>",
+        views.delete_allocation,
+        name="delete-allocation",
     ),
 ]
