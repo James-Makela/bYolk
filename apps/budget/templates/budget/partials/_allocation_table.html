@@ -1,0 +1,43 @@
+<table class="table w-full bg-base-200/30">
+  <tbody>
+    {% for allocation in allocations %}
+      <tr class="hover:bg-base-300 hover:z-50 focus-within:z-50 relative overflow-hidden">
+        <td colspan="10" class="p-0 border-none">
+          <div class="collapse rounded-none overflow-visible">
+            <input type="checkbox" id="toggle_{{ allocation.id }}" class="peer hidden" />
+            <div class="collapse-title grid grid-cols-10 w-full gap-2 py-3 px-4 border-b border-base-200 relative z-10">
+              <label for="toggle_{{ allocation.id }}" class="grid grid-cols-8 col-span-8 w-full cursor-pointer overflow-hidden">
+                <div class="font-medium truncate col-span-3">{{ allocation.dynamic_cost_name }}</div>
+                <div class="font-medium col-span-2">{{ allocation.expected_date }}</div>
+                <div class="text-right font-semibold col-span-1 {% if allocation.dynamic_remaining_spend > 0 %}text-success{% elif allocation.dynamic_remaining_spend == 0 %}text-info{% else %}text-error{% endif %}">${{ allocation.dynamic_remaining_spend }}</div>
+                <div class="text-right text-base-content/70 col-span-1">${{ allocation.dynamic_cost_amount }}</div>
+                <div class="text-right font-semibold col-span-1">${{ allocation.total_paid }}</div>
+              </label>
+              <div class="grid grid-cols-2 w-full gap-2 col-span-2">
+                <button
+                  class="btn btn-xs btn-soft col-span-1 w-full"
+                  hx-get="{% url 'get_allocation_picker' allocation.id %}"
+                  hx-target="#modal_container"
+                  onclick="allocation_modal.showModal()">
+                  Allocate
+                </button>
+                <div class="dropdown dropdown-end col-span-1 w-full z-50">
+                  <div tabindex="0" role="button" class="btn btn-xs btn-soft w-full">Actions</div>
+                  <ul tabindex="-1" class="dropdown-content menu bg-base-100 rounded-box z-[100] w-52 shadow-xl border border-base-200 mt-2">
+                    <li class="z-top"><a href="{% if next %}{% url 'move-cost-allocation' allocation.id next.id %}{% else %}" class="hidden{% endif %}">Move to next Budget</a></li>
+                    <li><a href="{% if previous %}{% url 'move-cost-allocation' allocation.id previous.id %}{% else %}" class="hidden{% endif %}">Move to previous Budget</a></li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+            <div class="collapse-content relative z-0 overflow-hidden">
+              <div class="mt-4">
+                {% include "transaction/partials/_table.html" with transactions=allocation.transactions.all %}
+              </div>
+            </div>
+          </div>
+        </td>
+      </tr>
+    {% endfor %}
+  </tbody>
+</table>

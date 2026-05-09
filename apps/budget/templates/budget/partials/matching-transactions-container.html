@@ -2,36 +2,9 @@
   {% with tx_data=budget.get_categorised_transactions %}
     {% if tx_data.incoming or tx_data.outgoing %}
 
-      <h2 class="text-xl font-bold">Income</h3>
-      <div class="overflow-x-auto rounded-lg border border-base-300" id="income-transactions-container">
-        <table class="table table-fixed">
-          <thead class="bg-base-200 text-base-content">
-            <tr>
-              <th class="w-1/6">Date</th>
-              <th class="w-2/6">Vendor</th>
-              <th class="w-2/6">Purchase Type</th>
-              <th class="w-1/6">Amount</th>
-            </tr>
-          </thead>
-          <tbody>
-            {% for transaction in tx_data.incoming %}
-              <tr class="hover:bg-base-300">
-                <td>{{ transaction.date }}</td>
-                <td>{{ transaction.vendor }}</td>
-                <td>{{ transaction.purchase_type }}</td>
-                <td class="text-success">${{ transaction.amount|default_if_none:"-" }}</td>
-              </tr>
-            {% endfor %}
-          </tbody>
-          <tfoot>
-            <tr class="bg-base-200/50 font-bold">
-              <td colspan="3" class="text-right">Total Income:</td>
-              <td class="text-right text-success">
-                ${{ budget.annotated_income|floatformat:2 }}
-              </td>
-            </tr>
-          </tfoot>
-        </table>
+      <h3 class="text-xl font-bold m-4">Income</h3>
+      <div id="income-transactions-container">
+        {% include "transaction/partials/_table.html" with transactions=tx_data.incoming %}
       </div>
 
       <form type="submit" method="get" action={% url 'allocation-with-transactions' budget.id %}>
@@ -87,7 +60,7 @@
                   </td>
                 </tr>
               {% empty %}
-                <tr><td colspan="4" class="text-center text-xl font-bold py-4">No uncategorised transactions :)</td></tr>
+                <tr><td colspan="6" class="text-center text-xl font-bold py-4">No un-allocated transactions :)</td></tr>
               {% endfor %}
             </tbody>
             <tfoot>
