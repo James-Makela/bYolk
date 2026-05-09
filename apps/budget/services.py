@@ -39,7 +39,8 @@ def populate_from_costs(budget_period, user):
                     CostAllocation(
                         budget_period=budget_period,
                         cost=cost,
-                        cost_name=cost.name,
+                        name=cost.name,
+                        amount=cost.amount,
                         expected_date=current_occurrence,
                     )
                 )

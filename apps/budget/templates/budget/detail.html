@@ -18,9 +18,9 @@
 
 {% block content %}
 
-  <h2 class="text-2xl font-bold">Cost Allocations</h2>
-  {% include "budget/partials/_income_budget_container.html" with allocations=allocated_income %}
-  {% include "budget/partials/_cost_budget_container.html" %}
+  <h2 class="text-2xl font-bold">Allocations</h2>
+  {% include "budget/partials/_income_budget_container.html" with allocations=allocated_income type="income" %}
+  {% include "budget/partials/_cost_budget_container.html" with type="cost" %}
 
   <div class="divider"></div>
   <h2 class="text-2xl font-bold">Transactions</h2>

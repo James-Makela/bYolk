@@ -5,6 +5,7 @@ from django.utils import timezone
 
 from apps.core.models import Category, User
 from apps.cost.models import Cost
+from apps.income.models import Income
 
 
 class BudgetQuerySet(models.QuerySet):  # type: ignore
@@ -39,7 +40,7 @@ class BudgetQuerySet(models.QuerySet):  # type: ignore
 
         return self.annotate(
             annotated_costs=Coalesce(
-                Sum("allocations__cost_amount"), Value(0), output_field=DecimalField()
+                Sum("costallocation_set__amount"), Value(0), output_field=DecimalField()
             ),
             annotated_spend=Abs(
                 Coalesce(
@@ -81,7 +82,11 @@ class BudgetPeriod(models.Model):
         return False
 
     def get_total_costs(self):
-        result = self.allocations.aggregate(total=Sum("cost_amount"))
+        result = self.costallocation_set.aggregate(total=Sum("amount"))
+        return result["total"] or 0
+
+    def get_total_income(self):
+        result = self.incomeallocation_set.aggregate(total=Sum("amount"))
         return result["total"] or 0
 
     def get_categorised_transactions(self):
@@ -115,18 +120,36 @@ class BudgetPeriod(models.Model):
         return transaction_types
 
 
-class CostAllocation(models.Model):
+class AllocationBase(models.Model):
     budget_period = models.ForeignKey(
         BudgetPeriod,
         on_delete=models.CASCADE,
-        related_name="allocations",
+        related_name="%(class)s_set",
     )
-    cost = models.ForeignKey(Cost, on_delete=models.SET_NULL, null=True, blank=True)
-    cost_name = models.CharField(max_length=50)
-    cost_amount = models.DecimalField(
-        max_digits=10, decimal_places=2, null=True, blank=True
-    )
+    name = models.CharField(max_length=50)
+    amount = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
     expected_date = models.DateField(null=True, blank=True)
+
+    class Meta:
+        abstract = True
+
+    @property
+    def total_paid(self):
+        return sum(transaction.amount for transaction in self.transactions.all())
+
+    @property
+    def remaining(self):
+        if self.total_paid >= 0:
+            return self.amount - self.total_paid
+        else:
+            return self.amount + self.total_paid
+
+    def __str__(self):
+        return f"{self.name} ${self.amount} for Budget {self.budget_period_id}"
+
+
+class CostAllocation(AllocationBase):
+    cost = models.ForeignKey(Cost, on_delete=models.SET_NULL, null=True, blank=True)
     category = models.ForeignKey(
         Category, on_delete=models.SET_NULL, null=True, blank=True
     )
@@ -139,36 +162,14 @@ class CostAllocation(models.Model):
             )
         ]
 
-    @property
-    def dynamic_cost_name(self):
-        if self.cost:
-            return self.cost.name
-        else:
-            return self.cost_name
 
-    @property
-    def dynamic_cost_amount(self):
-        if self.cost_amount:
-            return self.cost_amount
-        else:
-            return self.cost.amount
+class IncomeAllocation(AllocationBase):
+    income = models.ForeignKey(Income, on_delete=models.SET_NULL, null=True, blank=True)
 
-    def save(self, *args, **kwargs):
-        if self.cost and not self.cost_name:
-            self.cost_name = self.cost.name
-            self.cost_amount = self.cost.amount
-            self.category = self.cost.category
-        super().save(*args, **kwargs)
-
-    @property
-    def total_paid(self):
-        return sum(transaction.amount for transaction in self.transactions.all())
-
-    @property
-    def dynamic_remaining_spend(self):
-        return self.dynamic_cost_amount + self.total_paid
-
-    def __str__(self):
-        return (
-            f"{self.cost_name} ${self.cost_amount} for Budget {self.budget_period_id}"
-        )
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=["budget_period", "income", "expected_date"],
+                name="unique_income_per_budget",
+            )
+        ]

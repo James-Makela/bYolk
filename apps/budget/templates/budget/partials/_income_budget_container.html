@@ -19,11 +19,11 @@
     <tbody>
       <tr>
         <td colspan="10" class="p-0">
-          {% include "budget/partials/_allocation_table.html" %}
+          {% include "budget/partials/_allocation_table.html" with allocations=incomes %}
         </td>
       </tr>
 
-      {% if not allocations %}
+      {% if not incomes %}
         <tr>
           <td class="text-center py-4 col-span-10">No income allocated for this period.</td>
         </tr>
@@ -33,7 +33,7 @@
     <tfoot>
       <tr class="bg-base-200/50 font-bold text-base-content">
         <td colspan="7" class="text-right">Total Income:</td>
-        <td colspan="3" class="text-right text-succes">
+        <td colspan="3" class="text-right text-success">
           ${{ budget.get_total_income|floatformat:2 }}
         </td>
       </tr>

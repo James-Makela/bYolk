@@ -1,6 +1,6 @@
 from django.db import models
 
-from apps.budget.models import CostAllocation
+from apps.budget.models import CostAllocation, IncomeAllocation
 from apps.core.models import User
 
 
@@ -13,9 +13,16 @@ class Transaction(models.Model):
     receipt_details = models.CharField(max_length=255, null=True, blank=True)
     amount = models.DecimalField(max_digits=10, decimal_places=2)
     processed = models.BooleanField(default=False)
-    unique_hash = models.CharField(max_length=30, unique=True, db_index=True)
+    unique_hash = models.CharField(max_length=64, unique=True, db_index=True)
     cost_allocation = models.ForeignKey(
         CostAllocation,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="transactions",
+    )
+    income_allocation = models.ForeignKey(
+        IncomeAllocation,
         on_delete=models.SET_NULL,
         null=True,
         blank=True,

@@ -35,6 +35,13 @@ class FrequencyMixin(models.Model):
             return False
         return self.get_delta() == other.get_delta()
 
+    def frequency_string(self):
+        if self.frequency_value > 1:
+            return f"Every {self.frequency_value} {self.frequency_unit.capitalize()}"
+        else:
+            return f"Every {self.frequency_value}\
+            {self.frequency_unit.capitalize().rstrip('s')}"
+
 
 # Create your models here.
 class User(AbstractUser):

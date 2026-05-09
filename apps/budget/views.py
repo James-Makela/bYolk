@@ -5,7 +5,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render
 from django.urls import reverse
 
-from apps.budget.models import BudgetPeriod, CostAllocation
+from apps.budget.models import BudgetPeriod, CostAllocation, IncomeAllocation
 from apps.transaction.models import Transaction
 
 from .forms import CostAllocationForm, CostAllocationTransactionsForm
@@ -45,15 +45,19 @@ def budget_detail(request, id):
         "transactions"
     )
     duplicate_names = (
-        allocations.values("cost_name")
+        allocations.values("name")
         .annotate(count=Count("id"))
         .filter(count__gt=1)
-        .values_list("cost_name", flat=True)
+        .values_list("name", flat=True)
+    )
+
+    incomes = IncomeAllocation.objects.filter(budget_period=budget).prefetch_related(
+        "transactions"
     )
 
     grouped_allocations = []
     for name in duplicate_names:
-        items_list = allocations.filter(cost_name=name)
+        items_list = allocations.filter(name=name)
         total_paid = sum(item.total_paid for item in items_list)
         total_amount = sum(item.dynamic_cost_amount for item in items_list)
         remaining_spend = total_amount - total_paid
@@ -68,12 +72,13 @@ def budget_detail(request, id):
             }
         )
 
-    ungrouped_allocations = allocations.exclude(cost_name__in=duplicate_names)
+    ungrouped_allocations = allocations.exclude(name__in=duplicate_names)
 
     context = {
         "budget": budget,
         "allocations": ungrouped_allocations,
         "grouped_allocations": grouped_allocations,
+        "incomes": incomes,
         "previous": previous,
         "next": next,
     }
@@ -102,10 +107,17 @@ def populate_costs(request, id):
 
 
 @login_required
-def get_allocation_picker(request, allocation_id):
+def get_allocation_picker(request, allocation_type, allocation_id):
     """Returns the HTMX modal content for selecting transactions."""
+    models = {
+        "income": IncomeAllocation,
+        "cost": CostAllocation,
+    }
+    TargetModel = models.get(allocation_type, CostAllocation)
+    related_field = "cost" if allocation_type == "cost" else "income"
+
     allocation = get_object_or_404(
-        CostAllocation.objects.select_related("budget_period"),
+        TargetModel.objects.select_related("budget_period"),
         pk=allocation_id,
         budget_period__user=request.user,
     )
@@ -113,22 +125,25 @@ def get_allocation_picker(request, allocation_id):
     transactions = allocation.budget_period.get_categorised_transactions()
     unallocated = list(transactions["allocatable"])
 
-    if not allocation.cost or len(allocation.cost.keywords) == 0:
-        keywords = None
-    else:
-        keywords = allocation.cost.keywords.split(",")
+    source_obj = getattr(allocation, related_field, None)
+
+    keywords = None
+    if source_obj and source_obj.keywords:
+        keywords = [
+            k.strip().lower() for k in source_obj.keywords.split(",") if k.strip()
+        ]
 
     for transaction in unallocated:
-        if not keywords:
-            break
-        for keyword in keywords:
-            if keyword.lower().strip() in transaction.vendor.lower():
-                print(f"Matched {keyword} against {transaction.vendor}")
+        transaction.is_match = False
+        if keywords and transaction.vendor:
+            vendor_lower = transaction.vendor.lower()
+            if any(kw in vendor_lower for kw in keywords):
                 transaction.is_match = True
 
     sorted_transactions = sorted(
         unallocated, key=lambda x: getattr(x, "is_match", False), reverse=True
     )
+    print(sorted_transactions)
 
     return render(
         request,
@@ -136,15 +151,25 @@ def get_allocation_picker(request, allocation_id):
         {
             "allocation": allocation,
             "eligible_transactions": sorted_transactions,
+            "allocation_type": allocation_type,
         },
     )
 
 
 @login_required
-def save_allocations(request, allocation_id):
+def save_allocations(request, allocation_type, allocation_id):
     """Processes the HTMX form submission."""
+    models = {
+        "income": IncomeAllocation,
+        "cost": CostAllocation,
+    }
+    TargetModel = models.get(allocation_type, CostAllocation)
+    field_to_update = (
+        "income_allocation" if allocation_type == "income" else "cost_allocation"
+    )
+
     allocation = get_object_or_404(
-        CostAllocation.objects.select_related("budget_period"),
+        TargetModel.objects.select_related("budget_period"),
         pk=allocation_id,
         budget_period__user=request.user,
     )
@@ -155,17 +180,18 @@ def save_allocations(request, allocation_id):
 
         # Link selected transactions to this allocation
         Transaction.objects.filter(id__in=selected_ids, user=request.user).update(
-            cost_allocation=allocation
+            **{field_to_update: allocation}
         )
+
         if update_amount:
             total_sum = (
-                Transaction.objects.filter(cost_allocation=allocation).aggregate(
+                Transaction.objects.filter(**{field_to_update: allocation}).aggregate(
                     total=Sum("amount")
                 )["total"]
                 or 0
             )
 
-            allocation.cost_amount = abs(total_sum)
+            allocation.amount = abs(total_sum)
             allocation.save()
 
         # HX-Refresh tells the browser to reload the whole page to update totals
@@ -234,7 +260,7 @@ def add_allocation_with_transactions(request, budget_id):
         )
         total_amount = sum(abs(tx.amount) for tx in selected_transactions)
         form = CostAllocationTransactionsForm(
-            user=request.user, initial={"cost_amount": total_amount}
+            user=request.user, initial={"amount": total_amount}
         )
 
     return render(

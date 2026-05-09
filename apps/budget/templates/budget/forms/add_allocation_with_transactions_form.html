@@ -23,7 +23,7 @@
               {% if field.field.required %}<span class="text-error">*</span>{% endif %}
             </label>
 
-            {% if field.name == 'cost_amount' %}
+            {% if field.name == 'amount' %}
               <div class="input input-bordered flex items-center gap-0 p-0 overflow-hidden w-full {% if field.errors %}input-error{% endif %}">
                 <span class="pl-3 opacity-70 flex-none">$</span>
                 <input
