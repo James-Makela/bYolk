@@ -1,0 +1,43 @@
+<div class="overflow-visible rounded-lg border border-base-300 mt-2">
+  <table class="table w-full">
+
+    <thead>
+      <tr class="bg-base-200 text-base-content">
+        <th colspan="10" class="p-0">
+          <div class="grid grid-cols-10 w-full px-4 py-3 text-xs font-bold uppercase tracking-wider opacity-70">
+            <div class="col-span-3">Income Source</div>
+            <div class="text-left col-span-2">Expected date</div>
+            <div class="text-right col-span-1">Remaining</div>
+            <div class="text-right col-span-1">Amount</div>
+            <div class="text-right col-span-1">Paid</div>
+            <div class="col-span-2"></div>
+          </div>
+        </th>
+      </tr>
+    </thead>
+
+    <tbody>
+      <tr>
+        <td colspan="10" class="p-0">
+          {% include "budget/partials/_allocation_table.html" %}
+        </td>
+      </tr>
+
+      {% if not allocations %}
+        <tr>
+          <td class="text-center py-4 col-span-10">No income allocated for this period.</td>
+        </tr>
+      {% endif %}
+    </tbody>
+
+    <tfoot>
+      <tr class="bg-base-200/50 font-bold text-base-content">
+        <td colspan="7" class="text-right">Total Income:</td>
+        <td colspan="3" class="text-right text-succes">
+          ${{ budget.get_total_income|floatformat:2 }}
+        </td>
+      </tr>
+    </tfoot>
+
+  </table>
+</div>
