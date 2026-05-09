@@ -27,7 +27,7 @@
                     <li class="z-top"><a href="{% if next %}{% url 'move-cost-allocation' allocation.id next.id %}{% else %}" class="hidden{% endif %}">Move to next Budget</a></li>
                     <li><a href="{% if previous %}{% url 'move-cost-allocation' allocation.id previous.id %}{% else %}" class="hidden{% endif %}">Move to previous Budget</a></li>
                     <li>
-                      <form action="{% url 'delete-allocation' allocation.id budget.id %}" method="post" onsubmit="return confirm('Are you sure?')">
+                      <form action="{% url 'delete-allocation' type allocation.id budget.id %}" method="post" onsubmit="return confirm('Are you sure?')">
                         {% csrf_token %}
                         <button type="submit" class="text-error cursor-pointer">
                           Delete allocation

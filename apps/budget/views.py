@@ -303,10 +303,14 @@ def move_cost_allocation(request, allocation_id, budget_id):
 
 
 @login_required
-def delete_allocation(request, pk, budget_id):
-    allocation = get_object_or_404(
-        CostAllocation, pk=pk, budget_period__user=request.user
-    )
+def delete_allocation(request, allocation_type, pk, budget_id):
+    models = {
+        "income": IncomeAllocation,
+        "cost": CostAllocation,
+    }
+    TargetModel = models.get(allocation_type, CostAllocation)
+
+    allocation = get_object_or_404(TargetModel, pk=pk, budget_period__user=request.user)
 
     if request.method == "POST":
         allocation.delete()

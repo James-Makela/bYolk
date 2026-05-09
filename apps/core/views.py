@@ -54,10 +54,10 @@ def create_category(request):
 
 @login_required
 def delete_category(request, pk):
-    cost = get_object_or_404(Category, pk=pk, user=request.user)
+    category = get_object_or_404(Category, pk=pk, user=request.user)
 
     if request.method == "POST":
-        cost.delete()
+        category.delete()
         messages.success(request, "Category deleted")
 
     return HttpResponseRedirect("/core/categories/")

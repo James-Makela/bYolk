@@ -33,7 +33,7 @@ urlpatterns = [
         name="allocation-with-transactions",
     ),
     path(
-        "delete-allocation/<int:pk>/<int:budget_id>",
+        "delete-allocation/<str:allocation_type>/<int:pk>/<int:budget_id>",
         views.delete_allocation,
         name="delete-allocation",
     ),
