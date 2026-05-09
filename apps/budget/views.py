@@ -55,6 +55,12 @@ def budget_detail(request, id):
         "transactions"
     )
 
+    unallocated_transactions = budget.get_categorised_transactions()["unallocated"]
+    unallocated_balance = sum(
+        transaction.amount for transaction in unallocated_transactions
+    )
+    print(unallocated_balance)
+
     grouped_allocations = []
     for name in duplicate_names:
         items_list = allocations.filter(name=name)
@@ -81,6 +87,8 @@ def budget_detail(request, id):
         "incomes": incomes,
         "previous": previous,
         "next": next,
+        "unallocated_balance": unallocated_balance,
+        "unallocated_transactions": unallocated_transactions,
     }
 
     return render(
@@ -123,7 +131,7 @@ def get_allocation_picker(request, allocation_type, allocation_id):
     )
 
     transactions = allocation.budget_period.get_categorised_transactions()
-    unallocated = list(transactions["allocatable"])
+    unallocated = list(transactions["unallocated"])
 
     source_obj = getattr(allocation, related_field, None)
 
