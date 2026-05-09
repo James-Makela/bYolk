@@ -50,4 +50,24 @@
       </fieldset>
     </form>
   </div>
+  {% block extra_js %}
+    <script>
+      document.addEventListener('DOMContentLoaded', function () {
+        const categoryField = document.getElementById('id_category');
+        const costForm = document.querySelector('form');
+
+        if (categoryField && costForm) {
+          categoryField.addEventListener('keydown', function (e) {
+                // Check if the key pressed is Enter
+            if (e.key === 'Enter') {
+                    // Prevent the dropdown from just closing/reopening
+              e.preventDefault();
+                    // Fire the form submission
+              costForm.submit();
+            }
+          });
+        }
+      });
+    </script>
+  {% endblock extra_js %}
 {% endblock content %}
