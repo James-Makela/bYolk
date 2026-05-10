@@ -22,7 +22,7 @@ jobs:
       - name: Run Django Tests
         env:
           # Add any necessary env vars (like a dummy SECRET_KEY)
-          SECRET_KEY: "temporary-key-for-testing"
+          SECRET_KEY: ${{ secrets.DJANGO_SECRET_KEY }}
           DEBUG: "False"
         run: |
           python manage.py test
