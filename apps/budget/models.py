@@ -1,7 +1,6 @@
 from django.db import models
 from django.db.models import DecimalField, OuterRef, Subquery, Sum, Value
 from django.db.models.functions import Abs, Coalesce
-from django.utils import timezone
 from django.utils.functional import cached_property
 
 from apps.core.models import Category, User
@@ -74,13 +73,6 @@ class BudgetPeriod(models.Model):
 
     def __str__(self):
         return f"Budget {self.id} {self.start_date} -> {self.end_date}"
-
-    @property
-    def is_current(self):
-        now = timezone.now().date()
-        if now >= self.start_date and now <= self.end_date:
-            return True
-        return False
 
     @cached_property
     def get_total_costs(self):

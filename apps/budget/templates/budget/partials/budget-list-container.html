@@ -13,7 +13,7 @@
 
       <tbody>
         {% for budget in budget_periods %}
-          {% if budget.is_current %}
+          {% if budget.id == current_budget.id %}
             <tr class="bg-accent-content hover:bg-accent-content/50">
           {% else %}
             <tr class="hover:bg-base-300">
