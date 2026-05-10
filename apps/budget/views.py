@@ -1,9 +1,10 @@
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from django.db.models import Count, Sum
+from django.db.models import BooleanField, Case, Count, Sum, Value, When
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render
 from django.urls import reverse
+from django.utils import timezone
 
 from apps.budget.models import BudgetPeriod, CostAllocation, IncomeAllocation
 from apps.transaction.models import Transaction
@@ -14,13 +15,26 @@ from .services import generate_next_budget_period, populate_from_costs
 
 @login_required
 def budgets_list(request):
+    today = timezone.now().date()
     budget_periods = (
         BudgetPeriod.objects.filter(user=request.user)
+        .annotate(
+            is_current_period=Case(
+                When(start_date__lte=today, end_date__gte=today, then=Value(True)),
+                default=Value(False),
+                output_field=BooleanField(),
+            )
+        )
         .with_transaction_stats()
         .order_by("-start_date")
     )
 
-    context = {"budget_periods": budget_periods}
+    current_budget = budget_periods.filter(is_current_period=True).first()
+
+    context = {
+        "budget_periods": budget_periods,
+        "current_budget": current_budget,
+    }
     return render(request, "budget/index.html", context)
 
 
