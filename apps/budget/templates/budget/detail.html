@@ -17,31 +17,32 @@
 {% endblock %}
 
 {% block content %}
+  <div class="max-w-6xl mx-auto">
+    <h2 class="text-2xl font-bold">Allocations</h2>
+    {% include "budget/partials/_income_budget_container.html" with allocations=allocated_income type="income" %}
+    {% include "budget/partials/_cost_budget_container.html" with type="cost" %}
 
-  <h2 class="text-2xl font-bold">Allocations</h2>
-  {% include "budget/partials/_income_budget_container.html" with allocations=allocated_income type="income" %}
-  {% include "budget/partials/_cost_budget_container.html" with type="cost" %}
-
-  <div class="divider"></div>
-  <div class="card w-96 bg-primary/20 card-md shadow-sm">
-    <div class="card-body">
-      <h2 class="card-title">Budget Balance:</h2>
-      <p class="text-2xl {% if budget.balance > 0 %}text-success{% elif budget.balance == 0 %}text-info{% else %}text-error{% endif %}">${{ budget.balance|floatformat:2 }}</p>
-      <div class="justify-end card-actions">
-        <button class="btn btn-primary">Complete Budget</button>
+    <div class="divider"></div>
+    <div class="card w-96 bg-primary/20 card-md shadow-sm">
+      <div class="card-body">
+        <h2 class="card-title">Budget Balance:</h2>
+        <p class="text-2xl {% if budget.balance > 0 %}text-success{% elif budget.balance == 0 %}text-info{% else %}text-error{% endif %}">${{ budget.balance|floatformat:2 }}</p>
+        <div class="justify-end card-actions">
+          <button class="btn btn-primary">Complete Budget</button>
+        </div>
       </div>
     </div>
-  </div>
-  <div class="divider"></div>
-  {% include "budget/partials/matching-transactions-container.html" %}
+    <div class="divider"></div>
+    {% include "budget/partials/matching-transactions-container.html" %}
 
-  <dialog id="allocation_modal" class="modal">
-    <div id="modal_container" class="modal-box w-11/12 max-w-3xl">
+    <dialog id="allocation_modal" class="modal">
+      <div id="modal_container" class="modal-box w-11/12 max-w-3xl">
     <!-- HTMX injects content here -->
-    </div>
-    <form method="dialog" class="modal-backdrop">
-      <button>close</button>
-    </form>
-  </dialog>
+      </div>
+      <form method="dialog" class="modal-backdrop">
+        <button>close</button>
+      </form>
+    </dialog>
+  </div>
 {% endblock content %}
 

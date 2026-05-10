@@ -16,7 +16,7 @@
       <tbody>
         {% for transaction in transactions %}
           <tr class="hover:bg-base-300">
-            <td>{{ transaction.date }}</td>
+            <td class="whitespace-nowrap">{{ transaction.date }}</td>
             <td>{{ transaction.vendor }}</td>
             <td>{{ transaction.purchase_type }}</td>
             <td>{{ transaction.receipt_details }}</td>
