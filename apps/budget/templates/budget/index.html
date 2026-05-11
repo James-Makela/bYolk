@@ -16,16 +16,16 @@
 {% endblock %}
 
 {% block content %}
-
-  {% if current_budget %}
-    {% include "budget/partials/_current_budget_goto.html" %}
-    <div class="divider"></div>
-  {% endif %}
-  {% if user.preferences %}
-    {% include "budget/partials/budget-list-container.html" %}
-  {% else %}
-    {% include "forms/set_user_preferences.html" %}
-  {% endif %}
-
+  <div class="max-w-6xl mx-auto">
+    {% if current_budget %}
+      {% include "budget/partials/_current_budget_goto.html" %}
+      <div class="divider"></div>
+    {% endif %}
+    {% if user.preferences %}
+      {% include "budget/partials/budget-list-container.html" %}
+    {% else %}
+      {% include "forms/set_user_preferences.html" %}
+    {% endif %}
+  </div>
 {% endblock content %}
 
