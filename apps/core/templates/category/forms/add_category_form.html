@@ -4,14 +4,14 @@
 {% block navbar_title %}Add a Category{% endblock %}
 
 {% block navbar_actions %}
-  <a href="{% url 'categories-page' %}" class="btn btn-primary btn-sm mr-8">
+  <a href="{% url 'core:categories-page' %}" class="btn btn-primary btn-sm mr-8">
     Cancel
   </a>
 {% endblock %}
 
 {% block content %}
   <div class="p-10 max-w-lg mx-auto">
-    <form action="{% url 'add-category' %}" method="post" class="space-y-4">
+    <form action="{% url 'core:add-category' %}" method="post" class="space-y-4">
       {% csrf_token %}
 
       <fieldset class="fieldset w-max-500 bg-base-200 border border-base-300 p-4 rounded-box overflow-visible">

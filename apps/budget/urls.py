@@ -37,4 +37,7 @@ urlpatterns = [
         views.delete_allocation,
         name="delete-allocation",
     ),
+    path(
+        "delete-budgetperiod/<int:pk>", views.delete_budget_period, name="delete-budget"
+    ),
 ]

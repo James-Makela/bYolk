@@ -7,6 +7,7 @@ from django.urls import reverse
 from django.utils import timezone
 
 from apps.budget.models import BudgetPeriod, CostAllocation, IncomeAllocation
+from apps.core.forms import InitialUserPreferencesForm
 from apps.transaction.models import Transaction
 
 from .forms import CostAllocationForm, CostAllocationTransactionsForm
@@ -34,7 +35,10 @@ def budgets_list(request):
     context = {
         "budget_periods": budget_periods,
         "current_budget": current_budget,
+        "form": None,
     }
+    if not hasattr(request.user, "preferences"):
+        context["form"] = InitialUserPreferencesForm()
     return render(request, "budget/index.html", context)
 
 
@@ -339,3 +343,14 @@ def delete_allocation(request, allocation_type, pk, budget_id):
         messages.success(request, "Allocation deleted")
 
     return HttpResponseRedirect(f"/budgets/{budget_id}")
+
+
+@login_required
+def delete_budget_period(request, pk):
+    period = get_object_or_404(BudgetPeriod, pk=pk, user=request.user)
+
+    if request.method == "POST":
+        period.delete()
+        messages.success(request, "Budget Period deleted")
+
+    return HttpResponseRedirect("/budgets/")

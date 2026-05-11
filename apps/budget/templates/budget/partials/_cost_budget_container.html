@@ -1,45 +1,31 @@
-<div class="overflow-visible rounded-lg border border-base-300 mt-2">
-  <table class="table w-full">
+<div class="overflow-visible rounded-lg border border-base-300 mt-2 bg-base-100">
 
-    <thead>
-      <tr class="bg-base-200 text-base-content">
-        <th colspan="10" class="p-0">
-          <div class="grid grid-cols-10 w-full px-4 py-3 text-xs font-bold uppercase tracking-wider opacity-70">
-            <div class="col-span-3">Cost Name</div>
-            <div class="text-left col-span-2">Expected date</div>
-            <div class="text-right col-span-1">Remaining</div>
-            <div class="text-right col-span-1">Amount</div>
-            <div class="text-right col-span-1">Paid</div>
-            <div class="col-span-2"></div>
-          </div>
-        </th>
-      </tr>
-    </thead>
+  <div class="grid grid-cols-10 gap-2 bg-base-200 px-4 py-3 text-xs font-bold uppercase tracking-wider opacity-70 text-base-content">
+    <div class="col-span-3">Cost Name</div>
+    <div class="col-span-2 text-left">Expected date</div>
+    <div class="col-span-1 text-right">Remaining</div>
+    <div class="col-span-1 text-right">Amount</div>
+    <div class="col-span-1 text-right">Paid</div>
+    <div class="col-span-2"></div>
+  </div>
 
-    <tbody>
-      {% include "budget/partials/_grouped_allocation_table.html" %}
+  <div class="divide-y divide-base-300">
+    {% include "budget/partials/_grouped_allocation_table.html" %}
 
-      <tr>
-        <td colspan="10" class="p-0">
-          {% include "budget/partials/_allocation_table.html" %}
-        </td>
-      </tr>
+    {% include "budget/partials/_allocation_table.html" %}
 
-      {% if not allocations and not grouped_allocations %}
-        <tr>
-          <td class="text-center py-4 col-span-10">No cost allocations for this period.</td>
-        </tr>
-      {% endif %}
-    </tbody>
+    {% if not allocations and not grouped_allocations %}
+      <div class="py-3 text-center text-sm opacity-60">
+        No cost allocations for this period.
+      </div>
+    {% endif %}
+  </div>
 
-    <tfoot>
-      <tr class="bg-base-200/50 font-bold text-base-content">
-        <td colspan="7" class="text-right">Total Costs:</td>
-        <td colspan="3" class="text-right text-error">
-          ${{ budget.get_total_costs|floatformat:2 }}
-        </td>
-      </tr>
-    </tfoot>
+  <div class="grid grid-cols-10 gap-2 bg-base-200/50 px-4 py-3 font-bold text-base-content border-t border-base-300">
+    <div class="col-span-8 text-right">Total Costs:</div>
+    <div class="col-span-2 text-right text-error">
+      ${{ budget.get_total_costs|floatformat:2 }}
+    </div>
+  </div>
 
-  </table>
 </div>

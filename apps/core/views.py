@@ -4,7 +4,7 @@ from django.contrib.auth.decorators import login_not_required, login_required
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404, redirect, render
 
-from .forms import CategoryForm, CustomUserCreationForm
+from .forms import CategoryForm, CustomUserCreationForm, InitialUserPreferencesForm
 from .models import Category
 
 
@@ -61,3 +61,17 @@ def delete_category(request, pk):
         messages.success(request, "Category deleted")
 
     return HttpResponseRedirect("/core/categories/")
+
+
+@login_required
+def set_preferences(request):
+    if request.method == "POST":
+        form = InitialUserPreferencesForm(request.POST)
+        if form.is_valid():
+            preferences = form.save(commit=False)
+            preferences.user = request.user
+            preferences.save()
+            messages.success(
+                request, "Preferences saved, you can now create your first budget"
+            )
+            return HttpResponseRedirect("/budgets/")

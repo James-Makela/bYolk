@@ -42,7 +42,7 @@ class CostForm(forms.ModelForm):
         user = kwargs.pop("user", None)
         super(CostForm, self).__init__(*args, **kwargs)
         if user and hasattr(user, "preferences"):
-            self.fields["start_date"].initial = user.preferences.first_pay_date
+            self.fields["start_date"].initial = user.preferences.first_budget_date
 
         if user:
             self.fields["category"].queryset = Category.objects.filter(user=user)

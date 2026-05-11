@@ -7,7 +7,9 @@ class Cost(FrequencyMixin, models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     name = models.CharField(max_length=255)
     amount = models.DecimalField(max_digits=10, decimal_places=2)
-    category = models.ForeignKey(Category, null=True, on_delete=models.SET_NULL)
+    category = models.ForeignKey(
+        Category, null=True, blank=True, on_delete=models.SET_NULL
+    )
     start_date = models.DateField()
     keywords = models.CharField(
         max_length=500, blank=True, help_text="Comma-separated list"

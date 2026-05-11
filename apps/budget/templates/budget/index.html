@@ -8,7 +8,7 @@
     <a href="{% url 'generate-budget' %}" class="btn btn-primary btn-sm mr-8">
       + Generate next Budget
     </a>
-  {% else %}
+  {% elif user.preferences %}
     <a href="{% url 'generate-budget' %}" class="btn btn-primary btn-sm mr-8">
       + Create first Budget
     </a>
@@ -19,9 +19,13 @@
 
   {% if current_budget %}
     {% include "budget/partials/_current_budget_goto.html" %}
+    <div class="divider"></div>
   {% endif %}
-  <div class="divider"></div>
-  {% include "budget/partials/budget-list-container.html" %}
+  {% if user.preferences %}
+    {% include "budget/partials/budget-list-container.html" %}
+  {% else %}
+    {% include "forms/set_user_preferences.html" %}
+  {% endif %}
 
 {% endblock content %}
 
