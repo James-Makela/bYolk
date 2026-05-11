@@ -13,7 +13,7 @@
       <tbody class="[&_tr:last-child]:border-none">
         {% for tx in transactions %}
           <tr class="border-base-200">
-            <td>{{ tx.date }}</td>
+            <td class="whitespace-nowrap">{{ tx.date }}</td>
             <td>{{ tx.vendor }}</td>
             <td>{{ tx.purchase_type }}</td>
             <td>{{ tx.receipt_details }}</td>

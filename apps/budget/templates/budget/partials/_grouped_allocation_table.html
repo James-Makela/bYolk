@@ -1,39 +1,26 @@
-<div class="flex flex-col bg-base-200/20">
+<div class="flex flex-col bg-base-200/20 overflow-visible">
   {% for group in grouped_allocations %}
-    <div class="border-b border-base-300 last:border-0">
+    <div class="group border-b border-base-300 last:border-0 relative has-[:focus-within]:z-50">
 
       <input type="checkbox" id="group_{{ forloop.counter }}" class="peer hidden" />
 
-      <label for="group_{{ forloop.counter }}" class="grid grid-cols-10 w-full gap-2 py-3 px-4 items-center cursor-pointer hover:bg-base-300/50 select-none leading-none">
-
-        <div class="font-bold col-span-5 text-sm">
-          {{ group.name }} <span class="opacity-50">({{ group.original_items|length }})</span>
-        </div>
-
-        <div class="text-right font-medium col-span-1 text-sm text-base-content/70">
-          ${{ group.total_amount }}
-        </div>
-
-        <div class="text-right font-bold col-span-1 text-sm">
-          ${{ group.total_paid }}
-        </div>
-
-        <div class="text-right font-bold col-span-1 text-sm {% if group.remaining_spend > 0 %}text-success{% elif group.remaining_spend == 0 %}text-info{% else %}text-error{% endif %}">
-          ${{ group.remaining_spend }}
-        </div>
-
-        <div class="col-span-1 flex justify-end items-center opacity-40">
-          <span class="peer-checked:hidden">+</span>
-          <span class="hidden peer-checked:inline">−</span>
+      <label for="group_{{ forloop.counter }}" class="grid grid-cols-10 w-full gap-2 py-3 px-4 items-center cursor-pointer hover:bg-base-300/50 select-none leading-none relative z-10">
+        <div class="font-bold col-span-3 text-sm">{{ group.name }} [{{ group.original_items|length }} Items]</div>
+        <div class="col-span-2"></div>
+        <div class="text-right font-medium col-span-1 text-sm text-base-content/70">${{ group.total_amount }}</div>
+        <div class="text-right font-bold col-span-1 text-sm">${{ group.total_paid }}</div>
+        <div class="text-right font-bold col-span-1 text-sm {% if group.remaining_spend > 0 %}text-success{% elif group.remaining_spend == 0 %}text-info{% else %}text-error{% endif %}">${{ group.remaining_spend }}</div>
+        <div class="col-span-2 flex justify-end items-center opacity-40">
+          <span class="font-semibold group-has-[:checked]:hidden">+</span>
+          <span class="font-semibold hidden group-has-[:checked]:inline">−</span>
         </div>
       </label>
 
-      <div class="grid grid-rows-[0fr] transition-all duration-300 peer-checked:grid-rows-[1fr] overflow-hidden bg-base-300/5">
+      <div class="grid grid-rows-[0fr] transition-all duration-300 peer-checked:grid-rows-[1fr] overflow-hidden has-[:focus-within]:overflow-visible bg-base-300/5">
         <div class="min-h-0">
           {% include "budget/partials/_allocation_table.html" with allocations=group.original_items %}
         </div>
       </div>
-
     </div>
   {% endfor %}
 </div>
