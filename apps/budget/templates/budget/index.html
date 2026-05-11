@@ -17,7 +17,9 @@
 
 {% block content %}
 
-  {% include "budget/partials/_current_budget_goto.html" %}
+  {% if current_budget %}
+    {% include "budget/partials/_current_budget_goto.html" %}
+  {% endif %}
   <div class="divider"></div>
   {% include "budget/partials/budget-list-container.html" %}
 

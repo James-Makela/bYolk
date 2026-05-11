@@ -52,7 +52,7 @@ class UserPreferences(FrequencyMixin, models.Model):
     user = models.OneToOneField(
         settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="preferences"
     )
-    first_pay_date = models.DateField(default=timezone.now)
+    first_budget_date = models.DateField(default=timezone.now)
 
     class Meta:
         verbose_name_plural = "User Preferences"

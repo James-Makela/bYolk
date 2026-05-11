@@ -13,7 +13,7 @@ def generate_next_budget_period(user):
     if latest_budget:
         start_date = latest_budget.end_date + timedelta(days=1)
     else:
-        start_date = getattr(user.preferences, "first_pay_date", date.today())
+        start_date = getattr(user.preferences, "first_budget_date", date.today())
 
     delta = user.preferences.get_delta()
 
