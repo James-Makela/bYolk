@@ -99,8 +99,7 @@
             if (cb.checked) {
                     // 2. Extract the amount from the data attribute
                     // parseFloat converts text "11.40" to a number
-                    // Math.abs ensures it's positive
-              const val = Math.abs(parseFloat(cb.dataset.amount)) || 0;
+              const val = parseFloat(cb.dataset.amount) || 0;
               total += val;
             }
           });
@@ -108,7 +107,7 @@
             // 3. Update the input field
             // toFixed(2) ensures we see $10.50 instead of $10.5
           if (amountInput) {
-            amountInput.value = total.toFixed(2);
+            amountInput.value = Math.abs(total.toFixed(2));
           }
         }
 

@@ -284,7 +284,7 @@ def add_allocation_with_transactions(request, budget_id):
             user=request.user,
             id__in=transaction_ids,
         )
-        total_amount = sum(abs(tx.amount) for tx in selected_transactions)
+        total_amount = abs(sum((tx.amount) for tx in selected_transactions))
         form = CostAllocationTransactionsForm(
             user=request.user, initial={"amount": total_amount}
         )
