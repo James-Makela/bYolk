@@ -3,6 +3,7 @@ from dateutil.relativedelta import relativedelta
 from django.conf import settings
 from django.contrib.auth.models import AbstractUser
 from django.db import models
+from django.db.models.functions import Lower
 from django.utils import timezone
 
 
@@ -36,11 +37,14 @@ class FrequencyMixin(models.Model):
         return self.get_delta() == other.get_delta()
 
     def frequency_string(self):
-        if self.frequency_value > 1:
-            return f"Every {self.frequency_value} {self.frequency_unit.capitalize()}"
+        unit = self.get_frequency_unit_display()
+        if self.frequency_value == 1:
+            unit = unit.rstrip("(s)")
+            value = ""
         else:
-            return f"Every {self.frequency_value}\
-            {self.frequency_unit.capitalize().rstrip('s')}"
+            unit = unit.replace("(", "").replace(")", "")
+            value = f"{self.frequency_value} "
+        return f"Every {value}{unit}"
 
 
 # Create your models here.
@@ -69,7 +73,9 @@ class Category(models.Model):
         verbose_name_plural = "Categories"
         constraints = [
             models.UniqueConstraint(
-                fields=["user", "name"], name="unique_category_per_user"
+                "user",
+                Lower("name"),
+                name="unique_category_per_user",
             )
         ]
 

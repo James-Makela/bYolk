@@ -16,8 +16,10 @@ class Cost(FrequencyMixin, models.Model):
     )
 
     def __str__(self):
-        return f"{self.name}, ${self.amount} every {self.frequency_value} \
-    {self.frequency_unit}"
+        frequency_string = super().frequency_string()
+        if frequency_string:
+            frequency_string = frequency_string[0].lower() + frequency_string[1:]
+        return f"{self.name}, ${self.amount} {frequency_string}"
 
     class Meta:
         ordering = ["-amount"]
