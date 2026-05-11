@@ -23,11 +23,11 @@
           <td>${{ budget.get_total_costs|floatformat:2 }}</td>
           <td class="text-error">${{ budget.annotated_spend|floatformat:2 }}</td>
           <td class="text-success">${{ budget.annotated_income|floatformat:2 }}</td>
-          <td><a class="btn btn-xs btn-soft" href="/budgets/{{ budget.id }}">View</a></td>
+          <td><a class="btn btn-xs btn-soft w-full" href="/budgets/{{ budget.id }}">View</a></td>
           <td>
             <form action="{% url 'delete-budget' budget.pk %}" method="post" onsubmit="return confirm('Are you sure?')">
               {% csrf_token %}
-              <button type="submit" class="btn btn-xs btn-soft btn-error cursor-pointer">
+              <button type="submit" class="btn btn-xs btn-soft btn-error cursor-pointer w-full">
                 Delete
               </button>
             </form>
