@@ -6,11 +6,11 @@
         <label for="toggle_{{ allocation.id }}" class="absolute inset-0 z-0 cursor-pointer"></label>
         <div class="font-medium truncate col-span-3 text-sm relative z-10 pointer-events-none">{{ allocation.name }}</div>
         <div class="font-medium col-span-2 text-sm relative z-10 pointer-events-none">{{ allocation.expected_date }}</div>
+        <div class="text-right text-base-content/70 col-span-1 text-sm relative z-10 pointer-events-none">${{ allocation.amount }}</div>
+        <div class="text-right font-semibold col-span-1 text-sm relative z-10 pointer-events-none">${{ allocation.total_paid }}</div>
         <div class="text-right font-semibold col-span-1 text-sm relative z-10 pointer-events-none {% if allocation.remaining > 0 %}text-success{% elif allocation.remaining == 0 %}text-info{% else %}text-error{% endif %}">
           ${{ allocation.remaining }}
         </div>
-        <div class="text-right text-base-content/70 col-span-1 text-sm relative z-10 pointer-events-none">${{ allocation.amount }}</div>
-        <div class="text-right font-semibold col-span-1 text-sm relative z-10 pointer-events-none">${{ allocation.total_paid }}</div>
         <div class="grid grid-cols-2 gap-2 col-span-2 relative z-20 content-center items-center">
           <button
             class="btn btn-xs btn-soft w-full"
@@ -21,7 +21,7 @@
           </button>
           <div class="dropdown dropdown-end w-full leading-none">
             <div tabindex="0" role="button" class="btn btn-xs btn-soft w-full">Actions</div>
-            <ul tabindex="-1" class="dropdown-content menu bg-base-100 rounded-box z-[100] w-52 shadow-xl border border-base-200">
+            <ul tabindex="-1" class="dropdown-content menu bg-base-100 rounded-box z-[100] w-52 shadow-xl border border-base-200 mt-2">
               <li><a href="{% if next %}{% url 'move-cost-allocation' allocation.id next.id %}{% else %}#{% endif %}" class="{% if not next %}hidden{% endif %}">Move to next Budget</a></li>
               <li><a href="{% if previous %}{% url 'move-cost-allocation' allocation.id previous.id %}{% else %}#{% endif %}" class="{% if not previous %}hidden{% endif %}">Move to previous Budget</a></li>
               <li>
