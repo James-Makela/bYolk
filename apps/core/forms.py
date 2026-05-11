@@ -35,3 +35,7 @@ class InitialUserPreferencesForm(forms.ModelForm):
                 attrs={"class": "input input-bordered w-full", "type": "date"}
             ),
         }
+        labels = {
+            "frequency_value": "Every",
+            "frequency_unit": "",
+        }
