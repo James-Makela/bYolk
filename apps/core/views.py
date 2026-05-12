@@ -75,3 +75,37 @@ def set_preferences(request):
                 request, "Preferences saved, you can now create your first budget"
             )
             return HttpResponseRedirect("/budgets/")
+
+
+@login_required
+def category_edit(request, pk=None):
+    if pk:
+        category = get_object_or_404(Category, pk=pk, user=request.user)
+        title = "Edit Category"
+        message = "Category updated!"
+    else:
+        category = None
+        title = "Add Category"
+        message = "Category saved!"
+
+    if request.method == "POST":
+        form = CategoryForm(request.POST, instance=category)
+        if form.is_valid():
+            new_category = form.save(commit=False)
+            new_category.user = request.user
+            print(f"PK: {new_category.pk}")
+            new_category.save()
+            messages.success(request, message)
+            return HttpResponseRedirect("/core/categories/")
+
+    else:
+        form = CategoryForm(instance=category)
+
+    return render(
+        request,
+        "category/forms/add_category_form.html",
+        {
+            "form": form,
+            "title": title,
+        },
+    )
