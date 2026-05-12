@@ -16,9 +16,10 @@ class CustomUserCreationForm(UserCreationForm):
 class CategoryForm(forms.ModelForm):
     class Meta:
         model = Category
-        fields = ["name"]
+        fields = ["name", "colour"]
         widgets = {
             "name": forms.TextInput(attrs={"class": "input input-bordered w-full"}),
+            "colour": forms.ColorInput(attrs={"class": "input input-bordered w-full"}),
         }
 
 
