@@ -51,7 +51,6 @@ def get_actual_date(description):
         r"(\d+)[\s]+(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[\s]+(\d{4})",
         description,
     )
-    print(actual_date)
     if actual_date and len(actual_date[0]) == 3:
         try:
             date_string = " ".join(actual_date[0])

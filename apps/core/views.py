@@ -93,7 +93,6 @@ def category_edit(request, pk=None):
         if form.is_valid():
             new_category = form.save(commit=False)
             new_category.user = request.user
-            print(f"PK: {new_category.pk}")
             new_category.save()
             messages.success(request, message)
             return HttpResponseRedirect("/core/categories/")

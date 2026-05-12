@@ -77,7 +77,6 @@ def budget_detail(request, id):
     unallocated_balance = sum(
         transaction.amount for transaction in unallocated_transactions
     )
-    print(unallocated_balance)
 
     grouped_allocations = []
     for name in duplicate_names:
@@ -118,7 +117,6 @@ def budget_detail(request, id):
 
 @login_required
 def start_next_budget(request):
-    print(f"User: {request.user}")
     generate_next_budget_period(request.user)
     messages.success(request, "Next budget period generated")
     return HttpResponseRedirect("/budgets/")
@@ -169,7 +167,6 @@ def get_allocation_picker(request, allocation_type, allocation_id):
     sorted_transactions = sorted(
         unallocated, key=lambda x: getattr(x, "is_match", False), reverse=True
     )
-    print(sorted_transactions)
 
     return render(
         request,

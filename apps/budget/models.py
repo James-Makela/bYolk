@@ -161,6 +161,7 @@ class CostAllocation(AllocationBase):
                 name="unique_cost_per_budget",
             )
         ]
+        ordering = ["-amount"]
 
 
 class IncomeAllocation(AllocationBase):

@@ -5,7 +5,7 @@
       <input type="checkbox" id="toggle_{{ allocation.id }}" class="peer hidden" />
       <div class="grid grid-cols-10 w-full gap-2 py-0 px-4 items-center cursor-pointer select-none relative">
         <label for="toggle_{{ allocation.id }}" class="absolute inset-0 z-0 cursor-pointer"></label>
-        <div class="font-medium truncate col-span-3 text-lg relative z-10 pointer-events-none p-0">{{ allocation.name }}{% if allocation.category %}<span class="badge badge-sm ml-2" style="{% if allocation.category.color %} background-color: {{ allocation.category.color }}; color: {{ allocation.category.color|contrast_color }};{% endif %}">{{ allocation.category.name }}</span>{% endif %}</div>
+        <div class="font-medium truncate col-span-3 text-lg relative z-10 pointer-events-none p-0">{{ allocation.name }}{% if allocation.category %}<span class="badge badge-soft badge-sm ml-2" style="{% if allocation.category.color %} background-color: {{ allocation.category.color }}; color: {{ allocation.category.color|contrast_color }};{% endif %}">{{ allocation.category.name }}</span>{% endif %}</div>
         <div class="font-medium col-span-2 text-sm relative z-10 pointer-events-none">{{ allocation.expected_date }}</div>
         <div class="text-right text-base-content/70 col-span-1 text-sm relative z-10 pointer-events-none">${{ allocation.amount }}</div>
         <div class="text-right font-semibold col-span-1 text-sm relative z-10 pointer-events-none">${{ allocation.total_paid }}</div>
