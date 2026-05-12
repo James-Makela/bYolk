@@ -68,7 +68,7 @@ class UserPreferences(FrequencyMixin, models.Model):
 class Category(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     name = models.CharField(max_length=50)
-    colour = models.CharField(max_length=7, null=True, blank=True)
+    color = models.CharField(max_length=7, null=True, blank=True)
 
     class Meta:
         verbose_name_plural = "Categories"
