@@ -131,10 +131,10 @@ class UserPreferencesTests(TestCase):
             user=self.user,
             frequency_value=2,
             frequency_unit="weeks",
-            first_pay_date=datetime(2026, 1, 1),
+            first_budget_date=datetime(2026, 1, 1),
         )
 
-        next_pay_date = preferences.first_pay_date + preferences.get_delta()
+        next_pay_date = preferences.first_budget_date + preferences.get_delta()
         self.assertEqual(next_pay_date, datetime(2026, 1, 15))
 
     def test_default_values(self):
@@ -143,7 +143,7 @@ class UserPreferencesTests(TestCase):
         self.assertEqual(preferences.user, self.user)
         self.assertEqual(preferences.frequency_value, 1)
         self.assertEqual(preferences.frequency_unit, "months")
-        self.assertIsNotNone(preferences.first_pay_date)
+        self.assertIsNotNone(preferences.first_budget_date)
         self.assertEqual(self.user.preferences, preferences)
 
     def test_multiple_preferences_for_one_user_raises_integrityerror(self):
