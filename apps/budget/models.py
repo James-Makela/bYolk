@@ -156,7 +156,8 @@ class CostAllocation(AllocationBase):
     class Meta:
         constraints = [
             models.UniqueConstraint(
-                fields=["budget_period", "cost", "expected_date"],
+                fields=["cost", "expected_date"],
+                condition=models.Q(expected_date__isnull=False),
                 name="unique_cost_per_budget",
             )
         ]
