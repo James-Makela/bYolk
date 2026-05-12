@@ -44,19 +44,27 @@
 
       <div class="drawer-side is-drawer-close:overflow-visible z-40">
         <label for="main-drawer" aria-label="close sidebar" class="drawer-overlay"></label>
-
         <div class="flex min-h-full flex-col items-start bg-base-200 is-drawer-close:w-14 is-drawer-open:w-64 transition-all duration-200">
           <ul class="menu w-full grow pt-2">
+            <li class="pointer-events-none">
+              <div class"is-drawer-close:hidden">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-egg-icon lucide-egg">
+                  <path d="M12 2C8 2 4 8 4 14a8 8 0 0 0 16 0c0-6-4-12-8-12"/>
+                </svg>
+                <span class="text-3xl">bYolk</span>
+              </div>
+            </li>
+            <div class="divider mt-1"></div>
                 <!-- Home -->
             <li>
               <a href="{% url 'home' %}"
                  class="is-drawer-close:tooltip is-drawer-close:tooltip-right"
-                 data-tip="Home">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-house-icon lucide-house">
-                  <path d="M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8"/>
-                  <path d="M3 10a2 2 0 0 1 .709-1.528l7-6a2 2 0 0 1 2.582 0l7 6A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+                 data-tip="Dashboard">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-gauge-icon lucide-gauge">
+                  <path d="m12 14 4-4"/>
+                  <path d="M3.34 19a10 10 0 1 1 17.32 0"/>
                 </svg>
-                <span class="is-drawer-close:hidden">Home</span>
+                <span class="is-drawer-close:hidden">Dashboard</span>
               </a>
             </li>
 
@@ -127,7 +135,20 @@
                   <span class="is-drawer-close:hidden">Categories</span>
                 </a>
               </li>
-              <div class="is-drawer-close:hidden mt-auto">
+                <!-- Help - ? -->
+              <li class="mt-auto mb-5">
+                <a href="{% url 'core:categories-page' %}"
+                   class="is-drawer-close:tooltip is-drawer-close:tooltip-right"
+                   data-tip="Help">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-badge-question-mark-icon lucide-badge-question-mark">
+                    <path d="M3.85 8.62a4 4 0 0 1 4.78-4.77 4 4 0 0 1 6.74 0 4 4 0 0 1 4.78 4.78 4 4 0 0 1 0 6.74 4 4 0 0 1-4.77 4.78 4 4 0 0 1-6.75 0 4 4 0 0 1-4.78-4.77 4 4 0 0 1 0-6.76Z"/>
+                    <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/>
+                    <line x1="12" x2="12.01" y1="17" y2="17"/>
+                  </svg>
+                  <span class="is-drawer-close:hidden">Help</span>
+                </a>
+              </li>
+              <div class="is-drawer-close:hidden">
                 <form method="post" action="{% url 'logout' %}" class="inline">
                   {% csrf_token %}
                   <button type="submit" class="btn btn-soft btn-error btn-wide">Logout</button>
