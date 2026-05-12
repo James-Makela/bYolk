@@ -1,6 +1,8 @@
+import csv
+
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from django.http import HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render
 
 from apps.cost.models import Cost
@@ -63,3 +65,28 @@ def delete_cost(request, pk):
         messages.success(request, "Cost deleted")
 
     return HttpResponseRedirect("/costs/")
+
+
+@login_required
+def cost_export(request):
+    costs = Cost.objects.filter(user=request.user)
+    response = HttpResponse(
+        content_type="text/csv",
+        headers={"Content-Disposition": 'attachment; filename="costs.csv"'},
+    )
+    if not costs:
+        return HttpResponseRedirect("/costs/")
+
+    writer = csv.writer(response)
+    writer.writerow(["name", "amount", "category", "start date", "keywords"])
+    for cost in costs:
+        writer.writerow(
+            [
+                cost.name,
+                cost.amount,
+                cost.category.name,
+                cost.start_date,
+                cost.keywords,
+            ]
+        )
+    return response

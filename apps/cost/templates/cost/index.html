@@ -4,6 +4,9 @@
 {% block navbar_title %}Costs{% endblock %}
 
 {% block navbar_actions %}
+  <a href="{% url 'export-costs' %}" class="btn btn-primary btn-sm">
+    Export Costs to .csv
+  </a>
   <a href="{% url 'add-cost' %}" class="btn btn-primary btn-sm mr-8">
     + Add New Cost
   </a>
