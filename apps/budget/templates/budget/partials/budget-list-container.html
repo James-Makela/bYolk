@@ -3,12 +3,11 @@
     {% if budget_periods %}
       <thead class="bg-base-200 text-base-content">
         <tr>
-          <th class="px-6 py-3">Date Range</th>
-          <th class="px-6 py-3">Total Costs</th>
-          <th class="px-6 py-3">Total Spent</th>
-          <th class="px-6 py-3">Total Income</th>
-          <th class="px-6 py-3"></th>
-          <th></th>
+          <th class="px-4 py-2">Date Range</th>
+          <th class="px-4 py-2">Total Costs</th>
+          <th class="px-4 py-2">Total Spent</th>
+          <th class="px-4 py-2">Total Income</th>
+          <th class="px-4 py-2"></th>
         </tr>
       </thead>
 
@@ -23,14 +22,16 @@
           <td>${{ budget.get_total_costs|floatformat:2 }}</td>
           <td class="text-error">${{ budget.annotated_spend|floatformat:2 }}</td>
           <td class="text-success">${{ budget.annotated_income|floatformat:2 }}</td>
-          <td><a class="btn btn-xs btn-soft w-full" href="/budgets/{{ budget.id }}">View</a></td>
-          <td>
-            <form action="{% url 'delete-budget' budget.pk %}" method="post" onsubmit="return confirm('Are you sure?')">
-              {% csrf_token %}
-              <button type="submit" class="btn btn-xs btn-soft btn-error cursor-pointer w-full">
-                Delete
-              </button>
-            </form>
+          <td class="py-3 h-px">
+            <div class="grid grid-cols-2 gap-2 relative z-20 content-center items-center">
+              <a class="btn btn-sm btn-soft" href="/budgets/{{ budget.id }}">View</a>
+              <form class="m-0" action="{% url 'delete-budget' budget.pk %}" method="post" onsubmit="return confirm('Are you sure?')">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-sm btn-soft btn-error cursor-pointer w-full">
+                  Delete
+                </button>
+              </form>
+            </div>
           </td>
           </tr>
         {% endfor %}

@@ -2,7 +2,7 @@
   {% for allocation in allocations %}
     <div class="group relative hover:bg-base-300 focus-within:z-50 border-b border-base-200 last:border-none">
       <input type="checkbox" id="toggle_{{ allocation.id }}" class="peer hidden" />
-      <div class="grid grid-cols-10 w-full gap-2 py-3 px-4 items-center cursor-pointer select-none relative">
+      <div class="grid grid-cols-10 w-full gap-2 py-0 px-4 items-center cursor-pointer select-none relative">
         <label for="toggle_{{ allocation.id }}" class="absolute inset-0 z-0 cursor-pointer"></label>
         <div class="font-medium truncate col-span-3 text-sm relative z-10 pointer-events-none">{{ allocation.name }}</div>
         <div class="font-medium col-span-2 text-sm relative z-10 pointer-events-none">{{ allocation.expected_date }}</div>
@@ -11,29 +11,31 @@
         <div class="text-right font-semibold col-span-1 text-sm relative z-10 pointer-events-none {% if allocation.remaining > 0 %}text-success{% elif allocation.remaining == 0 %}text-info{% else %}text-error{% endif %}">
           ${{ allocation.remaining }}
         </div>
-        <div class="grid grid-cols-2 gap-2 col-span-2 relative z-20 content-center items-center">
+        <div class="grid grid-cols-2 gap-2 col-span-2 relative z-20 content-center items-center py-3">
           <button
-            class="btn btn-xs btn-soft w-full"
+            class="btn btn-sm btn-soft w-full"
             hx-get="{% url 'get_allocation_picker' type allocation.id %}"
             hx-target="#modal_container"
             onclick="allocation_modal.showModal()">
             Allocate
           </button>
-          <div class="dropdown dropdown-end w-full leading-none">
-            <div tabindex="0" role="button" class="btn btn-xs btn-soft w-full">Actions</div>
-            <ul tabindex="-1" class="dropdown-content menu bg-base-100 rounded-box z-[100] w-52 shadow-xl border border-base-200 mt-2">
-              <li><a href="{% if next %}{% url 'move-cost-allocation' allocation.id next.id %}{% else %}#{% endif %}" class="{% if not next %}hidden{% endif %}">Move to next Budget</a></li>
-              <li><a href="{% if previous %}{% url 'move-cost-allocation' allocation.id previous.id %}{% else %}#{% endif %}" class="{% if not previous %}hidden{% endif %}">Move to previous Budget</a></li>
+
+          <div class="dropdown">
+            <div tabindex="0" role="button" class="btn btn-sm btn-soft w-full">Actions</div>
+            <ul tabindex="-1" class="dropdown-content menu bg-base-100 rounded-box z-[100] w-42 p-2 shadow-xl border border-base-200">
+              <li><a href="{% if next %}{% url 'move-cost-allocation' allocation.id next.id %}{% else %}#{% endif %}" class="flex justify-between items-center hover:text-primary {% if not next %}hidden{% endif %}">Move to next Budget</a></li>
+              <li><a href="{% if previous %}{% url 'move-cost-allocation' allocation.id previous.id %}{% else %}#{% endif %}" class="flex justify-between items-center hover:text-primary {% if not previous %}hidden{% endif %}">Move to previous Budget</a></li>
               <li>
                 <form action="{% url 'delete-allocation' type allocation.id budget.id %}" method="post" onsubmit="return confirm('Are you sure?')">
                   {% csrf_token %}
-                  <button type="submit" class="text-error cursor-pointer w-full text-left">
+                  <button type="submit" class="text-error cursor-pointer">
                     Delete allocation
                   </button>
                 </form>
               </li>
             </ul>
           </div>
+
         </div>
       </div>
       <div class="grid grid-rows-[0fr] transition-all duration-300 peer-checked:grid-rows-[1fr]">

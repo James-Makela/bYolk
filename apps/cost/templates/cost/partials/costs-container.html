@@ -19,9 +19,10 @@
             <td>{{ cost.frequency_string }}</td>
             <td>${{ cost.amount }}</td>
             <td>
-              <div class="dropdown">
-                <div tabindex="0" role="button" class="btn btn-sm">Actions</div>
-                <ul tabindex="-1" class="dropdown-content menu bg-base-100 rounded-box z-1 w-42 p-2 shadow-sm">
+
+              <div class="dropdown w-full">
+                <div tabindex="0" role="button" class="btn btn-sm btn-soft w-full">Actions</div>
+                <ul tabindex="-1" class="dropdown-content menu bg-base-100 rounded-box z-1 w-42 p-2 shadow-xl border border-base-200">
                   <li>
                     <form action="{% url 'delete-cost' cost.pk %}" method="post" onsubmit="return confirm('Are you sure?')">
                       {% csrf_token %}
@@ -37,6 +38,7 @@
                   </li>
                 </ul>
               </div>
+
             </td>
           </tr>
         {% endfor %}
