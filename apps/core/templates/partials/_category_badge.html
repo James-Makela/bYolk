@@ -1,0 +1,2 @@
+{% load color_utils %}
+<span class="badge badge-sm ml-2 font-normal" style="{% if category.color %} background-color: {{ category.color }}80; color: {{ category.color|contrast_color }};{% endif %}">{{ category.name }}</span>

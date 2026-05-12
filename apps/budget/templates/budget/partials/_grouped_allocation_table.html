@@ -5,7 +5,7 @@
       <input type="checkbox" id="group_{{ forloop.counter }}" class="peer hidden" />
 
       <label for="group_{{ forloop.counter }}" class="grid grid-cols-10 w-full gap-2 py-3 px-4 items-center cursor-pointer hover:bg-base-300/50 select-none leading-none relative z-10">
-        <div class="font-bold col-span-3 text-sm">{{ group.name }} [{{ group.original_items|length }} Items]</div>
+        <div class="font-bold col-span-3 text-sm">{{ group.name }} ({{ group.original_items|length }} Items){% if group.original_items.0.category %}{% include "partials/_category_badge.html" with category=group.original_items.0.category %}{% endif %}</div>
         <div class="col-span-2"></div>
         <div class="text-right font-medium col-span-1 text-sm text-base-content/70">${{ group.total_amount }}</div>
         <div class="text-right font-bold col-span-1 text-sm">${{ group.total_paid }}</div>
