@@ -1,11 +1,15 @@
 services:
   web:
+    env_file:
+        - .env
     build: .
     depends_on:
       db:
         condition: service_healthy
 
   db:
+    env_file:
+        - .env
     image: postgres:18
     volumes:
       - postgres_data:/var/lib/postgresql

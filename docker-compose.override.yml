@@ -1,7 +1,5 @@
 services:
   web:
-    env_file:
-      - .env.dev
     command: python /code/manage.py runserver 0.0.0.0:8000
     volumes:
       - .:/code
@@ -9,8 +7,6 @@ services:
       - "8000:8000"
 
   db:
-    env_file:
-      - .env.dev
     environment:
       - POSTGRES_HOST_AUTH_METHOD=trust
     ports:
