@@ -149,6 +149,8 @@ activemq-data/
 
 # Environments
 .env
+.env.prod
+.env.dev
 .envrc
 .venv
 env/
@@ -223,3 +225,6 @@ node_modules/
 
 # Generated css
 output.css
+
+# Podman
+.containers
