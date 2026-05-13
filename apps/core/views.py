@@ -1,8 +1,13 @@
+import json
+
 from django.contrib import messages
 from django.contrib.auth import login
 from django.contrib.auth.decorators import login_not_required, login_required
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404, redirect, render
+from django.utils import timezone
+
+from apps.budget.models import CostAllocation
 
 from .forms import CategoryForm, CustomUserCreationForm, InitialUserPreferencesForm
 from .models import Category
@@ -10,8 +15,49 @@ from .models import Category
 
 # Create your views here.
 @login_required
-def home(request):
-    return render(request, "base.html")
+def dashboard(request):
+    today = timezone.now().date()
+    groceries_allocations = CostAllocation.objects.filter(
+        budget_period__user=request.user,
+        name="Groceries",
+        budget_period__end_date__lte=today,
+    ).order_by("budget_period__end_date")
+
+    petrol_allocations = CostAllocation.objects.filter(
+        budget_period__user=request.user,
+        name="Petrol",
+        budget_period__end_date__lte=today,
+    ).order_by("budget_period__end_date")
+
+    groceries = {
+        "title": "Groceries",
+        "chart_id": "groceries",
+        "dates": json.dumps(
+            [
+                a.budget_period.start_date.strftime("%d, %b %Y")
+                for a in groceries_allocations
+            ]
+        ),
+        "amounts": json.dumps([float(a.amount) for a in groceries_allocations]),
+        "color": groceries_allocations[0].cost.category.color,
+    }
+    petrol = {
+        "title": "Petrol",
+        "chart_id": "petrol",
+        "dates": json.dumps(
+            [
+                a.budget_period.start_date.strftime("%d, %b %Y")
+                for a in petrol_allocations
+            ]
+        ),
+        "amounts": json.dumps([float(a.amount) for a in petrol_allocations]),
+        "color": petrol_allocations[0].cost.category.color,
+    }
+    context = {
+        "groceries": groceries,
+        "petrol": petrol,
+    }
+    return render(request, "dashboard.html", context)
 
 
 @login_not_required

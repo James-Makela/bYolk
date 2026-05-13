@@ -1,0 +1,103 @@
+<div class="card w-96 bg-base-200 card-sm shadow-sm">
+  <div class="card-body p-4">
+    <h2 class="card-title">{{ title }}</h2>
+    <div id="chart-{{ chart_id }}"></div>
+  </div>
+</div>
+<script>
+  var options = {
+    fill: {
+      colors: "{{ color }}",
+    },
+    series: [{
+      name: '{{ title }}',
+      data: {{ amounts|safe }}
+    }],
+    chart: {
+      height: 250,
+      type: 'bar',
+      parentHeightOffset: 0,
+      toolbar: {
+        show: false,
+      },
+    },
+    grid: {
+      show: false,
+      padding: {
+        top: 0,
+        right: 0,
+        bottom: 0,
+        left: 0,
+      },
+    },
+    tooltip: {
+      theme: 'dark',
+    },
+    plotOptions: {
+      bar: {
+        borderRadius: 5,
+        dataLabels: {
+          position: 'top', // top, center, bottom
+        },
+      }
+    },
+    dataLabels: {
+      enabled: false,
+      formatter: function (val) {
+        return "$" + val;
+      },
+      style: {
+        fontSize: '12px',
+        colors: ["#304758"]
+      }
+    },
+
+    xaxis: {
+      categories: {{ dates|safe }},
+      position: 'bottom',
+      labels: {
+        show: false,
+        rotate: 0,
+        offsetY: 0,
+      },
+      lines: {
+        show: false
+      },
+      axisBorder: {
+        show: false
+      },
+      axisTicks: {
+        show: false
+      },
+      tooltip: {
+        enabled: false,
+        theme: 'dark',
+      }
+    },
+    yaxis: {
+      axisBorder: {
+        show: false
+      },
+      lines: {
+        show: false
+      },
+      axisTicks: {
+        show: false,
+      },
+      labels: {
+        show: false,
+        formatter: function (val) {
+          return "$" + val;
+        },
+        tooltip: {
+          enabled: false,
+          theme: 'dark'
+        }
+      }
+
+    },
+  };
+
+  var chart = new ApexCharts(document.querySelector("#chart-{{ chart_id }}"), options);
+  chart.render();
+</script>

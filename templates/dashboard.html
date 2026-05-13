@@ -1,0 +1,10 @@
+{% extends 'base.html' %}
+{% block content %}
+  <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+  <div class="flex gap-8">
+    {% include 'partials/_mini_graph.html' with dates=groceries.dates amounts=groceries.amounts chart_id=groceries.chart_id title=groceries.title color=groceries.color %}
+    {% include 'partials/_mini_graph.html' with dates=petrol.dates amounts=petrol.amounts chart_id=petrol.chart_id title=petrol.title color=petrol.color %}
+  </div>
+{% endblock content %}
+{% block extra_js %}
+{% endblock extra_js %}
