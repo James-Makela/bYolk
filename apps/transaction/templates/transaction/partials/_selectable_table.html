@@ -13,7 +13,7 @@
       {% for transaction in transactions %}
         <tr class="hover:bg-base-300 has-[:checked]:bg-primary/10 cursor-pointer"
             onclick="this.querySelector('.transaction-checkbox').click()">
-          <td class="p-2">
+          <td class="p-1">
             <input
               type="checkbox"
               id="check-{{ transaction.id }}"
@@ -23,17 +23,17 @@
             >
           </td>
 
-          <td class="p-2">
+          <td class="p-1">
             {{ transaction.date }}
           </td>
 
-          <td class="p-2">
+          <td class="p-1">
             {{ transaction.vendor }}
           </td>
-          <td class="p-2">
+          <td class="p-1">
             {{ transaction.purchase_type }}
           </td>
-          <td class="p-2 text-right {% if transaction.amount > 0 %}text-success{% elif transaction.amount == 0 %}text-info{% else %}text-error{% endif %}">
+          <td class="p-1 pr-4 text-right {% if transaction.amount > 0 %}text-success{% elif transaction.amount == 0 %}text-info{% else %}text-error{% endif %}">
             ${{ transaction.amount|default_if_none:"-" }}
           </td>
         </tr>
