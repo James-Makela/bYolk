@@ -1,0 +1,55 @@
+<div class="overflow-x-auto rounded-lg border border-base-300">
+  <table class="table w-full">
+    <thead class="bg-base-200 text-base-content">
+      <tr>
+        <th class="w-12">Select</th>
+        <th class="">Date</th>
+        <th class="">Vendor</th>
+        <th class="">Purchase Type</th>
+        <th class="text-right">Amount</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for transaction in transactions %}
+        <tr class="hover:bg-base-300 has-[:checked]:bg-primary/10 cursor-pointer"
+            onclick="this.querySelector('.transaction-checkbox').click()">
+          <td class="p-2">
+            <input
+              type="checkbox"
+              id="check-{{ transaction.id }}"
+              name="transaction_ids"
+              value="{{ transaction.id }}"
+              class="transaction-checkbox checkbox checkbox-md checkbox-accent m-3"
+            >
+          </td>
+
+          <td class="p-2">
+            {{ transaction.date }}
+          </td>
+
+          <td class="p-2">
+            {{ transaction.vendor }}
+          </td>
+          <td class="p-2">
+            {{ transaction.purchase_type }}
+          </td>
+          <td class="p-2 text-right {% if transaction.amount > 0 %}text-success{% elif transaction.amount == 0 %}text-info{% else %}text-error{% endif %}">
+            ${{ transaction.amount|default_if_none:"-" }}
+          </td>
+        </tr>
+      {% empty %}
+        <tr><td colspan="6" class="text-center text-lg p-2">No unallocated transactions 😃</td></tr>
+      {% endfor %}
+    </tbody>
+    {% if not hide_footer %}
+      <tfoot>
+        <tr class="bg-base-200/50 font-bold">
+          <td colspan="4" class="text-right">Total Unallocated:</td>
+          <td class="text-right text-error">
+            ${{ unallocated_balance|floatformat:2 }}
+          </td>
+        </tr>
+      </tfoot>
+    {% endif %}
+  </table>
+</div>
