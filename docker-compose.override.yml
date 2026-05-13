@@ -4,7 +4,7 @@ services:
     volumes:
       - .:/code
     ports:
-      - "8000:8000"
+      - "${WEB_PORT}:8000"
 
   db:
     environment:
