@@ -30,7 +30,7 @@ AUTH_USER_MODEL = "core.User"
 SECRET_KEY = env("DJANGO_SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = env("DEBUG_MODE")
+DEBUG = env.bool("DEBUG_MODE")
 
 if not DEBUG:
     SECURE_SSL_REDIRECT = True
