@@ -8,6 +8,14 @@ jobs:
     container:
       image: python:3.14.4-bookworm 
 
+    services:
+      db:
+        image: postgres:18
+        env:
+          POSTGRES_DB: budgetmaker
+          POSTGRES_USER: budgetmaker
+          POSTGRES_HOST_AUTH_METHOD: trust
+
     steps:
       - name: Checkout
         run: |
@@ -22,6 +30,10 @@ jobs:
         run: |
           echo "DJANGO_SECRET_KEY=${{ secrets.DJANGO_SECRET_KEY }}" > .env
           echo "DEBUG_MODE=True" >> .env
+          echo "POSTGRES_DB=budgetmaker" >> .env
+          echo "POSTGRES_USER=budgetmaker" >> .env
+          echo "POSTGRES_HOST=db" >> .env
+          echo "POSTGRES_PORT=5432" >> .env
       - name: Run Django Tests
         run: |
           python manage.py test
