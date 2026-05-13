@@ -1,6 +1,6 @@
 services:
   web:
-    command: gunicorn budgetmaker.wsgi:application --bind 0.0.0.0:8000 --workers 3
+    command: ./entrypoint.sh
     ports:
       - "${WEB_PORT}:8000"
     restart: unless-stopped
