@@ -1,13 +1,9 @@
-import json
-
 from django.contrib import messages
 from django.contrib.auth import login
 from django.contrib.auth.decorators import login_not_required, login_required
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404, redirect, render
-from django.utils import timezone
 
-from apps.budget.models import CostAllocation
 from apps.cost.models import Cost
 
 from .forms import CategoryForm, CustomUserCreationForm, InitialUserPreferencesForm
@@ -17,25 +13,27 @@ from .services import get_cost_graph_data
 
 # Create your views here.
 @login_required
-def dashboard(request):
+def dashboard(request, view_type="categories"):
     charts = []
     costs = Cost.objects.filter(user=request.user)
     categories = Category.objects.filter(user=request.user)
 
-    # for cost in costs:
-    #     graph_data = get_cost_graph_data(request.user, cost=cost)
-    #     print(graph_data)
-    #     if graph_data['dates'] != '[]':
-    #         charts.append(graph_data)
+    if view_type == "costs":
+        for cost in costs:
+            graph_data = get_cost_graph_data(request.user, cost=cost)
+            print(graph_data)
+            if graph_data:
+                charts.append(graph_data)
 
-    for category in categories:
-        graph_data = get_cost_graph_data(request.user, category=category)
-        print(graph_data)
-        if graph_data["dates"] != "[]":
-            charts.append(graph_data)
+    if view_type == "categories":
+        for category in categories:
+            graph_data = get_cost_graph_data(request.user, category=category)
+            if graph_data:
+                charts.append(graph_data)
 
     context = {
         "charts": charts,
+        "view_type": view_type,
     }
     return render(request, "dashboard.html", context)
 

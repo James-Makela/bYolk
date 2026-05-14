@@ -1,10 +1,10 @@
 function renderChart(chartID, color, title, amounts, dates, budgetedAmount) {
-  const stub = budgetedAmount * 0.03;
+  const hasBudget = budgetedAmount > 0;
+  const maxActual = Math.max(...amounts.filter(a => a > 0), 0);
+  const max = hasBudget ? Math.max(maxActual, budgetedAmount) : maxActual;
+  const stub = hasBudget ? budgetedAmount * 0.03 : maxActual * 0.03;
   const displayAmounts = amounts.map(a => a === 0 ? stub : a);
   const isStub = amounts.map(a => a === 0);
-  const max = Math.max(...amounts.filter(a => a > 0), budgetedAmount);
-  console.log(amounts, Math.max(...amounts.filter(a => a > 0), budgetedAmount));
-  console.log(displayAmounts);
 
   var options = {
     series: [{
@@ -32,6 +32,7 @@ function renderChart(chartID, color, title, amounts, dates, budgetedAmount) {
     colors:  [
       function(context) {
         if (isStub[context.dataPointIndex]) return color;
+        if (!hasBudget) return color;
         return context.value <= budgetedAmount ? color : '#ff0000';
       }
     ],
@@ -55,7 +56,7 @@ function renderChart(chartID, color, title, amounts, dates, budgetedAmount) {
       }
     },
     annotations: {
-      yaxis: [{
+      yaxis: hasBudget ? [{
         y: budgetedAmount,
         label: {
           text: `$${budgetedAmount.toFixed(2)}`,
@@ -66,7 +67,7 @@ function renderChart(chartID, color, title, amounts, dates, budgetedAmount) {
             color: '#ffffff',
           },
         },
-      }],
+      }] : [],
     },
 
     xaxis: {

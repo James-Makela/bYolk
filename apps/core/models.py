@@ -31,6 +31,14 @@ class FrequencyMixin(models.Model):
         kwargs = {self.frequency_unit: self.frequency_value}
         return relativedelta(**kwargs)
 
+    def get_delta_days(self):
+        relative_delta = self.get_delta()
+        return (
+            relative_delta.days
+            + (relative_delta.months * 30)
+            + (relative_delta.years * 365)
+        )
+
     def matches_frequency(self, other):
         if not hasattr(other, "get_delta"):
             return False

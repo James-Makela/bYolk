@@ -4,6 +4,18 @@
 {% block title %}Dashboard{% endblock %}
 {% block navbar_title %}Dashboard{% endblock %}
 
+{% block navbar_actions %}
+  {% if view_type == 'categories' %}
+    <a href="{% url 'chosen-dashboard' 'costs' %}" class="btn btn-primary btn-sm mr-8">
+      view by cost
+    </a>
+  {% elif view_type == "costs" %}
+    <a href="{% url 'chosen-dashboard' 'categories' %}" class="btn btn-primary btn-sm mr-8">
+      view by category
+    </a>
+  {% endif %}
+{% endblock %}
+
 {% block content %}
   <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
   <script src="{% static 'js/spent_chart.js' %}"></script>

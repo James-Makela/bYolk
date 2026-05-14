@@ -126,7 +126,7 @@ class AllocationBase(models.Model):
         related_name="%(class)s_set",
     )
     name = models.CharField(max_length=50)
-    amount = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
+    amount = models.DecimalField(max_digits=10, decimal_places=2, blank=True, default=0)
     expected_date = models.DateField(null=True, blank=True)
 
     class Meta:
