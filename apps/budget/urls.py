@@ -8,6 +8,11 @@ urlpatterns = [
     path("<int:id>/", views.budget_detail, name="detail"),
     path("<int:id>/populate", views.populate_costs, name="populate-costs"),
     path(
+        "edit/<int:pk>/<int:budget_id>",
+        views.edit_allocation_with_transactions,
+        name="edit-allocation",
+    ),
+    path(
         "allocation/<str:allocation_type>/<int:allocation_id>/picker/",
         views.get_allocation_picker,
         name="get_allocation_picker",
@@ -29,7 +34,7 @@ urlpatterns = [
     ),
     path(
         "create-allocation-with-transactions/<int:budget_id>",
-        views.add_allocation_with_transactions,
+        views.edit_allocation_with_transactions,
         name="allocation-with-transactions",
     ),
     path(

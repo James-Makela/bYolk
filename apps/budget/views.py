@@ -254,21 +254,38 @@ def add_single_allocation(request, budget_id):
 
 
 @login_required
-def add_allocation_with_transactions(request, budget_id):
+def edit_allocation_with_transactions(request, budget_id, pk=None):
     budget_period = get_object_or_404(BudgetPeriod, id=budget_id)
 
+    if pk:
+        allocation = get_object_or_404(
+            CostAllocation, pk=pk, budget_period__user=request.user
+        )
+        title = "Edit Allocation"
+        message = "Allocation updated!"
+    else:
+        allocation = None
+        title = "Add Allocation"
+        message = "Allocation saved!"
+
     if request.method == "POST":
-        form = CostAllocationForm(request.POST)
+        form = CostAllocationForm(request.POST, instance=allocation)
         selected_ids = request.POST.getlist("transaction_ids")
         if form.is_valid():
             new_allocation = form.save(commit=False)
             new_allocation.budget_period = budget_period
             new_allocation.save()
 
+            # Allocate ticked transactions
             Transaction.objects.filter(id__in=selected_ids, user=request.user).update(
                 cost_allocation=new_allocation
             )
-            messages.success(request, "Cost added!")
+            # Unallocate any unticked
+            Transaction.objects.filter(
+                cost_allocation=new_allocation, user=request.user
+            ).exclude(id__in=selected_ids).update(cost_allocation=None)
+
+            messages.success(request, message)
             return HttpResponseRedirect(f"/budgets/{budget_id}")
 
         else:
@@ -277,13 +294,15 @@ def add_allocation_with_transactions(request, budget_id):
 
     else:
         transaction_ids = request.GET.getlist("transaction_ids")
+        if not transaction_ids and allocation:
+            transaction_ids = allocation.transactions.values_list("id", flat=True)
         selected_transactions = Transaction.objects.filter(
             user=request.user,
             id__in=transaction_ids,
         )
         total_amount = abs(sum((tx.amount) for tx in selected_transactions))
         form = CostAllocationTransactionsForm(
-            user=request.user, initial={"amount": total_amount}
+            instance=allocation, user=request.user, initial={"amount": total_amount}
         )
 
     return render(
@@ -294,6 +313,7 @@ def add_allocation_with_transactions(request, budget_id):
             "form": form,
             "total": total_amount,
             "selected_transactions": selected_transactions,
+            "title": title,
         },
     )
 
