@@ -53,11 +53,11 @@ def get_cost_graph_data(user, cost=None, category=None):
     if sum(amounts) == 0:
         return None
 
+    average_per_budget = sum(amounts) / len(amounts)
+
     dates, amounts = pad_graph_data_to_window(
         dates, amounts, budget_periods, six_months_ago
     )
-
-    average_per_budget = sum(amounts) / len(amounts)
 
     if cost:
         return {
