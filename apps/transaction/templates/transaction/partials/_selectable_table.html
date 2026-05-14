@@ -20,6 +20,7 @@
               name="transaction_ids"
               value="{{ transaction.id }}"
               class="transaction-checkbox checkbox checkbox-md checkbox-accent m-3"
+              {% if transaction.is_match %}checked{% endif %}
             >
           </td>
 
