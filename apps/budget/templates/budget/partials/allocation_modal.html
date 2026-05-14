@@ -1,4 +1,6 @@
-<form hx-post="{% url 'save_allocations' allocation_type allocation.id %}" hx-target="#modal_container">
+<form hx-post="{% url 'save_allocations' allocation_type allocation.id %}"
+      hx-target="#modal_container"
+      class="flex flex-col max-h-[80vh]">
   {% csrf_token %}
   <h3 class="font-bold text-lg mb-4">Link Transactions to {{ allocation.name }}</h3>
   {% include "transaction/partials/_selectable_table.html" with transactions=eligible_transactions hide_footer=True %}

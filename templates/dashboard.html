@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Dashboard{% endblock %}
+{% block navbar_title %}Dashboard{% endblock %}
+
+{% block navbar_actions %}
+  {% if view_type == 'categories' %}
+    <a href="{% url 'chosen-dashboard' 'costs' %}" class="btn btn-primary btn-sm mr-8">
+      view by cost
+    </a>
+  {% elif view_type == "costs" %}
+    <a href="{% url 'chosen-dashboard' 'categories' %}" class="btn btn-primary btn-sm mr-8">
+      view by category
+    </a>
+  {% endif %}
+{% endblock %}
+
+{% block content %}
+  <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+  <script src="{% static 'js/spent_chart.js' %}"></script>
+  <div class="flex flex-wrap gap-8">
+    {% for chart in charts %}
+      {% include 'partials/_mini_graph.html' with dates=chart.dates amounts=chart.amounts chart_id=chart.chart_id title=chart.title color=chart.color budgeted_amount=chart.budgeted_amount average=chart.average %}
+    {% endfor %}
+  </div>
+{% endblock content %}
+{% block extra_js %}
+{% endblock extra_js %}
