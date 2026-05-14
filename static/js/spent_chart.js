@@ -2,7 +2,7 @@ function renderChart(chartID, color, title, amounts, dates, budgetedAmount) {
   const hasBudget = budgetedAmount > 0;
   const maxActual = Math.max(...amounts.filter(a => a > 0), 0);
   const max = hasBudget ? Math.max(maxActual, budgetedAmount) : maxActual;
-  const stub = hasBudget ? budgetedAmount * 0.03 : maxActual * 0.03;
+  const stub = Math.max(maxActual, budgetedAmount) * 0.02;
   const displayAmounts = amounts.map(a => a === 0 ? stub : a);
   const isStub = amounts.map(a => a === 0);
 
