@@ -1,104 +1,17 @@
-<div class="card w-96 bg-base-200 card-sm shadow-sm">
-  <div class="card-body p-4">
+<div class="card max-w-96 min-w-84 shrink bg-base-200 card-md shadow-sm">
+  <div class="card-body p-4 ps-8">
     <h2 class="card-title">{{ title }}</h2>
+    <p class="card-content">Average: ${{ average|floatformat:2 }}</p>
     <div id="chart-{{ chart_id }}"></div>
   </div>
 </div>
 <script>
-  var options = {
-    fill: {
-      colors: "{{ color }}",
-    },
-    series: [{
-      name: '{{ title }}',
-      data: {{ amounts|safe }}
-    }],
-    chart: {
-      height: 250,
-      type: 'bar',
-      parentHeightOffset: 0,
-      toolbar: {
-        show: false,
-      },
-    },
-    grid: {
-      show: false,
-    },
-    tooltip: {
-      theme: 'dark',
-    },
-    plotOptions: {
-      bar: {
-        borderRadius: 5,
-        dataLabels: {
-          position: 'top', // top, center, bottom
-        },
-      }
-    },
-    dataLabels: {
-      enabled: false,
-      formatter: function (val) {
-        return "$" + val;
-      },
-      style: {
-        fontSize: '12px',
-        colors: ["#304758"]
-      }
-    },
-    annotations: {
-      yaxis: [{
-        y: 400,
-      }],
-    },
-
-    xaxis: {
-      categories: {{ dates|safe }},
-      crosshairs: {
-        show: false
-      },
-      position: 'bottom',
-      labels: {
-        show: false,
-        rotate: 0,
-        offsetY: 0,
-      },
-      lines: {
-        show: false
-      },
-      axisBorder: {
-        show: false
-      },
-      axisTicks: {
-        show: false
-      },
-      tooltip: {
-        enabled: false,
-        theme: 'dark',
-      }
-    },
-    yaxis: {
-      axisBorder: {
-        show: false
-      },
-      lines: {
-        show: false
-      },
-      axisTicks: {
-        show: false,
-      },
-      labels: {
-        show: true,
-        formatter: function (val) {
-          return "$" + val;
-        },
-        tooltip: {
-          enabled: false,
-          theme: 'dark'
-        }
-      }
-    },
-  };
-
-  var chart = new ApexCharts(document.querySelector("#chart-{{ chart_id }}"), options);
-  chart.render();
+  renderChart(
+    "{{ chart_id }}",
+    "{{ color }}",
+    "{{ title }}",
+    {{ amounts|safe }},
+    {{ dates|safe }},
+    {{ budgeted_amount|safe }}
+  );
 </script>

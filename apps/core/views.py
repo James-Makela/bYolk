@@ -8,54 +8,34 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
 
 from apps.budget.models import CostAllocation
+from apps.cost.models import Cost
 
 from .forms import CategoryForm, CustomUserCreationForm, InitialUserPreferencesForm
 from .models import Category
+from .services import get_cost_graph_data
 
 
 # Create your views here.
 @login_required
 def dashboard(request):
-    today = timezone.now().date()
-    groceries_allocations = CostAllocation.objects.filter(
-        budget_period__user=request.user,
-        name="Groceries",
-        budget_period__end_date__lte=today,
-    ).order_by("budget_period__end_date")
+    charts = []
+    costs = Cost.objects.filter(user=request.user)
+    categories = Category.objects.filter(user=request.user)
 
-    petrol_allocations = CostAllocation.objects.filter(
-        budget_period__user=request.user,
-        name="Petrol",
-        budget_period__end_date__lte=today,
-    ).order_by("budget_period__end_date")
+    # for cost in costs:
+    #     graph_data = get_cost_graph_data(request.user, cost=cost)
+    #     print(graph_data)
+    #     if graph_data['dates'] != '[]':
+    #         charts.append(graph_data)
 
-    groceries = {
-        "title": "Groceries",
-        "chart_id": "groceries",
-        "dates": json.dumps(
-            [
-                a.budget_period.start_date.strftime("%d, %b %Y")
-                for a in groceries_allocations
-            ]
-        ),
-        "amounts": json.dumps([float(a.amount) for a in groceries_allocations]),
-        "color": groceries_allocations[0].cost.category.color,
-    }
-    petrol = {
-        "title": "Petrol",
-        "chart_id": "petrol",
-        "dates": json.dumps(
-            [
-                a.budget_period.start_date.strftime("%d, %b %Y")
-                for a in petrol_allocations
-            ]
-        ),
-        "amounts": json.dumps([float(a.amount) for a in petrol_allocations]),
-        "color": petrol_allocations[0].cost.category.color,
-    }
+    for category in categories:
+        graph_data = get_cost_graph_data(request.user, category=category)
+        print(graph_data)
+        if graph_data["dates"] != "[]":
+            charts.append(graph_data)
+
     context = {
-        "groceries": groceries,
-        "petrol": petrol,
+        "charts": charts,
     }
     return render(request, "dashboard.html", context)
 
