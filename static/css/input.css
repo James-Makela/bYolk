@@ -1,6 +1,14 @@
 @import "tailwindcss";
-@plugin "daisyui" {
-  themes: light --default, dark --prefersdark, forest;
+@plugin "daisyui";
+@plugin "daisyui/theme" {
+  name: "dark";
+  prefersdark: true;
+  --color-primary: oklch(82% 0.189 91.6);
+  --color-primary-content: oklch(0% 0 142.94);
+  --color-accent-content: oklch(45% 0.08 145);
+  --color-base-100: oklch(22% 0.01 80);
+  --color-base-200: oklch(18% 0.01 80);
+  --color-base-300: oklch(15% 0.01 80);
 }
 @plugin "@tailwindcss/typography";
 
