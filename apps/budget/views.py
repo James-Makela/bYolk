@@ -49,13 +49,13 @@ def budget_detail(request, id):
         pk=id,
         user=request.user,
     )
-    previous = (
+    previous_period = (
         BudgetPeriod.objects.filter(id__lt=id, user=request.user)
         .order_by("-id")
         .only("id")
         .first()
     )
-    next = (
+    next_period = (
         BudgetPeriod.objects.filter(id__gt=id, user=request.user)
         .order_by("id")
         .only("id")
@@ -85,8 +85,8 @@ def budget_detail(request, id):
         "allocations": ungrouped_allocations,
         "grouped_allocations": grouped_allocations,
         "incomes": incomes,
-        "previous": previous,
-        "next": next,
+        "previous": previous_period,
+        "next": next_period,
         "unallocated_balance": unallocated_balance,
         "unallocated_transactions": unallocated_transactions,
     }
@@ -209,7 +209,7 @@ def add_single_allocation(request, budget_id):
             new_allocation.budget_period = budget_period
             new_allocation.save()
             messages.success(request, "Cost added!")
-            return HttpResponseRedirect("detail", args=[budget_id])
+            return HttpResponseRedirect(reverse("detail", args=[budget_id]))
 
         else:
             messages.error(request, "Unable to save cost.")
@@ -230,6 +230,10 @@ def add_single_allocation(request, budget_id):
 
 @login_required
 def edit_allocation_with_transactions(request, budget_id, pk=None):
+    """Handles both editing and creating a cost allocation with associated transactions.
+
+    If the pk is provided, it will edit, otherwise it will create a new allocation.
+    """
     budget_period = get_object_or_404(BudgetPeriod, id=budget_id, user=request.user)
 
     if pk:
@@ -293,6 +297,7 @@ def edit_allocation_with_transactions(request, budget_id, pk=None):
 
 @login_required
 def move_cost_allocation(request, allocation_id, budget_id):
+    """Moves a cost allocation to a neighbouring budget period"""
     allocation = get_object_or_404(
         CostAllocation.objects.select_related("budget_period"),
         pk=allocation_id,
@@ -300,20 +305,11 @@ def move_cost_allocation(request, allocation_id, budget_id):
     )
 
     current_budget = allocation.budget_period.id
-    try:
-        budget_to_assign = BudgetPeriod.objects.get(pk=budget_id)
-    except BudgetPeriod.DoesNotExist:
-        budget_to_assign = None
+    budget_to_assign = get_object_or_404(BudgetPeriod, pk=budget_id, user=request.user)
 
-    if not budget_to_assign:
-        messages.error(
-            request,
-            "The budget you are trying to move this allocation to does not exist.",
-        )
-    else:
-        allocation.budget_period = budget_to_assign
-        allocation.save()
-        messages.success(request, "Allocation moved successfully.")
+    allocation.budget_period = budget_to_assign
+    allocation.save()
+    messages.success(request, "Allocation moved successfully.")
 
     return HttpResponseRedirect(reverse("detail", args=[current_budget]))
 
