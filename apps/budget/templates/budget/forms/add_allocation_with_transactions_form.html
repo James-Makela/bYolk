@@ -87,8 +87,6 @@
   {% block extra_js %}
     <script>
       document.addEventListener('DOMContentLoaded', function () {
-        // 1. Grab the elements
-        // Django usually prefixes field IDs with "id_"
         const amountInput = document.querySelector('.cost-amount-input');
         const checkboxes = document.querySelectorAll('.transaction-checkbox');
 
@@ -107,7 +105,7 @@
             // 3. Update the input field
             // toFixed(2) ensures we see $10.50 instead of $10.5
           if (amountInput) {
-            amountInput.value = Math.abs(total.toFixed(2));
+            amountInput.value = (total > 0 ? -total : Math.abs(total)).toFixed(2);
           }
         }
 
@@ -115,6 +113,7 @@
         checkboxes.forEach(cb => {
           cb.addEventListener('change', updateTotal);
         });
+        updateTotal();
       });
 
       document.addEventListener('DOMContentLoaded', function () {

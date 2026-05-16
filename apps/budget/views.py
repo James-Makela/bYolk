@@ -263,7 +263,6 @@ def edit_allocation_with_transactions(request, budget_id, pk=None):
         )
         title = "Edit Allocation"
         message = "Allocation updated!"
-        total_allocated = allocation.amount
     else:
         allocation = None
         title = "Add Allocation"
@@ -301,11 +300,7 @@ def edit_allocation_with_transactions(request, budget_id, pk=None):
             user=request.user,
             id__in=transaction_ids,
         )
-        if not pk:
-            total_allocated = abs(sum((tx.amount) for tx in selected_transactions))
-        form = CostAllocationTransactionsForm(
-            instance=allocation, user=request.user, initial={"amount": total_allocated}
-        )
+        form = CostAllocationTransactionsForm(instance=allocation, user=request.user)
 
     return render(
         request,
@@ -313,7 +308,6 @@ def edit_allocation_with_transactions(request, budget_id, pk=None):
         {
             "budget_id": budget_id,
             "form": form,
-            "total": total_allocated,
             "selected_transactions": selected_transactions,
             "title": title,
         },
