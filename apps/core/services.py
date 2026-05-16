@@ -40,7 +40,7 @@ def get_cost_graph_data(user, cost=None, category=None):
 
     allocation_map = defaultdict(float)
     for allocation in allocations:
-        allocation_map[allocation.budget_period_id] += float(abs(allocation.total_paid))
+        allocation_map[allocation.budget_period_id] += -float(allocation.total_paid)
 
     dates = []
     amounts = []
