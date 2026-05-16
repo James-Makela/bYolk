@@ -80,6 +80,10 @@ def budget_detail(request, id):
         transaction.amount for transaction in unallocated_transactions
     )
 
+    budget_length = (budget.end_date - budget.start_date).days
+    current_position = (timezone.now().date() - budget.start_date).days
+    print(budget_length)
+
     context = {
         "budget": budget,
         "allocations": ungrouped_allocations,
@@ -89,6 +93,8 @@ def budget_detail(request, id):
         "next": next_period,
         "unallocated_balance": unallocated_balance,
         "unallocated_transactions": unallocated_transactions,
+        "budget_length": budget_length,
+        "current_position": current_position,
     }
 
     return render(
