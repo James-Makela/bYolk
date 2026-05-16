@@ -166,10 +166,7 @@ class AllocationBase(models.Model):
 
     @property
     def remaining(self):
-        if self.total_paid >= 0:
-            return self.amount - self.total_paid
-        else:
-            return self.amount + self.total_paid
+        return self.amount + self.total_paid
 
     def __str__(self):
         return f"{self.name} ${self.amount} for Budget {self.budget_period_id}"
