@@ -301,7 +301,7 @@ def edit_allocation_with_transactions(request, budget_id, pk=None):
             user=request.user,
             id__in=transaction_ids,
         )
-        if not total_allocated:
+        if not pk:
             total_allocated = abs(sum((tx.amount) for tx in selected_transactions))
         form = CostAllocationTransactionsForm(
             instance=allocation, user=request.user, initial={"amount": total_allocated}
