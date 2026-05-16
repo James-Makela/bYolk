@@ -1,5 +1,5 @@
 from django.db import models
-from django.db.models import DecimalField, OuterRef, Subquery, Sum, Value
+from django.db.models import Count, DecimalField, OuterRef, Subquery, Sum, Value
 from django.db.models.functions import Abs, Coalesce
 from django.utils.functional import cached_property
 
@@ -53,7 +53,37 @@ class BudgetQuerySet(models.QuerySet):  # type: ignore
         )
 
 
+class CostAllocationQuerySet(models.QuerySet):  # type: ignore
+    def grouped_by_name(self):
+        duplicate_names = (
+            self.values("name")
+            .annotate(count=Count("id"))
+            .filter(count__gt=1)
+            .values_list("name", flat=True)
+        )
+
+        grouped = []
+        for name in duplicate_names:
+            items = list(self.filter(name=name).prefetch_related("transactions"))
+            total_paid = sum(item.total_paid for item in items)
+            total_amount = sum(item.amount for item in items)
+            grouped.append(
+                {
+                    "name": name,
+                    "all_dates": [item.expected_date for item in items],
+                    "total_amount": total_amount,
+                    "total_paid": total_paid,
+                    "remaining_spend": total_amount - total_paid,
+                    "original_items": items,
+                }
+            )
+
+        return grouped
+
+
 class BudgetPeriod(models.Model):
+    objects = BudgetQuerySet.as_manager()
+
     class Status(models.TextChoices):
         OPEN = "open", "Open"
         CLOSED = "closed", "Closed"
@@ -68,8 +98,6 @@ class BudgetPeriod(models.Model):
         default=Status.PENDING,
     )
     notes = models.CharField(max_length=250, blank=True)
-
-    objects = BudgetQuerySet.as_manager()
 
     def __str__(self):
         return f"Budget {self.id} {self.start_date} -> {self.end_date}"
@@ -148,6 +176,8 @@ class AllocationBase(models.Model):
 
 
 class CostAllocation(AllocationBase):
+    objects = CostAllocationQuerySet.as_manager()
+
     cost = models.ForeignKey(Cost, on_delete=models.SET_NULL, null=True, blank=True)
     category = models.ForeignKey(
         Category, on_delete=models.SET_NULL, null=True, blank=True

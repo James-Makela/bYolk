@@ -1,6 +1,6 @@
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from django.db.models import BooleanField, Case, Count, Sum, Value, When
+from django.db.models import BooleanField, Case, Sum, Value, When
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render
 from django.urls import reverse
@@ -18,7 +18,7 @@ from .services import generate_next_budget_period, populate_from_costs
 def budgets_list(request):
     today = timezone.now().date()
     budget_periods = (
-        BudgetPeriod.objects.filter(user=request.user)
+        BudgetPeriod.objects.filter(user=request.user)  # type: ignore
         .annotate(
             is_current_period=Case(
                 When(start_date__lte=today, end_date__gte=today, then=Value(True)),
@@ -45,7 +45,9 @@ def budgets_list(request):
 @login_required
 def budget_detail(request, id):
     budget = get_object_or_404(
-        BudgetPeriod.objects.with_transaction_stats(), pk=id, user=request.user
+        BudgetPeriod.objects.with_transaction_stats(),  # type: ignore
+        pk=id,
+        user=request.user,
     )
     previous = (
         BudgetPeriod.objects.filter(id__lt=id, user=request.user)
@@ -59,14 +61,14 @@ def budget_detail(request, id):
         .only("id")
         .first()
     )
+
     allocations = CostAllocation.objects.filter(budget_period=budget).prefetch_related(
         "transactions"
     )
-    duplicate_names = (
-        allocations.values("name")
-        .annotate(count=Count("id"))
-        .filter(count__gt=1)
-        .values_list("name", flat=True)
+
+    grouped_allocations = allocations.grouped_by_name()  # type: ignore
+    ungrouped_allocations = allocations.exclude(
+        name__in=[g["name"] for g in grouped_allocations]
     )
 
     incomes = IncomeAllocation.objects.filter(budget_period=budget).prefetch_related(
@@ -77,25 +79,6 @@ def budget_detail(request, id):
     unallocated_balance = sum(
         transaction.amount for transaction in unallocated_transactions
     )
-
-    grouped_allocations = []
-    for name in duplicate_names:
-        items_list = allocations.filter(name=name)
-        total_paid = sum(item.total_paid for item in items_list)
-        total_amount = sum(item.amount for item in items_list)
-        remaining_spend = total_amount - total_paid
-        grouped_allocations.append(
-            {
-                "name": name,
-                "all_dates": [item.expected_date for item in items_list],
-                "total_amount": total_amount,
-                "total_paid": total_paid,
-                "remaining_spend": remaining_spend,
-                "original_items": items_list,
-            }
-        )
-
-    ungrouped_allocations = allocations.exclude(name__in=duplicate_names)
 
     context = {
         "budget": budget,
@@ -295,7 +278,9 @@ def edit_allocation_with_transactions(request, budget_id, pk=None):
     else:
         transaction_ids = request.GET.getlist("transaction_ids")
         if not transaction_ids and allocation:
-            transaction_ids = allocation.transactions.values_list("id", flat=True)
+            transaction_ids = allocation.transactions.values_list(  # type: ignore
+                "id", flat=True
+            )
         selected_transactions = Transaction.objects.filter(
             user=request.user,
             id__in=transaction_ids,
