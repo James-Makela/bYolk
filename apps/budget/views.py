@@ -134,22 +134,12 @@ def get_allocation_picker(request, allocation_type, allocation_id):
 
     source_obj = getattr(allocation, related_field, None)
 
-    keywords = None
-    if source_obj and source_obj.keywords:
-        keywords = [
-            k.strip().lower() for k in source_obj.keywords.split(",") if k.strip()
-        ]
+    keywords = source_obj.get_keywords() if source_obj else []
 
     for transaction in unallocated:
-        transaction.is_match = False
-        if keywords and transaction.vendor:
-            vendor_lower = transaction.vendor.lower()
-            if any(kw in vendor_lower for kw in keywords):
-                transaction.is_match = True
+        transaction.is_match = transaction.matches_keywords(keywords)
 
-    sorted_transactions = sorted(
-        unallocated, key=lambda x: getattr(x, "is_match", False), reverse=True
-    )
+    sorted_transactions = sorted(unallocated, key=lambda x: x.is_match, reverse=True)
 
     return render(
         request,

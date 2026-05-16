@@ -1,9 +1,9 @@
 from django.db import models
 
-from apps.core.models import Category, FrequencyMixin, User
+from apps.core.models import Category, FrequencyMixin, KeywordsMixin, User
 
 
-class Cost(FrequencyMixin, models.Model):
+class Cost(KeywordsMixin, FrequencyMixin, models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     name = models.CharField(max_length=255)
     amount = models.DecimalField(max_digits=10, decimal_places=2)

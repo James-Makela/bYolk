@@ -55,6 +55,19 @@ class FrequencyMixin(models.Model):
         return f"Every {value}{unit}"
 
 
+class KeywordsMixin:
+    keywords: str
+
+    def get_keywords(self):
+        if not self.keywords:
+            return []
+        return [
+            keyword.strip().lower()
+            for keyword in self.keywords.split(",")
+            if keyword.strip()
+        ]
+
+
 # Create your models here.
 class User(AbstractUser):
     pass

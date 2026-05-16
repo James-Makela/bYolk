@@ -36,5 +36,11 @@ class Transaction(models.Model):
         else:
             return False
 
+    def matches_keywords(self, keywords):
+        if not keywords or not self.vendor:
+            return False
+        ventor_lower = self.vendor.lower()
+        return any(keyword in ventor_lower for keyword in keywords)
+
     def __str__(self):
         return f"{self.date}, {self.vendor}"
