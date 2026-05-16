@@ -102,7 +102,7 @@ def budget_detail(request, id):
 def start_next_budget(request):
     generate_next_budget_period(request.user)
     messages.success(request, "Next budget period generated")
-    return HttpResponseRedirect("/budgets/")
+    return HttpResponseRedirect(reverse("budgets-page"))
 
 
 @login_required
@@ -205,10 +205,12 @@ def save_allocations(request, allocation_type, allocation_id):
         response["HX-Refresh"] = "true"
         return response
 
+    return HttpResponse(status=405)
+
 
 @login_required
 def add_single_allocation(request, budget_id):
-    budget_period = get_object_or_404(BudgetPeriod, id=budget_id)
+    budget_period = get_object_or_404(BudgetPeriod, id=budget_id, user=request.user)
 
     if request.method == "POST":
         form = CostAllocationForm(request.POST)
@@ -217,11 +219,11 @@ def add_single_allocation(request, budget_id):
             new_allocation.budget_period = budget_period
             new_allocation.save()
             messages.success(request, "Cost added!")
-            return HttpResponseRedirect(f"/budgets/{budget_id}")
+            return HttpResponseRedirect("detail", args=[budget_id])
 
         else:
             messages.error(request, "Unable to save cost.")
-            return HttpResponseRedirect(f"/budgets/{budget_id}")
+            return HttpResponseRedirect(reverse("detail", args=[budget_id]))
 
     else:
         form = CostAllocationForm(user=request.user)
@@ -238,7 +240,7 @@ def add_single_allocation(request, budget_id):
 
 @login_required
 def edit_allocation_with_transactions(request, budget_id, pk=None):
-    budget_period = get_object_or_404(BudgetPeriod, id=budget_id)
+    budget_period = get_object_or_404(BudgetPeriod, id=budget_id, user=request.user)
 
     if pk:
         allocation = get_object_or_404(
@@ -269,11 +271,11 @@ def edit_allocation_with_transactions(request, budget_id, pk=None):
             ).exclude(id__in=selected_ids).update(cost_allocation=None)
 
             messages.success(request, message)
-            return HttpResponseRedirect(f"/budgets/{budget_id}")
+            return HttpResponseRedirect(reverse("detail", args=[budget_id]))
 
         else:
             messages.error(request, "Unable to save cost.")
-            return HttpResponseRedirect(f"/budgets/{budget_id}")
+            return HttpResponseRedirect(reverse("detail", args=[budget_id]))
 
     else:
         transaction_ids = request.GET.getlist("transaction_ids")
@@ -323,7 +325,7 @@ def move_cost_allocation(request, allocation_id, budget_id):
         allocation.save()
         messages.success(request, "Allocation moved successfully.")
 
-    return HttpResponseRedirect(f"/budgets/{current_budget}")
+    return HttpResponseRedirect(reverse("detail", args=[current_budget]))
 
 
 @login_required
@@ -340,7 +342,7 @@ def delete_allocation(request, allocation_type, pk, budget_id):
         allocation.delete()
         messages.success(request, "Allocation deleted")
 
-    return HttpResponseRedirect(f"/budgets/{budget_id}")
+    return HttpResponseRedirect(reverse("detail", args=[budget_id]))
 
 
 @login_required
@@ -351,4 +353,4 @@ def delete_budget_period(request, pk):
         period.delete()
         messages.success(request, "Budget Period deleted")
 
-    return HttpResponseRedirect("/budgets/")
+    return HttpResponseRedirect(reverse("budgets-page"))

@@ -1,4 +1,4 @@
-<form hx-post="{% url 'save_allocations' allocation_type allocation.id %}"
+<form hx-post="{% url 'save-allocations' allocation_type allocation.id %}"
       hx-target="#modal_container"
       class="flex flex-col max-h-[80vh]">
   {% csrf_token %}

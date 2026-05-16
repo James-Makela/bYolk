@@ -15,7 +15,7 @@
         <div class="grid grid-cols-2 gap-2 col-span-2 relative z-20 content-center items-center py-3">
           <button
             class="btn btn-sm btn-soft w-full"
-            hx-get="{% url 'get_allocation_picker' type allocation.id %}"
+            hx-get="{% url 'get-allocation-picker' type allocation.id %}"
             hx-target="#modal_container"
             onclick="allocation_modal.showModal()">
             Allocate
