@@ -105,7 +105,7 @@
             // 3. Update the input field
             // toFixed(2) ensures we see $10.50 instead of $10.5
           if (amountInput) {
-            amountInput.value = (total > 0 ? -total : Math.abs(total)).toFixed(2);
+            amountInput.value = total.toFixed(2);
           }
         }
 

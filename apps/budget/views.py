@@ -187,7 +187,7 @@ def save_allocations(request, allocation_type, allocation_id):
                 or 0
             )
 
-            allocation.amount = abs(total_sum)
+            allocation.amount = total_sum
             allocation.save()
 
         # HX-Refresh tells the browser to reload the whole page to update totals

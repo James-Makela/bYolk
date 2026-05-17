@@ -104,17 +104,19 @@ class BudgetPeriod(models.Model):
 
     @cached_property
     def get_total_costs(self):
-        result = self.costallocation_set.aggregate(total=Sum("amount"))
+        result = self.costallocation_set.aggregate(total=Sum("amount"))  # type: ignore
         return result["total"] or 0
 
     @cached_property
     def get_total_income(self):
-        result = self.incomeallocation_set.aggregate(total=Sum("amount"))
+        result = self.incomeallocation_set.aggregate(  # type: ignore
+            total=Sum("amount")
+        )
         return result["total"] or 0
 
     @cached_property
     def balance(self):
-        return self.get_total_income - self.get_total_costs
+        return self.get_total_income + self.get_total_costs
 
     def get_categorised_transactions(self):
         from apps.transaction.models import Transaction
@@ -166,7 +168,7 @@ class AllocationBase(models.Model):
 
     @property
     def remaining(self):
-        return self.amount + self.total_paid
+        return -self.amount + self.total_paid
 
     def __str__(self):
         return f"{self.name} ${self.amount} for Budget {self.budget_period_id}"
@@ -188,7 +190,7 @@ class CostAllocation(AllocationBase):
                 name="unique_cost_per_budget",
             )
         ]
-        ordering = ["-amount"]
+        ordering = ["amount"]
 
 
 class IncomeAllocation(AllocationBase):

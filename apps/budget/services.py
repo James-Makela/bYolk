@@ -45,7 +45,7 @@ def populate_from_costs(budget_period, user):
                         budget_period=budget_period,
                         cost=cost,
                         name=cost.name,
-                        amount=cost.amount,
+                        amount=-cost.amount,
                         expected_date=current_occurrence,
                         category=category,
                     )
