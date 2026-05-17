@@ -1,0 +1,54 @@
+<div class="overflow-show rounded-lg border border-base-300 max-w-6xl mx-auto" id="costs-container">
+  <table class="table">
+    {% if incomes %}
+      <thead class="bg-base-200 text-base-content">
+        <tr>
+          <th class="px-6">Income</th>
+          <th class="px-6">Source</th>
+          <th class="px-6">Frequency</th>
+          <th class="px-6">Amount</th>
+          <th class="px-6"></th>
+        </tr>
+      </thead>
+
+      <tbody>
+        {% for income in incomes %}
+          <tr class="hover:bg-base-300 {% if request.GET.updated == income.id|slugify %}animate-flash-green{% endif %}">
+            <td>{{ income.name }}</td>
+            <td>{{ income.category }}</td>
+            <td>{{ income.frequency_string }}</td>
+            <td>${{ income.amount }}</td>
+            <td>
+
+              <div class="dropdown w-full">
+                <div tabindex="0" role="button" class="btn btn-sm btn-soft w-full">Actions</div>
+                <ul tabindex="-1" class="dropdown-content menu bg-base-100 rounded-box z-1 w-42 p-2 shadow-xl border border-base-200">
+                  <li>
+                    <form action="{% url 'delete-income' income.pk %}" method="post" onsubmit="return confirm('Are you sure?')">
+                      {% csrf_token %}
+                      <button type="submit" class="text-error cursor-pointer">
+                        Delete income
+                      </button>
+                    </form>
+                  </li>
+                  <li>
+                    <a href="{% url 'edit-income' income.pk %}" class="flex justify-between items-center hover:text-primary">
+                      Edit
+                    </a>
+                  </li>
+                </ul>
+              </div>
+
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    {% else %}
+      <tbody>
+        <tr>
+          <td class="text-center py-4">No incomes found</td>
+        </tr>
+      </tbody>
+    {% endif %}
+  </table>
+</div>
