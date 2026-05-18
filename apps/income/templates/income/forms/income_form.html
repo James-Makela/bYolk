@@ -4,7 +4,7 @@
 {% block navbar_title %}{{ title }}{% endblock %}
 
 {% block navbar_actions %}
-  <a href="{% url 'costs-page' %}" class="btn btn-primary btn-sm mr-8">
+  <a href="{% url 'incomes-page' %}" class="btn btn-primary btn-sm mr-8">
     Cancel
   </a>
 {% endblock %}
@@ -15,7 +15,7 @@
       {% csrf_token %}
 
       <fieldset class="fieldset bg-base-200 border border-base-300 p-4 rounded-box overflow-visible max-w-[500px]">
-        <legend class="fieldset-legend text-l">{{ title|default:"Cost Details" }}</legend>
+        <legend class="fieldset-legend text-l">{{ title|default:"Income Details" }}</legend>
 
         {% for field in form %}
           <div class="form-control relative z-10">
@@ -46,7 +46,7 @@
           </div>
         {% endfor %}
 
-        <button type="submit" class="btn btn-primary mt-6 w-full">Save Cost</button>
+        <button type="submit" class="btn btn-primary mt-6 w-full">Save Income</button>
       </fieldset>
     </form>
   </div>

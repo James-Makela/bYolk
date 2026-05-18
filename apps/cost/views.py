@@ -46,13 +46,15 @@ def cost_edit(request, pk=None):
     else:
         form = CostForm(instance=cost, user=request.user)
 
+    context = {
+        "form": form,
+        "title": title,
+    }
+
     return render(
         request,
         "cost/forms/cost_form.html",
-        {
-            "form": form,
-            "title": title,
-        },
+        context,
     )
 
 
