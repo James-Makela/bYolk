@@ -19,11 +19,6 @@ case "$CONTAINER_RUNTIME" in
     ;;
 esac
 
-if ! command -v "$CONTAINER_RUNTIME" &>/dev/null; then
-  echo "Error: '$CONTAINER_RUNTIME' is not installed or not in PATH." >&2
-  exit 1
-fi
-
 if [ "$CONTAINER_RUNTIME" = "docker" ]; then
   COMPOSE_CMD="sudo docker compose"
 else
