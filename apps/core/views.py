@@ -1,13 +1,11 @@
 from django.contrib import messages
-from django.contrib.auth import login
-from django.contrib.auth.decorators import login_not_required, login_required
+from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseRedirect
-from django.shortcuts import get_object_or_404, redirect, render
-from django.urls import reverse
+from django.shortcuts import get_object_or_404, render
 
 from apps.cost.models import Cost
 
-from .forms import CategoryForm, CustomUserCreationForm, InitialUserPreferencesForm
+from .forms import CategoryForm, InitialUserPreferencesForm
 from .models import Category
 from .services import get_cost_graph_data
 
@@ -37,19 +35,6 @@ def dashboard(request, view_type="categories"):
         "view_type": view_type,
     }
     return render(request, "dashboard.html", context)
-
-
-@login_not_required
-def register(request):
-    if request.method == "POST":
-        form = CustomUserCreationForm(request.POST)
-        if form.is_valid():
-            user = form.save()
-            login(request, user)  # Log the user in immediately after signing up
-            return redirect(reverse("budgets-page"))  # Redirect to your main page
-    else:
-        form = CustomUserCreationForm()
-    return render(request, "registration/register.html", {"form": form})
 
 
 @login_required

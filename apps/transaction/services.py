@@ -6,15 +6,14 @@ import pandas as pd
 from .models import Transaction
 
 
-def generate_unique_hash(description, amount, balance, user_name):
+def generate_unique_hash(description, amount, balance, uid):
     receipt_number = re.findall(r"(?<=Receipt )\d{4,6}", description)
     stripped_amount = str(amount).replace(".", "_").strip("-")
     stripped_balance = str(balance).replace(".", "_").strip("-")
-    hashed_user = hash(user_name)
     if not receipt_number:
-        return f"000000_{stripped_amount}{stripped_balance}{hashed_user}"
+        return f"000000_{stripped_amount}{stripped_balance}{uid}"
     else:
-        return f"{receipt_number[0]}_{stripped_amount}{hashed_user}"
+        return f"{receipt_number[0]}_{stripped_amount}{uid}"
 
 
 def process_description(description):
@@ -67,7 +66,7 @@ def process_transaction_upload(user, csv_file):
     for _, row in df.iterrows():
         amount = row["Credit"] if pd.notnull(row.get("Credit")) else row.get("Debit", 0)
         hash = generate_unique_hash(
-            row["Description"], amount, row["Balance"], user.username
+            row["Description"], amount, row["Balance"], user.uid
         )
         vendor, purchase_type, receipt_details = process_description(row["Description"])
         date = get_actual_date(row["Description"])

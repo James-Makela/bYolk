@@ -22,8 +22,7 @@ from apps.core import views
 
 urlpatterns = [
     path("admin/", admin.site.urls),
-    path("accounts/", include("django.contrib.auth.urls")),
-    path("accounts/register/", views.register, name="register"),
+    path("accounts/", include("allauth.urls")),
     path("", views.dashboard, name="dashboard"),
     path("dashboard/<str:view_type>", views.dashboard, name="chosen-dashboard"),
     path("costs/", include("apps.cost.urls")),

@@ -147,7 +147,7 @@
                 </a>
               </li>
               <div class="is-drawer-close:hidden">
-                <form method="post" action="{% url 'logout' %}" class="inline">
+                <form method="post" action="{% url 'account_logout' %}" class="inline">
                   {% csrf_token %}
                   <button type="submit" class="btn btn-soft btn-error btn-wide">Logout</button>
                 </form>
