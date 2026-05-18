@@ -6,9 +6,7 @@
 with pkgs;
 mkShell {
   packages = packages ++ [
-  direnv
   nodejs
-  sqlite
   python314
   podman
   podman-compose
@@ -20,7 +18,6 @@ mkShell {
   ];
   NIX_LD = lib.fileContents "${stdenv.cc}/nix-support/dynamic-linker";
   shellHook = ''
-    export LD_LIBRARY_PATH=$NIX_LD_LIBRARY_PATH
     export DOCKER_HOST="unix://$XDG_RUNTIME_DIR/podman/podman.sock"
 
     # Set up registry config so short names resolve to Docker Hub
