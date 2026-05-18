@@ -25,4 +25,4 @@ else
   COMPOSE_CMD="podman compose"
 fi
 
-$COMPOSE_CMD -f docker-compose.yml -f docker-compose.prod.yml up -d
+$COMPOSE_CMD -f docker-compose.yml -f docker-compose.prod.yml up -d --build
