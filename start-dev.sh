@@ -31,4 +31,10 @@ if ! command -v "$CONTAINER_RUNTIME" &>/dev/null; then
   exit 1
 fi
 
-$CONTAINER_RUNTIME compose up -d
+if [ "$CONTAINER_RUNTIME" = "docker" ]; then
+  COMPOSE_CMD="sudo docker compose"
+else
+  COMPOSE_CMD="podman compose"
+fi
+
+$COMPOSE_CMD up -d
