@@ -166,7 +166,7 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 # django-allauth configuration
 LOGIN_REDIRECT_URL = "/"
 ACCOUNT_LOGOUT_REDIRECT = "/"
-ACCOUNT_SIGNUP_REDIRECT_URL = "/"
+ACCOUNT_SIGNUP_REDIRECT_URL = "/budgets/"
 SITE_ID = 1
 AUTHENTICATION_BACKENDS = (
     "django.contrib.auth.backends.ModelBackend",
