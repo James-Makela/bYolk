@@ -1,13 +1,5 @@
 #!/bin/sh
 
-export NVM_DIR="$HOME/.nvm"
-[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-
-if ! command -v npm &>/dev/null; then
-  echo "Error: 'npm is not installed or not in PATH." >&2
-  exit 1
-fi
-
 npm install
 npm run build:css
 
