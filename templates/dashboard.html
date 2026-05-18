@@ -6,11 +6,11 @@
 
 {% block navbar_actions %}
   {% if view_type == 'categories' %}
-    <a href="{% url 'chosen-dashboard' 'costs' %}" class="btn btn-primary btn-sm mr-8">
+    <a href="{% url 'core:chosen-dashboard' 'costs' %}" class="btn btn-primary btn-sm mr-8">
       view by cost
     </a>
   {% elif view_type == "costs" %}
-    <a href="{% url 'chosen-dashboard' 'categories' %}" class="btn btn-primary btn-sm mr-8">
+    <a href="{% url 'core:chosen-dashboard' 'categories' %}" class="btn btn-primary btn-sm mr-8">
       view by category
     </a>
   {% endif %}

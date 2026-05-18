@@ -6,19 +6,19 @@ urlpatterns = [
     path("", views.budgets_list, name="budgets-page"),
     path("generate/", views.start_next_budget, name="generate-budget"),
     path("<int:id>/", views.budget_detail, name="detail"),
-    path("<int:id>/populate/", views.populate_costs, name="populate-costs"),
+    path("populate/<int:id>/", views.populate_costs, name="populate-costs"),
     path(
         "edit/<int:pk>/<int:budget_id>",
         views.edit_allocation_with_transactions,
         name="edit-allocation",
     ),
     path(
-        "allocation/<str:allocation_type>/<int:allocation_id>/picker/",
+        "allocation/picker/<str:allocation_type>/<int:allocation_id>/",
         views.get_allocation_picker,
         name="get-allocation-picker",
     ),
     path(
-        "allocation/<str:allocation_type>/<int:allocation_id>/save/",
+        "allocation/save/<str:allocation_type>/<int:allocation_id>/",
         views.save_allocations,
         name="save-allocations",
     ),
