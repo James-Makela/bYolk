@@ -1,6 +1,6 @@
 services:
   web:
-    command: ./entrypoint.sh
+    command: sh -c "python manage.py collectstatic --noinput && gunicorn budgetmaker.wsgi:application --bind 0.0.0.0:8000 --workers 3
     ports:
       - "${WEB_PORT}:8000"
     restart: unless-stopped
