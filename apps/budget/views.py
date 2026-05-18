@@ -82,7 +82,6 @@ def budget_detail(request, id):
 
     budget_length = (budget.end_date - budget.start_date).days
     current_position = (timezone.now().date() - budget.start_date).days
-    print(budget_length)
 
     context = {
         "budget": budget,

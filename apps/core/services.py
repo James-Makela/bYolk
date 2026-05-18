@@ -47,7 +47,6 @@ def get_cost_graph_data(user, cost=None, category=None):
     for period in budget_periods:
         dates.append(period.start_date.strftime("%d, %b, %y"))
         allocation = allocation_map.get(period.id)
-        print(allocation)
         amounts.append(float(allocation_map.get(period.id, 0.0)))
 
     if sum(amounts) == 0:

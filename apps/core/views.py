@@ -20,7 +20,6 @@ def dashboard(request, view_type="categories"):
     if view_type == "costs":
         for cost in costs:
             graph_data = get_cost_graph_data(request.user, cost=cost)
-            print(graph_data)
             if graph_data:
                 charts.append(graph_data)
 
