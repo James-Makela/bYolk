@@ -110,7 +110,7 @@ class UserPreferences(FrequencyMixin, models.Model):
         verbose_name_plural = "User Preferences"
 
     def __str__(self):
-        return f"Preferences for {self.user.username}"
+        return f"Preferences for {self.user.email}"
 
 
 class Category(models.Model):

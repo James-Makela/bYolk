@@ -15,7 +15,7 @@ class CostTests(TestCase):
     @classmethod
     def setUpTestData(cls):
         cls.user = User.objects.create_user(
-            username="test", email="test@test.com", password="testpass123"
+            email="test@test.com", password="testpass123"
         )
         cls.category = Category.objects.create(user=cls.user, name="Housing")
 

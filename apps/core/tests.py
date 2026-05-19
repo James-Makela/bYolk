@@ -13,11 +13,9 @@ User = get_user_model()
 class CustomUserTests(TestCase):
     def test_create_user(self):
         user = User.objects.create_user(
-            username="test",
             email="test@test.com",
             password="testpass123",
         )
-        self.assertEqual(user.username, "test")
         self.assertEqual(user.email, "test@test.com")
         self.assertTrue(user.is_active)
         self.assertFalse(user.is_staff)
@@ -25,11 +23,9 @@ class CustomUserTests(TestCase):
 
     def test_create_superuser(self):
         user = User.objects.create_superuser(
-            username="supertest",
             email="supertest@test.com",
             password="supertestpass123",
         )
-        self.assertEqual(user.username, "supertest")
         self.assertEqual(user.email, "supertest@test.com")
         self.assertTrue(user.is_active)
         self.assertTrue(user.is_staff)
@@ -37,24 +33,22 @@ class CustomUserTests(TestCase):
 
 
 class SignupPageTests(TestCase):
-    username = "newuser"
     email = "newuser@email.com"
 
     @classmethod
     def setUp(self):
-        url = reverse("register")
+        url = reverse("account_signup")
         self.response = self.client.get(url)
 
     def test_signup_template(self):
         self.assertEqual(self.response.status_code, 200)
-        self.assertTemplateUsed(self.response, "registration/register.html")
+        self.assertTemplateUsed(self.response, "account/signup.html")
         self.assertContains(self.response, "Create Account")
         self.assertNotContains(self.response, "Some text that should no be on the page")
 
     def test_signup_form(self):
-        User.objects.create_user(self.username, self.email)
+        User.objects.create_user(self.email)
         self.assertEqual(get_user_model().objects.all().count(), 1)
-        self.assertEqual(get_user_model().objects.all()[0].username, self.username)
         self.assertEqual(get_user_model().objects.all()[0].email, self.email)
 
 
@@ -124,7 +118,9 @@ class FrequencyMixinTests(TestCase):
 class UserPreferencesTests(TestCase):
     @classmethod
     def setUpTestData(cls):
-        cls.user = User.objects.create_user(username="testuser", password="testpass123")
+        cls.user = User.objects.create_user(
+            email="testuser@example.com", password="testpass123"
+        )
 
     def test_next_pay_date(self):
         preferences = UserPreferences.objects.create(
@@ -154,14 +150,14 @@ class UserPreferencesTests(TestCase):
     def test_preferences_string(self):
         preferences = UserPreferences.objects.create(user=self.user)
 
-        self.assertEqual(str(preferences), "Preferences for testuser")
+        self.assertEqual(str(preferences), "Preferences for testuser@example.com")
 
 
 class CategoryTests(TestCase):
     @classmethod
     def setUpTestData(cls):
         cls.user = User.objects.create_user(
-            username="testuser",
+            email="testuser@example.com",
             password="testpass123",
         )
         cls.category = Category.objects.create(user=cls.user, name="Transport")
@@ -182,7 +178,7 @@ class CategoryTests(TestCase):
 
     def test_another_user_can_create_same_category(self):
         user_two = User.objects.create_user(
-            username="anothertestuser",
+            email="anothertestuser@example.com",
             password="testpass124",
         )
         category_two = Category.objects.create(
