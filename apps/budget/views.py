@@ -80,8 +80,12 @@ def budget_detail(request, id):
         transaction.amount for transaction in unallocated_transactions
     )
 
-    budget_length = (budget.end_date - budget.start_date).days
-    current_position = (timezone.now().date() - budget.start_date).days
+    budget_length = (budget.end_date - budget.start_date).days + 1
+    current_position = (timezone.now().date() - budget.start_date).days + 1
+    if current_position > budget_length:
+        complete = True
+    else:
+        complete = False
 
     context = {
         "budget": budget,
@@ -94,6 +98,7 @@ def budget_detail(request, id):
         "unallocated_transactions": unallocated_transactions,
         "budget_length": budget_length,
         "current_position": current_position,
+        "complete": complete,
     }
 
     return render(

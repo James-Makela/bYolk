@@ -17,8 +17,13 @@
 {% endblock %}
 
 {% block content %}
-  <div class="max-w-6xl mx-auto">
-    <progress class="progress progress-primary w-full h-5 my-6" value="{{ current_position }}" max="{{ budget_length }}"></progress>
+  <div class="max-w-6xl mx-auto p-4">
+    <div class="relative w-full">
+      <progress class="h-[32px] progress progress-primary w-full" value="{{ current_position }}" max="{{ budget_length }}"></progress>
+      <div class="absolute font-bold inset-0 flex -top-2 items-center justify-center text-white text-xs">
+        <p class="text-center">{% if complete %}Complete{% elif current_position < 0 %}{% else %}Day {{ current_position }} of {{ budget_length }}{% endif %}</p>
+      </div>
+    </div>
     <h2 class="text-2xl font-bold">Allocations</h2>
     {% include "budget/partials/_income_budget_container.html" with allocations=allocated_income type="income" %}
     {% include "budget/partials/_cost_budget_container.html" with type="cost" %}
