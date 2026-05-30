@@ -13,3 +13,13 @@ use_parentheses = true
 ensure_newline_before_comments = true
 known_django = "django"
 sections = ["FUTURE", "STDLIB", "THIRDPARTY", "DJANGO", "FIRSTPARTY", "LOCALFOLDER"]
+
+[tool.coverage.run]
+dynamic_context = "test_function"
+source = ["apps"]
+omit = [
+    "*/migrations/*",
+    "*/tests.py",
+    "*/__init__.py",
+    "*/apps.py",
+]
