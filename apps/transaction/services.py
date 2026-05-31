@@ -21,7 +21,7 @@ def process_description(description):
     if description_string == "":
         return "", "", ""
     description_pieces = description_string.split(" - ", 1)
-    vendor = description_pieces[0]
+    vendor = description_pieces[0].rstrip()
     if len(description_pieces) >= 2:
         second_split = description_pieces[1].rsplit(" - ", 1)
     else:
