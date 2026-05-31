@@ -19,7 +19,20 @@ def costs_page(request):
 def costs_list(request):
     costs = Cost.objects.filter(user=request.user)
 
-    context = {"costs": costs}
+    total_per_year = 0
+    total_per_budget = 0
+    total_per_week = 0
+    for cost in costs:
+        total_per_year += cost.cost_per_year
+        total_per_budget += cost.cost_per_budget_period
+        total_per_week += cost.cost_per_week
+
+    context = {
+        "costs": costs,
+        "total_yearly": total_per_year,
+        "total_per_budget": total_per_budget,
+        "total_per_week": total_per_week,
+    }
     return render(request, "cost/index.html", context)
 
 

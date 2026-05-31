@@ -28,3 +28,11 @@ class Cost(KeywordsMixin, FrequencyMixin, models.Model):
     def cost_per_budget_period(self):
         length_of_budget_period = self.user.preferences.get_delta_days()
         return (self.amount / self.get_delta_days()) * length_of_budget_period
+
+    @property
+    def cost_per_year(self):
+        return (self.amount / self.get_delta_days()) * 365
+
+    @property
+    def cost_per_week(self):
+        return (self.amount / self.get_delta_days()) * 7

@@ -1,0 +1,17 @@
+<div class="card bg-primary/20 w-96 bg-base-100 card-md shadow-sm mb-5">
+  <div class="card-body">
+    <h2 class="card-title">Cost totals</h2>
+    <p class="text-xl flex justify-between">
+      Per Year:
+      <span class="{% if budget.balance > 0 %}text-success{% elif budget.balance == 0 %}text-info{% else %}text-error{% endif %}">${{ total_yearly|floatformat:2 }}</span>
+    </p>
+    <p class="text-xl flex justify-between">
+      Per Budget:
+      <span class="{% if budget.balance > 0 %}text-success{% elif budget.balance == 0 %}text-info{% else %}text-error{% endif %}">${{ total_per_budget|floatformat:2 }}</span>
+    </p>
+    <p class="text-xl flex justify-between">
+      Per Week:
+      <span class="{% if budget.balance > 0 %}text-success{% elif budget.balance == 0 %}text-info{% else %}text-error{% endif %}">${{ total_per_week|floatformat:2 }}</span>
+    </p>
+  </div>
+</div>
