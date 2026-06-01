@@ -28,7 +28,7 @@
               <li><a href="{% if previous %}{% url 'move-cost-allocation' allocation.id previous.id %}{% else %}#{% endif %}" class="flex justify-between items-center hover:text-primary {% if not previous %}hidden{% endif %}">Move to previous Budget</a></li>
               <li>
                 <li>
-                  <a href="{% url 'edit-allocation' allocation.id budget.id %}" class="flex justify-between items-center hover:text-primary">Edit Allocation</a>
+                  <a href="{% url 'edit-allocation' type allocation.id budget.id %}" class="flex justify-between items-center hover:text-primary">Edit Allocation</a>
                 </li>
                 <li>
                   <form action="{% url 'delete-allocation' type allocation.id budget.id %}" method="post" onsubmit="return confirm('Are you sure?')">

@@ -10,7 +10,11 @@ from apps.budget.models import BudgetPeriod, CostAllocation, IncomeAllocation
 from apps.core.forms import InitialUserPreferencesForm
 from apps.transaction.models import Transaction
 
-from .forms import CostAllocationForm, CostAllocationTransactionsForm
+from .forms import (
+    CostAllocationForm,
+    CostAllocationTransactionsForm,
+    IncomeAllocationTransactionsForm,
+)
 from .services import generate_next_budget_period, populate_from_costs
 
 
@@ -239,17 +243,23 @@ def add_single_allocation(request, budget_id):
 
 
 @login_required
-def edit_allocation_with_transactions(request, budget_id, pk=None):
+def edit_allocation_with_transactions(request, allocation_type, budget_id, pk=None):
     """Handles both editing and creating a cost allocation with associated transactions.
 
     If the pk is provided, it will edit, otherwise it will create a new allocation.
     """
     budget_period = get_object_or_404(BudgetPeriod, id=budget_id, user=request.user)
 
+    model = CostAllocation if type == "cost" else IncomeAllocation
+    form_class = (
+        CostAllocationTransactionsForm
+        if type == "cost"
+        else IncomeAllocationTransactionsForm
+    )
+    transaction_field = "cost_allocation" if type == "cost" else "income_allocation"
+
     if pk:
-        allocation = get_object_or_404(
-            CostAllocation, pk=pk, budget_period__user=request.user
-        )
+        allocation = get_object_or_404(model, pk=pk, budget_period__user=request.user)
         title = "Edit Allocation"
         message = "Allocation updated!"
     else:
@@ -258,7 +268,7 @@ def edit_allocation_with_transactions(request, budget_id, pk=None):
         message = "Allocation saved!"
 
     if request.method == "POST":
-        form = CostAllocationForm(request.POST, instance=allocation)
+        form = form_class(request.POST, instance=allocation)
         selected_ids = request.POST.getlist("transaction_ids")
         if form.is_valid():
             new_allocation = form.save(commit=False)
@@ -267,18 +277,18 @@ def edit_allocation_with_transactions(request, budget_id, pk=None):
 
             # Allocate ticked transactions
             Transaction.objects.filter(id__in=selected_ids, user=request.user).update(
-                cost_allocation=new_allocation
+                **{transaction_field: new_allocation}
             )
             # Unallocate any unticked
             Transaction.objects.filter(
-                cost_allocation=new_allocation, user=request.user
-            ).exclude(id__in=selected_ids).update(cost_allocation=None)
+                **{transaction_field: new_allocation}, user=request.user
+            ).exclude(id__in=selected_ids).update(**{transaction_field: None})
 
             messages.success(request, message)
             return HttpResponseRedirect(reverse("detail", args=[budget_id]))
 
         else:
-            messages.error(request, "Unable to save cost.")
+            messages.error(request, "Unable to save allocation.")
             return HttpResponseRedirect(reverse("detail", args=[budget_id]))
 
     else:
@@ -291,7 +301,7 @@ def edit_allocation_with_transactions(request, budget_id, pk=None):
             user=request.user,
             id__in=transaction_ids,
         )
-        form = CostAllocationTransactionsForm(instance=allocation, user=request.user)
+        form = form_class(instance=allocation, user=request.user)
 
     return render(
         request,
@@ -301,6 +311,7 @@ def edit_allocation_with_transactions(request, budget_id, pk=None):
             "form": form,
             "selected_transactions": selected_transactions,
             "title": title,
+            "allocation_type": allocation_type,
         },
     )
 

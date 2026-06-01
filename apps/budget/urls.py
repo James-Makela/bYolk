@@ -8,7 +8,7 @@ urlpatterns = [
     path("<int:id>/", views.budget_detail, name="detail"),
     path("populate/<int:id>/", views.populate_costs, name="populate-costs"),
     path(
-        "edit/<int:pk>/<int:budget_id>",
+        "edit/<str:allocation_type>/<int:pk>/<int:budget_id>",
         views.edit_allocation_with_transactions,
         name="edit-allocation",
     ),
