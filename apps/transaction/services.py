@@ -11,7 +11,6 @@ def generate_unique_hash(description, amount, balance, uid):
     stripped_amount = str(amount).replace(".", "_").strip("-")
     stripped_balance = str(balance).replace(".", "_").strip("-")
     if not receipt_number:
-        print(stripped_balance)
         return f"000000_{stripped_amount}{stripped_balance}{uid}"
     else:
         return f"{receipt_number[0]}_{stripped_amount}{uid}"
