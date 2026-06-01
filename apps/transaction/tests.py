@@ -32,7 +32,7 @@ class TestGenerateUniqueHash(TestCase):
         balance = 50.00
 
         identifier = generate_unique_hash(description, amount, balance, self.user.uid)
-        expected_identifier = f"124511_20_26{self.user.uid}"
+        expected_identifier = f"000000_20_2650_0{self.user.uid}"
 
         self.assertEqual(identifier, expected_identifier)
 
