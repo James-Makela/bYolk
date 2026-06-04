@@ -52,7 +52,7 @@ def create_category(request):
             category.user = request.user
             category.save()
             messages.success(request, "Category added!")
-            return HttpResponseRedirect("/core/categories/")
+            return HttpResponseRedirect("/categories/")
 
     # If a GET or any other method create a blank form
     else:
@@ -69,7 +69,7 @@ def delete_category(request, pk):
         category.delete()
         messages.success(request, "Category deleted")
 
-    return HttpResponseRedirect("/core/categories/")
+    return HttpResponseRedirect("/categories/")
 
 
 @login_required
@@ -104,7 +104,7 @@ def category_edit(request, pk=None):
             new_category.user = request.user
             new_category.save()
             messages.success(request, message)
-            return HttpResponseRedirect("/core/categories/")
+            return HttpResponseRedirect("/categories/")
 
     else:
         form = CategoryForm(instance=category)
