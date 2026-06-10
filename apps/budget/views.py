@@ -251,13 +251,15 @@ def edit_allocation_with_transactions(request, allocation_type, budget_id, pk=No
     """
     budget_period = get_object_or_404(BudgetPeriod, id=budget_id, user=request.user)
 
-    model = CostAllocation if type == "cost" else IncomeAllocation
+    model = CostAllocation if allocation_type == "cost" else IncomeAllocation
     form_class = (
         CostAllocationTransactionsForm
-        if type == "cost"
+        if allocation_type == "cost"
         else IncomeAllocationTransactionsForm
     )
-    transaction_field = "cost_allocation" if type == "cost" else "income_allocation"
+    transaction_field = (
+        "cost_allocation" if allocation_type == "cost" else "income_allocation"
+    )
 
     if pk:
         allocation = get_object_or_404(model, pk=pk, budget_period__user=request.user)
