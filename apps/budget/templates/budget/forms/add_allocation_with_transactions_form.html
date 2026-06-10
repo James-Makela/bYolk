@@ -1,3 +1,4 @@
+{% load l10n %}
 {% extends 'base.html' %}
 
 {% block title %}{{ title }}{% endblock %}
@@ -62,7 +63,7 @@
                     <input
                       type="checkbox"
                       name="transaction_ids"
-                      value="{{ tx.id }}"
+                      value="{{ tx.id|unlocalize }}"
                       data-amount="{{ tx.amount }}"
                       class="transaction-checkbox checkbox checkbox-md checkbox-accent"
                       checked="checked"

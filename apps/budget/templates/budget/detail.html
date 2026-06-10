@@ -2,16 +2,16 @@
 
 {% block title %}{{ budget.start_date }}{% endblock %}
 {% block navbar_title %}
-  <a href="/budgets/{{ previous.id }}" class="btn btn-xs btn-primary btn-soft" {% if not previous %}disabled="disabled"{% endif %}>&larr; Previous</a>
+  <a href="/budgets/{{ previous.id|unlocalize }}" class="btn btn-xs btn-primary btn-soft" {% if not previous %}disabled="disabled"{% endif %}>&larr; Previous</a>
   Budget for {{ budget.start_date }} -> {{ budget.end_date }}
-  <a href="/budgets/{{ next.id }}" class="btn btn-xs btn-primary btn-soft" {% if not next %}disabled="disabled"{% endif %}>Next &rarr;</a>
+  <a href="/budgets/{{ next.id|unlocalize }}" class="btn btn-xs btn-primary btn-soft" {% if not next %}disabled="disabled"{% endif %}>Next &rarr;</a>
 {% endblock %}
 
 {% block navbar_actions %}
-  <a href="{% url 'add-cost-allocation' budget.id %}" class="btn btn-primary btn-sm">
+  <a href="{% url 'add-cost-allocation' budget.id|unlocalize %}" class="btn btn-primary btn-sm">
     Add one-off cost
   </a>
-  <a href="{% url 'populate-costs' budget.id %}" class="btn btn-primary btn-sm mr-8">
+  <a href="{% url 'populate-costs' budget.id|unlocalize %}" class="btn btn-primary btn-sm mr-8">
     Populate from costs
   </a>
 {% endblock %}
