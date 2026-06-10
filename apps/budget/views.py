@@ -130,11 +130,8 @@ def populate_costs(request, id):
 @login_required
 def get_allocation_picker(request, allocation_type, allocation_id):
     """Returns the HTMX modal content for selecting transactions."""
-    models = {
-        "income": IncomeAllocation,
-        "cost": CostAllocation,
-    }
-    TargetModel = models.get(allocation_type, CostAllocation)
+    TargetModel = CostAllocation if allocation_type == "cost" else IncomeAllocation
+
     related_field = "cost" if allocation_type == "cost" else "income"
 
     allocation = get_object_or_404(
@@ -169,11 +166,8 @@ def get_allocation_picker(request, allocation_type, allocation_id):
 @login_required
 def save_allocations(request, allocation_type, allocation_id):
     """Processes the HTMX form submission."""
-    models = {
-        "income": IncomeAllocation,
-        "cost": CostAllocation,
-    }
-    TargetModel = models.get(allocation_type, CostAllocation)
+    TargetModel = CostAllocation if allocation_type == "cost" else IncomeAllocation
+
     field_to_update = (
         "income_allocation" if allocation_type == "income" else "cost_allocation"
     )
@@ -251,7 +245,7 @@ def edit_allocation_with_transactions(request, allocation_type, budget_id, pk=No
     """
     budget_period = get_object_or_404(BudgetPeriod, id=budget_id, user=request.user)
 
-    model = CostAllocation if allocation_type == "cost" else IncomeAllocation
+    TargetModel = CostAllocation if allocation_type == "cost" else IncomeAllocation
     form_class = (
         CostAllocationTransactionsForm
         if allocation_type == "cost"
@@ -262,7 +256,9 @@ def edit_allocation_with_transactions(request, allocation_type, budget_id, pk=No
     )
 
     if pk:
-        allocation = get_object_or_404(model, pk=pk, budget_period__user=request.user)
+        allocation = get_object_or_404(
+            TargetModel, pk=pk, budget_period__user=request.user
+        )
         title = "Edit Allocation"
         message = "Allocation updated!"
     else:
@@ -340,11 +336,7 @@ def move_cost_allocation(request, allocation_id, budget_id):
 
 @login_required
 def delete_allocation(request, allocation_type, pk, budget_id):
-    models = {
-        "income": IncomeAllocation,
-        "cost": CostAllocation,
-    }
-    TargetModel = models.get(allocation_type, CostAllocation)
+    TargetModel = CostAllocation if allocation_type == "cost" else IncomeAllocation
 
     allocation = get_object_or_404(TargetModel, pk=pk, budget_period__user=request.user)
 
