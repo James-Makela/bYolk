@@ -3,7 +3,7 @@
     <h2 class="card-title">Current Budget</h2>
     <p class="text-xl">
       Balance:
-      <span class="{% if budget.balance > 0 %}text-success{% elif budget.balance == 0 %}text-info{% else %}text-error{% endif %}">${{ current_budget.balance|floatformat:2 }}</span>
+      <span class="{% if current_budget.balance > 0 %}text-success{% elif current_budget.balance == 0 %}text-info{% else %}text-error{% endif %}">${{ current_budget.balance|floatformat:2 }}</span>
     </p>
     <div class="justify-end card-actions">
       <a href="{% url 'detail' current_budget.id %}" class="btn btn-primary">Go to Current Budget</a>
