@@ -17,3 +17,16 @@ class Income(KeywordsMixin, FrequencyMixin, models.Model):
 
     class Meta:
         ordering = ["-amount"]
+
+    @property
+    def income_per_budget_period(self):
+        length_of_budget_period = self.user.preferences.get_delta_days()
+        return (self.amount / self.get_delta_days()) * length_of_budget_period
+
+    @property
+    def income_per_year(self):
+        return (self.amount / self.get_delta_days()) * 365
+
+    @property
+    def income_per_week(self):
+        return (self.amount / self.get_delta_days()) * 7

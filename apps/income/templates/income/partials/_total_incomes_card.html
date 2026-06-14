@@ -1,0 +1,21 @@
+<div class="card bg-primary/20 w-80 bg-base-100 card-md shadow-sm">
+  <div class="card-body">
+    <h2 class="card-title">Income totals</h2>
+    <p class="text-xl flex justify-between">
+      Per Year:
+      <span class="text-success">${{ total_income_yearly|floatformat:2 }}</span>
+    </p>
+    <p class="text-xl flex justify-between">
+      Per Month:
+      <span class="text-success">${{ total_income_monthly|floatformat:2 }}</span>
+    </p>
+    <p class="text-xl flex justify-between">
+      Per Budget:
+      <span class="text-success">${{ total_income_per_budget|floatformat:2 }}</span>
+    </p>
+    <p class="text-xl flex justify-between">
+      Per Week:
+      <span class="text-success">${{ total_income_per_week|floatformat:2 }}</span>
+    </p>
+  </div>
+</div>
