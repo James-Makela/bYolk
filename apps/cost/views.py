@@ -30,6 +30,7 @@ def costs_list(request):
     context = {
         "costs": costs,
         "total_yearly": total_per_year,
+        "total_monthly": total_per_year / 12,
         "total_per_budget": total_per_budget,
         "total_per_week": total_per_week,
     }
