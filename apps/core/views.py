@@ -8,7 +8,7 @@ from apps.income.models import Income
 
 from .forms import CategoryForm, InitialUserPreferencesForm
 from .models import Category
-from .services import get_cost_graph_data
+from .services import calculate_period_totals, get_cost_graph_data
 
 
 # Create your views here.
@@ -31,38 +31,28 @@ def dashboard(request, view_type="categories"):
             if graph_data:
                 charts.append(graph_data)
 
-    # TODO: This is duplicated in costs view - needs to be moved to the Cost class
-    total_costs_per_year = 0
-    total_costs_per_budget = 0
-    total_costs_per_week = 0
-    for cost in costs:
-        total_costs_per_year += cost.cost_per_year
-        total_costs_per_budget += cost.cost_per_budget_period
-        total_costs_per_week += cost.cost_per_week
-
-    total_income_per_year = 0
-    total_income_per_budget = 0
-    total_income_per_week = 0
-    for income in incomes:
-        total_income_per_year += income.income_per_year
-        total_income_per_budget += income.income_per_budget_period
-        total_income_per_week += income.income_per_week
+    cost_totals = calculate_period_totals(costs)
+    income_totals = calculate_period_totals(incomes)
 
     context = {
         "charts": charts,
         "view_type": view_type,
-        "total_yearly": total_costs_per_year,
-        "total_monthly": total_costs_per_year / 12,
-        "total_per_budget": total_costs_per_budget,
-        "total_per_week": total_costs_per_week,
-        "total_income_yearly": total_income_per_year,
-        "total_income_monthly": total_income_per_year / 12,
-        "total_income_per_budget": total_income_per_budget,
-        "total_income_per_week": total_income_per_week,
-        "total_savings_yearly": total_income_per_year - total_costs_per_year,
-        "total_savings_monthly": (total_income_per_year - total_costs_per_year) / 12,
-        "total_savings_per_budget": total_income_per_budget - total_costs_per_budget,
-        "total_savings_per_week": total_income_per_week - total_costs_per_week,
+        # Costs
+        "total_yearly": cost_totals["yearly"],
+        "total_monthly": cost_totals["yearly"] / 12,
+        "total_per_budget": cost_totals["per_budget"],
+        "total_per_week": cost_totals["per_week"],
+        # Income
+        "total_income_yearly": income_totals["yearly"],
+        "total_income_monthly": income_totals["yearly"] / 12,
+        "total_income_per_budget": income_totals["per_budget"],
+        "total_income_per_week": income_totals["per_week"],
+        # Savings
+        "total_savings_yearly": income_totals["yearly"] - cost_totals["yearly"],
+        "total_savings_monthly": (income_totals["yearly"] - cost_totals["yearly"]) / 12,
+        "total_savings_per_budget": income_totals["per_budget"]
+        - cost_totals["per_budget"],
+        "total_savings_per_week": income_totals["per_week"] - cost_totals["per_week"],
     }
     return render(request, "dashboard.html", context)
 

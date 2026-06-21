@@ -113,6 +113,33 @@ class UserPreferences(FrequencyMixin, models.Model):
         return f"Preferences for {self.user.email}"
 
 
+class FinancialItem(KeywordsMixin, FrequencyMixin, models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    name = models.CharField(max_length=255)
+    amount = models.DecimalField(max_digits=10, decimal_places=2)
+    start_date = models.DateField()
+    keywords = models.CharField(
+        max_length=500, blank=True, help_text="Comma-separated list"
+    )
+
+    class Meta:
+        abstract = True
+        ordering = ["-amount"]
+
+    @property
+    def per_budget_period(self):
+        length_of_budget_period = self.user.preferences.get_delta_days()
+        return (self.amount / self.get_delta_days()) * length_of_budget_period
+
+    @property
+    def per_year(self):
+        return (self.amount / self.get_delta_days()) * 365
+
+    @property
+    def per_week(self):
+        return (self.amount / self.get_delta_days()) * 7
+
+
 class Category(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     name = models.CharField(max_length=50)
