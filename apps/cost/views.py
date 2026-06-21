@@ -5,6 +5,7 @@ from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render
 
+from apps.core.services import calculate_period_totals
 from apps.cost.models import Cost
 
 from .forms import CostForm
@@ -19,7 +20,15 @@ def costs_page(request):
 def costs_list(request):
     costs = Cost.objects.filter(user=request.user)
 
-    context = {"costs": costs}
+    totals = calculate_period_totals(costs)
+
+    context = {
+        "costs": costs,
+        "total_yearly": totals["yearly"],
+        "total_monthly": totals["monthly"],
+        "total_per_budget": totals["per_budget"],
+        "total_per_week": totals["per_week"],
+    }
     return render(request, "cost/index.html", context)
 
 

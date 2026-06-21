@@ -1,3 +1,4 @@
+{% load l10n %}
 <div class="overflow-x-auto rounded-lg border border-base-300">
   <table class="table w-full">
     <thead class="bg-base-200 text-base-content">
@@ -16,9 +17,9 @@
           <td class="p-1">
             <input
               type="checkbox"
-              id="check-{{ transaction.id }}"
+              id="check-{{ transaction.id|unlocalize }}"
               name="transaction_ids"
-              value="{{ transaction.id }}"
+              value="{{ transaction.id|unlocalize }}"
               class="transaction-checkbox checkbox checkbox-md checkbox-accent m-3"
               {% if transaction.is_match %}checked{% endif %}
             >

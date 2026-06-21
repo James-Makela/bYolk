@@ -8,6 +8,19 @@ from apps.budget.models import BudgetPeriod, CostAllocation
 from apps.cost.models import Cost
 
 
+def calculate_period_totals(financial_items):
+    total_year = sum(item.per_year for item in financial_items)
+    total_budget = sum(item.per_budget_period for item in financial_items)
+    total_week = sum(item.per_week for item in financial_items)
+
+    return {
+        "yearly": total_year,
+        "monthly": total_year / 12,
+        "per_budget": total_budget,
+        "per_week": total_week,
+    }
+
+
 # Type to get either Budgeted costs - or Categories
 def get_cost_graph_data(user, cost=None, category=None):
     today = timezone.now().date()
@@ -34,9 +47,7 @@ def get_cost_graph_data(user, cost=None, category=None):
             user=user,
             category=category,
         )
-        allocated_per_budget = sum(
-            [cost.cost_per_budget_period for cost in related_costs]
-        )
+        allocated_per_budget = sum([cost.per_budget_period for cost in related_costs])
 
     allocation_map = defaultdict(float)
     for allocation in allocations:

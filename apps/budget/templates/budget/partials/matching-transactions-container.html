@@ -1,8 +1,8 @@
 <div id="transactions-container" class="mt-2 space-y-8">
-  <form type="submit" method="get" action="{% url 'allocation-with-transactions' budget.id %}" class="has-[:checked]:[&_button[type=submit]]:pointer-events-auto
-                                                                                                      has-[:checked]:[&_button[type=submit]]:bg-primary
-                                                                                                      has-[:checked]:[&_button[type=submit]]:text-primary-content
-                                                                                                      has-[:checked]:[&_button[type=submit]]:border-primary">
+  <form method="get" action="{% url 'allocation-with-transactions' 'cost' budget.id %}" class="has-[:checked]:[&_button[type=submit]]:pointer-events-auto
+                                                                                               has-[:checked]:[&_button[type=submit]]:bg-primary
+                                                                                               has-[:checked]:[&_button[type=submit]]:text-primary-content
+                                                                                               has-[:checked]:[&_button[type=submit]]:border-primary">
     <div class="flex w-full mb-5">
       <h2 class="text-xl font-bold">Un-allocated Transactions</h3>
       <button type="submit" class="btn btn-sm ml-auto pointer-events-none

@@ -4,10 +4,11 @@ from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render
 
 from apps.cost.models import Cost
+from apps.income.models import Income
 
 from .forms import CategoryForm, InitialUserPreferencesForm
 from .models import Category
-from .services import get_cost_graph_data
+from .services import calculate_period_totals, get_cost_graph_data
 
 
 # Create your views here.
@@ -15,6 +16,7 @@ from .services import get_cost_graph_data
 def dashboard(request, view_type="categories"):
     charts = []
     costs = Cost.objects.filter(user=request.user)
+    incomes = Income.objects.filter(user=request.user)
     categories = Category.objects.filter(user=request.user)
 
     if view_type == "costs":
@@ -29,9 +31,28 @@ def dashboard(request, view_type="categories"):
             if graph_data:
                 charts.append(graph_data)
 
+    cost_totals = calculate_period_totals(costs)
+    income_totals = calculate_period_totals(incomes)
+
     context = {
         "charts": charts,
         "view_type": view_type,
+        # Costs
+        "total_yearly": cost_totals["yearly"],
+        "total_monthly": cost_totals["yearly"] / 12,
+        "total_per_budget": cost_totals["per_budget"],
+        "total_per_week": cost_totals["per_week"],
+        # Income
+        "total_income_yearly": income_totals["yearly"],
+        "total_income_monthly": income_totals["yearly"] / 12,
+        "total_income_per_budget": income_totals["per_budget"],
+        "total_income_per_week": income_totals["per_week"],
+        # Savings
+        "total_savings_yearly": income_totals["yearly"] - cost_totals["yearly"],
+        "total_savings_monthly": (income_totals["yearly"] - cost_totals["yearly"]) / 12,
+        "total_savings_per_budget": income_totals["per_budget"]
+        - cost_totals["per_budget"],
+        "total_savings_per_week": income_totals["per_week"] - cost_totals["per_week"],
     }
     return render(request, "dashboard.html", context)
 
@@ -52,7 +73,7 @@ def create_category(request):
             category.user = request.user
             category.save()
             messages.success(request, "Category added!")
-            return HttpResponseRedirect("/core/categories/")
+            return HttpResponseRedirect("/categories/")
 
     # If a GET or any other method create a blank form
     else:
@@ -69,7 +90,7 @@ def delete_category(request, pk):
         category.delete()
         messages.success(request, "Category deleted")
 
-    return HttpResponseRedirect("/core/categories/")
+    return HttpResponseRedirect("/categories/")
 
 
 @login_required
@@ -104,7 +125,7 @@ def category_edit(request, pk=None):
             new_category.user = request.user
             new_category.save()
             messages.success(request, message)
-            return HttpResponseRedirect("/core/categories/")
+            return HttpResponseRedirect("/categories/")
 
     else:
         form = CategoryForm(instance=category)

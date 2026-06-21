@@ -1,5 +1,5 @@
 coverage==7.14.1
-Django==6.0.5
+Django==6.0.6
 django-environ==0.13.0
 django-allauth==65.16.1
 numpy==2.4.4
