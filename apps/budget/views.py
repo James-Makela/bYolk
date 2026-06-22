@@ -167,7 +167,6 @@ def get_allocation_picker(request, allocation_type, allocation_id):
 def save_allocations(request, allocation_type, allocation_id):
     """Processes the HTMX form submission."""
     TargetModel = CostAllocation if allocation_type == "cost" else IncomeAllocation
-
     field_to_update = (
         "income_allocation" if allocation_type == "income" else "cost_allocation"
     )
@@ -246,7 +245,7 @@ def edit_allocation_with_transactions(request, allocation_type, budget_id, pk=No
     budget_period = get_object_or_404(BudgetPeriod, id=budget_id, user=request.user)
 
     TargetModel = CostAllocation if allocation_type == "cost" else IncomeAllocation
-    form_class = (
+    TargetFormModel = (
         CostAllocationTransactionsForm
         if allocation_type == "cost"
         else IncomeAllocationTransactionsForm
@@ -267,7 +266,7 @@ def edit_allocation_with_transactions(request, allocation_type, budget_id, pk=No
         message = "Allocation saved!"
 
     if request.method == "POST":
-        form = form_class(request.POST, instance=allocation)
+        form = TargetFormModel(request.POST, instance=allocation)
         selected_ids = request.POST.getlist("transaction_ids")
         if form.is_valid():
             new_allocation = form.save(commit=False)
@@ -300,7 +299,7 @@ def edit_allocation_with_transactions(request, allocation_type, budget_id, pk=No
             user=request.user,
             id__in=transaction_ids,
         )
-        form = form_class(instance=allocation, user=request.user)
+        form = TargetFormModel(instance=allocation, user=request.user)
 
     return render(
         request,
