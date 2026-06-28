@@ -6,11 +6,12 @@ from django.shortcuts import get_object_or_404, render
 from django.urls import reverse
 from django.utils import timezone
 
-from apps.budget.models import BudgetPeriod, CostAllocation, IncomeAllocation
+from apps.budget.models import Bucket, BudgetPeriod, CostAllocation, IncomeAllocation
 from apps.core.forms import InitialUserPreferencesForm
 from apps.transaction.models import Transaction
 
 from .forms import (
+    BucketForm,
     CostAllocationForm,
     CostAllocationTransactionsForm,
     IncomeAllocationTransactionsForm,
@@ -84,6 +85,8 @@ def budget_detail(request, id):
         transaction.amount for transaction in unallocated_transactions
     )
 
+    buckets = Bucket.objects.filter(user=request.user)
+
     budget_length = (budget.end_date - budget.start_date).days + 1
     current_position = (timezone.now().date() - budget.start_date).days + 1
     if current_position > budget_length:
@@ -103,6 +106,7 @@ def budget_detail(request, id):
         "budget_length": budget_length,
         "current_position": current_position,
         "complete": complete,
+        "buckets": buckets,
     }
 
     return render(
@@ -355,3 +359,72 @@ def delete_budget_period(request, pk):
         messages.success(request, "Budget Period deleted")
 
     return HttpResponseRedirect(reverse("budgets-page"))
+
+
+@login_required
+def add_bucket(request, budget_id):
+    if request.method == "POST":
+        form = BucketForm(request.POST)
+        if form.is_valid():
+            new_bucket = form.save(commit=False)
+            new_bucket.user = request.user
+            new_bucket.save()
+            messages.success(request, "Bucket added!")
+            return HttpResponseRedirect(reverse("detail", args=[budget_id]))
+
+        else:
+            messages.error(request, "Unable to save bucket.")
+            return HttpResponseRedirect(reverse("detail", args=[budget_id]))
+
+    else:
+        form = BucketForm(user=request.user)
+
+    return render(
+        request,
+        "budget/forms/add_bucket_form.html",
+        {
+            "budget_id": budget_id,
+            "form": form,
+        },
+    )
+
+
+@login_required
+def empty_bucket(request, budget_id, bucket_id):
+    bucket = get_object_or_404(Bucket, pk=bucket_id, user=request.user)
+    allocation = get_object_or_404(
+        CostAllocation.objects.select_related("budget_period"),
+        cost=bucket.cost_id,
+        budget_period__user=request.user,
+        budget_period_id=budget_id,
+    )
+    print(allocation)
+
+    allocation.amount -= bucket.balance
+    bucket.balance = 0
+
+    bucket.save()
+    allocation.save()
+
+    return HttpResponseRedirect(reverse("detail", args=[budget_id]))
+
+
+@login_required
+def fill_bucket(request, budget_id, bucket_id):
+    bucket = get_object_or_404(Bucket, pk=bucket_id, user=request.user)
+    allocation = get_object_or_404(
+        CostAllocation.objects.select_related("budget_period"),
+        cost=bucket.cost_id,
+        budget_period__user=request.user,
+        budget_period_id=budget_id,
+    )
+    print(allocation)
+
+    difference = allocation.remaining
+    bucket.balance += difference
+    allocation.amount += difference
+
+    bucket.save()
+    allocation.save()
+
+    return HttpResponseRedirect(reverse("detail", args=[budget_id]))

@@ -1,6 +1,6 @@
 from django import forms
 
-from apps.budget.models import CostAllocation, IncomeAllocation
+from apps.budget.models import Bucket, CostAllocation, IncomeAllocation
 from apps.core.models import Category
 from apps.cost.models import Cost
 from apps.income.models import Income
@@ -72,3 +72,19 @@ class IncomeAllocationTransactionsForm(forms.ModelForm):
         super(IncomeAllocationTransactionsForm, self).__init__(*args, **kwargs)
         if user:
             self.fields["income"].queryset = Income.objects.filter(user=user)
+
+
+class BucketForm(forms.ModelForm):
+    class Meta:
+        model = Bucket
+        fields = ["name", "cost"]
+        widgets = {
+            "name": forms.TextInput(attrs={"class": "input input-bordered w-full"}),
+            "cost": forms.Select(attrs={"class": "select select-bordered w-full"}),
+        }
+
+    def __init__(self, *args, **kwargs):
+        user = kwargs.pop("user", None)
+        super(BucketForm, self).__init__(*args, **kwargs)
+        if user:
+            self.fields["cost"].queryset = Cost.objects.filter(user=user)

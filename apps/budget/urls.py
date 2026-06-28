@@ -45,4 +45,19 @@ urlpatterns = [
     path(
         "delete-budgetperiod/<int:pk>", views.delete_budget_period, name="delete-budget"
     ),
+    path(
+        "add-bucket/<int:budget_id>",
+        views.add_bucket,
+        name="add-bucket",
+    ),
+    path(
+        "empty-bucket/<int:budget_id>/<int:bucket_id>",
+        views.empty_bucket,
+        name="empty-bucket",
+    ),
+    path(
+        "fill-bucket/<int:budget_id>/<int:bucket_id>",
+        views.fill_bucket,
+        name="fill-bucket",
+    ),
 ]
