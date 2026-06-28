@@ -158,7 +158,7 @@ def get_allocation_picker(request, allocation_type, allocation_id):
 
     return render(
         request,
-        "budget/partials/allocation_modal.html",
+        "budget/partials/_allocation_modal.html",
         {
             "allocation": allocation,
             "eligible_transactions": sorted_transactions,
