@@ -13,7 +13,12 @@
 
       <tbody>
         {% for cost in costs %}
-          <tr class="hover:bg-base-300 {% if request.GET.updated == cost.id|slugify %}animate-flash-green{% endif %}">
+          <tr class="hover:bg-base-300
+                     {% if request.GET.updated == cost.id|slugify %}animate-flash-green{% endif %}
+                     {% if cost.passed %}
+                       text-base-content/30
+                     {% endif %}"
+          >
             <td>{{ cost.name }}</td>
             <td>{{ cost.category }}</td>
             <td>{{ cost.frequency_string }}</td>

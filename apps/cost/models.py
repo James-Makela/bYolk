@@ -1,4 +1,5 @@
 from django.db import models
+from django.utils import timezone
 
 from apps.core.models import Category, FinancialItem
 
@@ -16,3 +17,8 @@ class Cost(FinancialItem):
         if frequency_string:
             frequency_string = frequency_string[0].lower() + frequency_string[1:]
         return f"{self.name}, ${self.amount} {frequency_string}"
+
+    @property
+    def passed(self):
+        if self.end_date and self.end_date < timezone.now().date():
+            return True

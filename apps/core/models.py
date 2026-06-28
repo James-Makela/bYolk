@@ -118,6 +118,7 @@ class FinancialItem(KeywordsMixin, FrequencyMixin, models.Model):
     name = models.CharField(max_length=255)
     amount = models.DecimalField(max_digits=10, decimal_places=2)
     start_date = models.DateField()
+    end_date = models.DateField(null=True, blank=True)
     keywords = models.CharField(
         max_length=500, blank=True, help_text="Comma-separated list"
     )

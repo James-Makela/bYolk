@@ -18,7 +18,18 @@ def costs_page(request):
 
 @login_required
 def costs_list(request):
-    costs = Cost.objects.filter(user=request.user)
+    raw_costs = Cost.objects.filter(user=request.user)
+
+    active = []
+    passed = []
+
+    for cost in raw_costs:
+        if cost.passed:
+            passed.append(cost)
+        else:
+            active.append(cost)
+
+    costs = active + passed
 
     totals = calculate_period_totals(costs)
 

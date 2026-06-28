@@ -16,6 +16,7 @@ class CostForm(forms.ModelForm):
             "frequency_value",
             "frequency_unit",
             "start_date",
+            "end_date",
         ]
         widgets = {
             "name": forms.TextInput(attrs={"class": "input input-bordered w-full"}),
@@ -34,6 +35,9 @@ class CostForm(forms.ModelForm):
                 attrs={"class": "select select-bordered w-full"}
             ),
             "start_date": forms.DateInput(
+                attrs={"class": "input input-bordered w-full", "type": "date"}
+            ),
+            "end_date": forms.DateInput(
                 attrs={"class": "input input-bordered w-full", "type": "date"}
             ),
         }

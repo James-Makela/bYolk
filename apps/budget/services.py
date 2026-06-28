@@ -36,6 +36,9 @@ def populate_from_costs(budget_period, user):
         delta = cost.get_delta()
         current_occurrence = cost.start_date
 
+        if cost.end_date and cost.end_date < budget_period.start_date:
+            break
+
         while current_occurrence <= budget_period.end_date:
             if current_occurrence >= budget_period.start_date:
                 if cost.category is not None:
