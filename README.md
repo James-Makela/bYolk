@@ -26,9 +26,9 @@ git clone https://git.silverbricc.com/JamesMakela/bYolk.git
 cp .env.example .env
 ```
 
-￼5. Open and edit the `.env` file in your text editor
+5. Open and edit the `.env` file in your text editor
 	1. Set the db password to a password of your choosing
-	￼2. Set the django secret key
+	2. Set the django secret key
 		- You can generate this with the below:
 ```bash
 python -c 'from django.core.management.utils import get_random_secret_key; print(get_random_secret_key())'
@@ -49,7 +49,7 @@ python -c 'from django.core.management.utils import get_random_secret_key; print
 cp .env.example .env
 ```
 
-￼5. Open and edit the `.env` file in your text editor as above
+5. Open and edit the `.env` file in your text editor as above
 	- You may want to set the `CONTAINER_RUNTIME` in the `.env` file to podman, or change the `shell.nix` to use docker if you prefer
 6. In your terminal type direnv allow
 7. Run with `./start-dev.sh`, or `./start.sh` if running in production mode
