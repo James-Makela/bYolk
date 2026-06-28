@@ -402,6 +402,10 @@ def empty_bucket(request, budget_id, bucket_id):
 
     allocation.amount -= bucket.balance
     bucket.balance = 0
+    if -allocation.amount == allocation.cost.amount:
+        allocation.note = None
+    else:
+        allocation.note = "Adjusted from bucket"
 
     bucket.save()
     allocation.save()
@@ -423,6 +427,7 @@ def fill_bucket(request, budget_id, bucket_id):
     difference = allocation.remaining
     bucket.balance += difference
     allocation.amount += difference
+    allocation.note = "Remainder sent to bucket"
 
     bucket.save()
     allocation.save()

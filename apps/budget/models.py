@@ -181,6 +181,7 @@ class CostAllocation(AllocationBase):
     category = models.ForeignKey(
         Category, on_delete=models.SET_NULL, null=True, blank=True
     )
+    note = models.CharField(max_length=50, null=True, blank=True)
 
     class Meta:
         constraints = [
