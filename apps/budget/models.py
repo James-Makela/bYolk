@@ -99,6 +99,15 @@ class BudgetPeriod(models.Model):
     )
     notes = models.CharField(max_length=250, blank=True)
 
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                "start_date",
+                "end_date",
+                name="unique_budget_per_period",
+            )
+        ]
+
     def __str__(self):
         return f"Budget {self.id} {self.start_date} -> {self.end_date}"
 
