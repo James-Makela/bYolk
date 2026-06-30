@@ -102,9 +102,10 @@ class BudgetPeriod(models.Model):
     class Meta:
         constraints = [
             models.UniqueConstraint(
+                "user",
                 "start_date",
                 "end_date",
-                name="unique_budget_per_period",
+                name="unique_user_budget_per_period",
             )
         ]
 
@@ -203,6 +204,8 @@ class CostAllocation(AllocationBase):
 
     @property
     def is_over(self):
+        if not self.cost:
+            return False
         print(f"Budgeted: {self.cost.amount}, Spent: {self.total_paid}")
         return -self.total_paid > self.cost.amount
 
