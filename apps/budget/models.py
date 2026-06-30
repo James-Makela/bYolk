@@ -227,6 +227,10 @@ class IncomeAllocation(AllocationBase):
             )
         ]
 
+    @property
+    def display_cost(self):
+        return self.amount
+
 
 class Bucket(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
