@@ -8,7 +8,7 @@
         <label for="toggle_{{ allocation.id|unlocalize }}" class="absolute inset-0 z-0 cursor-pointer"></label>
         <div class="font-medium truncate col-span-3 text-lg relative z-10 pointer-events-none p-0">{{ allocation.name }}{% if allocation.category %}{% include "partials/_category_badge.html" with category=allocation.category %}{% endif %}</div>
         <div class="font-medium col-span-2 text-sm relative z-10 pointer-events-none">{{ allocation.expected_date }}</div>
-        <div class="text-right text-base-content/70 col-span-1 text-sm relative z-10 pointer-events-none">${{ allocation.cost.amount }}</div>
+        <div class="text-right text-base-content/70 col-span-1 text-sm relative z-10 pointer-events-none">${{ allocation.display_cost }}</div>
         <div class="text-right font-semibold col-span-1 text-sm relative z-10 pointer-events-none{% if allocation.is_over %} text-error{% endif %}">${{ allocation.total_paid }}</div>
         <div class="text-right font-semibold col-span-1 text-sm relative z-10 pointer-events-none {% if allocation.remaining > 0 %}text-success{% elif allocation.remaining == 0 %}text-info{% else %}text-error{% endif %}">
           ${{ allocation.remaining }}
