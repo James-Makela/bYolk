@@ -201,6 +201,11 @@ class CostAllocation(AllocationBase):
         ]
         ordering = ["amount"]
 
+    @property
+    def is_over(self):
+        print(f"Budgeted: {self.cost.amount}, Spent: {self.total_paid}")
+        return -self.total_paid > self.cost.amount
+
 
 class IncomeAllocation(AllocationBase):
     income = models.ForeignKey(Income, on_delete=models.SET_NULL, null=True, blank=True)
