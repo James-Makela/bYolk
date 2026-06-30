@@ -326,8 +326,15 @@ def move_cost_allocation(request, allocation_id, budget_id):
         pk=allocation_id,
         budget_period__user=request.user,
     )
-
     current_budget = allocation.budget_period.id
+
+    # Check if there are associated costs with the allocation
+    if allocation.transactions.all().exists():
+        print(allocation.transactions)
+        messages.error(request, "Unable to move allocation with transactions")
+
+        return HttpResponseRedirect(reverse("detail", args=[current_budget]))
+
     budget_to_assign = get_object_or_404(BudgetPeriod, pk=budget_id, user=request.user)
 
     allocation.budget_period = budget_to_assign
