@@ -205,7 +205,7 @@ class CostAllocation(AllocationBase):
     @property
     def display_cost(self):
         if self.cost:
-            return self.cost.amount
+            return -self.cost.amount
         return self.amount
 
     @property
