@@ -46,15 +46,17 @@
           </div>
         {% endfor %}
 
-        <div class="mt-2">
-          <input
-            type="checkbox"
-            name="log_change"
-            class="checkbox checkbox-sm checkbox-accent"
-            checked="checked"
-          />
-          <span class="text-sm align-middle">Log cost change</span>
-        </div>
+        {% if cost  %}
+          <div class="mt-2">
+            <input
+              type="checkbox"
+              name="log_change"
+              class="checkbox checkbox-sm checkbox-accent"
+              checked="checked"
+            />
+            <span class="text-sm align-middle">Log cost change</span>
+          </div>
+        {% endif %}
 
         <button type="submit" class="btn btn-primary mt-6 w-full">Save Cost</button>
       </fieldset>

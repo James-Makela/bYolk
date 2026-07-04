@@ -203,12 +203,6 @@ class CostAllocation(AllocationBase):
         ordering = ["amount"]
 
     @property
-    def display_cost(self):
-        if self.cost:
-            return -self.cost.amount
-        return self.amount
-
-    @property
     def is_over(self):
         if not self.cost:
             return False
@@ -226,10 +220,6 @@ class IncomeAllocation(AllocationBase):
                 name="unique_income_per_budget",
             )
         ]
-
-    @property
-    def display_cost(self):
-        return self.amount
 
 
 class Bucket(models.Model):
