@@ -141,6 +141,16 @@ class FinancialItem(KeywordsMixin, FrequencyMixin, models.Model):
         return (self.amount / self.get_delta_days()) * 7
 
 
+class FinancialChange(models.Model):
+    previous_amount = models.DecimalField(max_digits=10, decimal_places=2)
+    new_amount = models.DecimalField(max_digits=10, decimal_places=2)
+    date_changed = models.DateField()
+
+    class Meta:
+        abstract = True
+        ordering = ["date_changed"]
+
+
 class Category(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     name = models.CharField(max_length=50)

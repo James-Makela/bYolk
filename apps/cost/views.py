@@ -4,9 +4,10 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render
+from django.utils import timezone
 
 from apps.core.services import calculate_period_totals
-from apps.cost.models import Cost
+from apps.cost.models import Cost, CostChange
 
 from .forms import CostForm
 
@@ -56,9 +57,23 @@ def cost_edit(request, pk=None):
 
     if request.method == "POST":
         form = CostForm(request.POST, instance=cost, user=request.user)
+        old_amount = cost.amount
         if form.is_valid():
             cost_item = form.save(commit=False)
             cost_item.user = request.user
+
+            # If the user wants to log this change, we create a change object
+            if request.POST.get("log_change"):
+                CostChange.objects.update_or_create(
+                    cost=cost,
+                    date_changed=timezone.now().date(),
+                    defaults={
+                        "new_amount": form.cleaned_data["amount"],
+                    },
+                    create_defaults={
+                        "previous_amount": old_amount,
+                    },
+                )
             cost_item.save()
             messages.success(request, message)
             return HttpResponseRedirect(f"/costs/?updated={cost_item.id}")
