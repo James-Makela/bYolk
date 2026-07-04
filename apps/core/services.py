@@ -27,7 +27,7 @@ def get_cost_graph_data(user, cost=None, category=None):
     six_months_ago = today - timedelta(days=183)
 
     budget_periods = BudgetPeriod.objects.filter(
-        user=user, end_date__lte=today, end_date__gte=six_months_ago
+        user=user, start_date__lte=today, start_date__gte=six_months_ago
     ).order_by("start_date")
 
     if cost:

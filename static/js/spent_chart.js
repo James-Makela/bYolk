@@ -31,9 +31,11 @@ function renderChart(chartID, color, title, amounts, dates, budgetedAmount) {
 
     colors:  [
       function(context) {
-        if (isStub[context.dataPointIndex]) return color;
-        if (!hasBudget) return color;
-        return context.value <= budgetedAmount ? color : '#ff0000';
+        const isLast = context.dataPointIndex === context.w.config.series[context.seriesIndex].data.length - 1;
+
+        if (isStub[context.dataPointIndex]) return isLast ? color + '80' : color;
+        if (!hasBudget) return isLast ? color + '80' : color;
+        return context.value <= budgetedAmount ? (isLast ? color + '80' : color) : (isLast ? '#ff000080' : '#ff0000');
       }
     ],
     plotOptions: {
