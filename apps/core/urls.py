@@ -12,4 +12,5 @@ urlpatterns = [
     path("add-category/", views.category_edit, name="add-category"),
     path("edit-category/<int:pk>", views.category_edit, name="edit-category"),
     path("delete-category/<int:pk>/", views.delete_category, name="delete-category"),
+    path("change-theme/", views.theme_select, name="change-theme"),
 ]
