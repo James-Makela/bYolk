@@ -218,7 +218,7 @@ class CostAllocation(AllocationBase):
         if not self.cost:
             return False
         print(f"Budgeted: {self.cost.amount}, Spent: {self.total_paid}")
-        return -self.total_paid > self.cost.amount
+        return self.total_paid < self.display_amount
 
 
 class IncomeAllocation(AllocationBase):
