@@ -58,7 +58,7 @@
             {% if user.is_authenticated %}
                 <!-- Dashboard -->
               <li>
-                <a href="{% url 'dashboard' %}"
+                <a href="{% url 'core:dashboard' %}"
                    class="is-drawer-close:tooltip is-drawer-close:tooltip-right"
                    data-tip="Dashboard">
                   <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-gauge-icon lucide-gauge">
@@ -83,7 +83,7 @@
 
                 <!-- Income - Dollar sign -->
               <li>
-                <a href="{% url 'costs-page' %}"
+                <a href="{% url 'incomes-page' %}"
                    class="is-drawer-close:tooltip is-drawer-close:tooltip-right"
                    data-tip="Income">
                   <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-briefcase-business-icon lucide-briefcase-business">
@@ -147,7 +147,7 @@
                 </a>
               </li>
               <div class="is-drawer-close:hidden">
-                <form method="post" action="{% url 'logout' %}" class="inline">
+                <form method="post" action="{% url 'account_logout' %}" class="inline">
                   {% csrf_token %}
                   <button type="submit" class="btn btn-soft btn-error btn-wide">Logout</button>
                 </form>

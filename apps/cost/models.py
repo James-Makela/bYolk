@@ -1,18 +1,12 @@
 from django.db import models
+from django.utils import timezone
 
-from apps.core.models import Category, FrequencyMixin, KeywordsMixin, User
+from apps.core.models import Category, FinancialChange, FinancialItem
 
 
-class Cost(KeywordsMixin, FrequencyMixin, models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    name = models.CharField(max_length=255)
-    amount = models.DecimalField(max_digits=10, decimal_places=2)
+class Cost(FinancialItem):
     category = models.ForeignKey(
         Category, null=True, blank=True, on_delete=models.SET_NULL
-    )
-    start_date = models.DateField()
-    keywords = models.CharField(
-        max_length=500, blank=True, help_text="Comma-separated list"
     )
 
     class Meta:
@@ -25,6 +19,21 @@ class Cost(KeywordsMixin, FrequencyMixin, models.Model):
         return f"{self.name}, ${self.amount} {frequency_string}"
 
     @property
-    def cost_per_budget_period(self):
-        length_of_budget_period = self.user.preferences.get_delta_days()
-        return (self.amount / self.get_delta_days()) * length_of_budget_period
+    def passed(self):
+        if self.end_date and self.end_date < timezone.now().date():
+            return True
+
+
+class CostChange(FinancialChange):
+    cost = models.ForeignKey(
+        Cost, on_delete=models.CASCADE, related_name="cost_changes"
+    )
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                "date_changed",
+                "cost",
+                name="unique_cost_change_per_day",
+            )
+        ]

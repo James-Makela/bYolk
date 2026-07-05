@@ -36,4 +36,5 @@ jobs:
           echo "POSTGRES_PORT=5432" >> .env
       - name: Run Django Tests
         run: |
-          python manage.py test
+          coverage run manage.py test
+          coverage report --fail-under=45

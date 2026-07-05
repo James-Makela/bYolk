@@ -1,0 +1,11 @@
+{% load l10n %}
+<div class="card w-96 h-40 bg-primary/20 card-md shadow-sm mr-5">
+  <div class="card-body">
+    <h2 class="card-title">{{ bucket.name }} Bucket</h2>
+    <p class="text-2xl {% if bucket.balance > 0 %}text-success{% elif bucket.balance == 0 %}text-info{% else %}text-error{% endif %}">${{ bucket.balance|floatformat:2 }}</p>
+    <div class="flex justify-end card-actions w-full">
+      <a href="{% url 'empty-bucket' budget.id|unlocalize bucket.id|unlocalize %}" class="btn btn-primary btn-sm w-30">Empty</a>
+      <a href="{% url 'fill-bucket' budget.id|unlocalize bucket.id|unlocalize %}" class="btn btn-primary btn-sm w-30">Fill</a>
+    </div>
+  </div>
+</div>

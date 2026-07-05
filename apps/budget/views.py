@@ -6,11 +6,16 @@ from django.shortcuts import get_object_or_404, render
 from django.urls import reverse
 from django.utils import timezone
 
-from apps.budget.models import BudgetPeriod, CostAllocation, IncomeAllocation
+from apps.budget.models import Bucket, BudgetPeriod, CostAllocation, IncomeAllocation
 from apps.core.forms import InitialUserPreferencesForm
 from apps.transaction.models import Transaction
 
-from .forms import CostAllocationForm, CostAllocationTransactionsForm
+from .forms import (
+    BucketForm,
+    CostAllocationForm,
+    CostAllocationTransactionsForm,
+    IncomeAllocationTransactionsForm,
+)
 from .services import generate_next_budget_period, populate_from_costs
 
 
@@ -80,6 +85,15 @@ def budget_detail(request, id):
         transaction.amount for transaction in unallocated_transactions
     )
 
+    buckets = Bucket.objects.filter(user=request.user)
+
+    budget_length = (budget.end_date - budget.start_date).days + 1
+    current_position = (timezone.now().date() - budget.start_date).days + 1
+    if current_position > budget_length:
+        complete = True
+    else:
+        complete = False
+
     context = {
         "budget": budget,
         "allocations": ungrouped_allocations,
@@ -89,6 +103,10 @@ def budget_detail(request, id):
         "next": next_period,
         "unallocated_balance": unallocated_balance,
         "unallocated_transactions": unallocated_transactions,
+        "budget_length": budget_length,
+        "current_position": current_position,
+        "complete": complete,
+        "buckets": buckets,
     }
 
     return render(
@@ -116,11 +134,8 @@ def populate_costs(request, id):
 @login_required
 def get_allocation_picker(request, allocation_type, allocation_id):
     """Returns the HTMX modal content for selecting transactions."""
-    models = {
-        "income": IncomeAllocation,
-        "cost": CostAllocation,
-    }
-    TargetModel = models.get(allocation_type, CostAllocation)
+    TargetModel = CostAllocation if allocation_type == "cost" else IncomeAllocation
+
     related_field = "cost" if allocation_type == "cost" else "income"
 
     allocation = get_object_or_404(
@@ -143,7 +158,7 @@ def get_allocation_picker(request, allocation_type, allocation_id):
 
     return render(
         request,
-        "budget/partials/allocation_modal.html",
+        "budget/partials/_allocation_modal.html",
         {
             "allocation": allocation,
             "eligible_transactions": sorted_transactions,
@@ -155,11 +170,7 @@ def get_allocation_picker(request, allocation_type, allocation_id):
 @login_required
 def save_allocations(request, allocation_type, allocation_id):
     """Processes the HTMX form submission."""
-    models = {
-        "income": IncomeAllocation,
-        "cost": CostAllocation,
-    }
-    TargetModel = models.get(allocation_type, CostAllocation)
+    TargetModel = CostAllocation if allocation_type == "cost" else IncomeAllocation
     field_to_update = (
         "income_allocation" if allocation_type == "income" else "cost_allocation"
     )
@@ -187,7 +198,8 @@ def save_allocations(request, allocation_type, allocation_id):
                 or 0
             )
 
-            allocation.amount = abs(total_sum)
+            allocation.amount = total_sum
+            print("Fine till here")
             allocation.save()
 
         # HX-Refresh tells the browser to reload the whole page to update totals
@@ -229,16 +241,26 @@ def add_single_allocation(request, budget_id):
 
 
 @login_required
-def edit_allocation_with_transactions(request, budget_id, pk=None):
+def edit_allocation_with_transactions(request, allocation_type, budget_id, pk=None):
     """Handles both editing and creating a cost allocation with associated transactions.
 
     If the pk is provided, it will edit, otherwise it will create a new allocation.
     """
     budget_period = get_object_or_404(BudgetPeriod, id=budget_id, user=request.user)
 
+    TargetModel = CostAllocation if allocation_type == "cost" else IncomeAllocation
+    TargetFormModel = (
+        CostAllocationTransactionsForm
+        if allocation_type == "cost"
+        else IncomeAllocationTransactionsForm
+    )
+    transaction_field = (
+        "cost_allocation" if allocation_type == "cost" else "income_allocation"
+    )
+
     if pk:
         allocation = get_object_or_404(
-            CostAllocation, pk=pk, budget_period__user=request.user
+            TargetModel, pk=pk, budget_period__user=request.user
         )
         title = "Edit Allocation"
         message = "Allocation updated!"
@@ -248,7 +270,7 @@ def edit_allocation_with_transactions(request, budget_id, pk=None):
         message = "Allocation saved!"
 
     if request.method == "POST":
-        form = CostAllocationForm(request.POST, instance=allocation)
+        form = TargetFormModel(request.POST, instance=allocation)
         selected_ids = request.POST.getlist("transaction_ids")
         if form.is_valid():
             new_allocation = form.save(commit=False)
@@ -257,18 +279,18 @@ def edit_allocation_with_transactions(request, budget_id, pk=None):
 
             # Allocate ticked transactions
             Transaction.objects.filter(id__in=selected_ids, user=request.user).update(
-                cost_allocation=new_allocation
+                **{transaction_field: new_allocation}
             )
             # Unallocate any unticked
             Transaction.objects.filter(
-                cost_allocation=new_allocation, user=request.user
-            ).exclude(id__in=selected_ids).update(cost_allocation=None)
+                **{transaction_field: new_allocation}, user=request.user
+            ).exclude(id__in=selected_ids).update(**{transaction_field: None})
 
             messages.success(request, message)
             return HttpResponseRedirect(reverse("detail", args=[budget_id]))
 
         else:
-            messages.error(request, "Unable to save cost.")
+            messages.error(request, "Unable to save allocation.")
             return HttpResponseRedirect(reverse("detail", args=[budget_id]))
 
     else:
@@ -281,7 +303,7 @@ def edit_allocation_with_transactions(request, budget_id, pk=None):
             user=request.user,
             id__in=transaction_ids,
         )
-        form = CostAllocationTransactionsForm(instance=allocation, user=request.user)
+        form = TargetFormModel(instance=allocation, user=request.user)
 
     return render(
         request,
@@ -291,6 +313,7 @@ def edit_allocation_with_transactions(request, budget_id, pk=None):
             "form": form,
             "selected_transactions": selected_transactions,
             "title": title,
+            "allocation_type": allocation_type,
         },
     )
 
@@ -303,8 +326,15 @@ def move_cost_allocation(request, allocation_id, budget_id):
         pk=allocation_id,
         budget_period__user=request.user,
     )
-
     current_budget = allocation.budget_period.id
+
+    # Check if there are associated costs with the allocation
+    if allocation.transactions.all().exists():
+        print(allocation.transactions)
+        messages.error(request, "Unable to move allocation with transactions")
+
+        return HttpResponseRedirect(reverse("detail", args=[current_budget]))
+
     budget_to_assign = get_object_or_404(BudgetPeriod, pk=budget_id, user=request.user)
 
     allocation.budget_period = budget_to_assign
@@ -316,11 +346,7 @@ def move_cost_allocation(request, allocation_id, budget_id):
 
 @login_required
 def delete_allocation(request, allocation_type, pk, budget_id):
-    models = {
-        "income": IncomeAllocation,
-        "cost": CostAllocation,
-    }
-    TargetModel = models.get(allocation_type, CostAllocation)
+    TargetModel = CostAllocation if allocation_type == "cost" else IncomeAllocation
 
     allocation = get_object_or_404(TargetModel, pk=pk, budget_period__user=request.user)
 
@@ -340,3 +366,72 @@ def delete_budget_period(request, pk):
         messages.success(request, "Budget Period deleted")
 
     return HttpResponseRedirect(reverse("budgets-page"))
+
+
+@login_required
+def add_bucket(request, budget_id):
+    if request.method == "POST":
+        form = BucketForm(request.POST)
+        if form.is_valid():
+            new_bucket = form.save(commit=False)
+            new_bucket.user = request.user
+            new_bucket.save()
+            messages.success(request, "Bucket added!")
+            return HttpResponseRedirect(reverse("detail", args=[budget_id]))
+
+        else:
+            messages.error(request, "Unable to save bucket.")
+            return HttpResponseRedirect(reverse("detail", args=[budget_id]))
+
+    else:
+        form = BucketForm(user=request.user)
+
+    return render(
+        request,
+        "budget/forms/add_bucket_form.html",
+        {
+            "budget_id": budget_id,
+            "form": form,
+        },
+    )
+
+
+@login_required
+def empty_bucket(request, budget_id, bucket_id):
+    bucket = get_object_or_404(Bucket, pk=bucket_id, user=request.user)
+    allocation = get_object_or_404(
+        CostAllocation.objects.select_related("budget_period"),
+        cost=bucket.cost_id,
+        budget_period__user=request.user,
+        budget_period_id=budget_id,
+    )
+    print(allocation)
+
+    allocation.amount -= bucket.balance
+    bucket.balance = 0
+
+    bucket.save()
+    allocation.save()
+
+    return HttpResponseRedirect(reverse("detail", args=[budget_id]))
+
+
+@login_required
+def fill_bucket(request, budget_id, bucket_id):
+    bucket = get_object_or_404(Bucket, pk=bucket_id, user=request.user)
+    allocation = get_object_or_404(
+        CostAllocation.objects.select_related("budget_period"),
+        cost=bucket.cost_id,
+        budget_period__user=request.user,
+        budget_period_id=budget_id,
+    )
+    print(allocation)
+
+    difference = allocation.remaining
+    bucket.balance += difference
+    allocation.amount += difference
+
+    bucket.save()
+    allocation.save()
+
+    return HttpResponseRedirect(reverse("detail", args=[budget_id]))

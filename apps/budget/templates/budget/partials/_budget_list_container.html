@@ -1,3 +1,4 @@
+{% load l10n %}
 <div class="overflow-x-auto rounded-lg border border-base-300">
   <table class="table w-full">
     {% if budget_periods %}
@@ -24,7 +25,7 @@
           <td class="text-success">${{ budget.annotated_income|floatformat:2 }}</td>
           <td class="py-3 h-px">
             <div class="grid grid-cols-2 gap-2 relative z-20 content-center items-center">
-              <a class="btn btn-sm btn-soft" href="/budgets/{{ budget.id }}">View</a>
+              <a class="btn btn-sm btn-soft" href="/budgets/{{ budget.id|unlocalize }}">View</a>
               <form class="m-0" action="{% url 'delete-budget' budget.pk %}" method="post" onsubmit="return confirm('Are you sure?')">
                 {% csrf_token %}
                 <button type="submit" class="btn btn-sm btn-soft btn-error cursor-pointer w-full">

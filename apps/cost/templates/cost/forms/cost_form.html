@@ -11,7 +11,6 @@
 
 {% block content %}
   <div class="p-10 max-w-lg mx-auto">
-    {# Removed action so it posts to the current URL (Edit or Add) #}
     <form method="post" class="space-y-4">
       {% csrf_token %}
 
@@ -33,7 +32,6 @@
                   step="0.01"
                   name="{{ field.html_name }}"
                   id="{{ field.id_for_label }}"
-                  {# Use 'value' but ensure we handle None safely #}
                   value="{{ field.value|default_if_none:'' }}"
                   class="grow bg-transparent h-full px-2 outline-none"
                 />
@@ -47,6 +45,18 @@
             {% endif %}
           </div>
         {% endfor %}
+
+        {% if cost  %}
+          <div class="mt-2">
+            <input
+              type="checkbox"
+              name="log_change"
+              class="checkbox checkbox-sm checkbox-accent"
+              checked="checked"
+            />
+            <span class="text-sm align-middle">Log cost change</span>
+          </div>
+        {% endif %}
 
         <button type="submit" class="btn btn-primary mt-6 w-full">Save Cost</button>
       </fieldset>

@@ -99,22 +99,34 @@ class BudgetPeriod(models.Model):
     )
     notes = models.CharField(max_length=250, blank=True)
 
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                "user",
+                "start_date",
+                "end_date",
+                name="unique_user_budget_per_period",
+            )
+        ]
+
     def __str__(self):
         return f"Budget {self.id} {self.start_date} -> {self.end_date}"
 
     @cached_property
     def get_total_costs(self):
-        result = self.costallocation_set.aggregate(total=Sum("amount"))
+        result = self.costallocation_set.aggregate(total=Sum("amount"))  # type: ignore
         return result["total"] or 0
 
     @cached_property
     def get_total_income(self):
-        result = self.incomeallocation_set.aggregate(total=Sum("amount"))
+        result = self.incomeallocation_set.aggregate(  # type: ignore
+            total=Sum("amount")
+        )
         return result["total"] or 0
 
     @cached_property
     def balance(self):
-        return self.get_total_income - self.get_total_costs
+        return self.get_total_income + self.get_total_costs
 
     def get_categorised_transactions(self):
         from apps.transaction.models import Transaction
@@ -166,7 +178,7 @@ class AllocationBase(models.Model):
 
     @property
     def remaining(self):
-        return self.amount + self.total_paid
+        return -self.amount + self.total_paid
 
     def __str__(self):
         return f"{self.name} ${self.amount} for Budget {self.budget_period_id}"
@@ -188,7 +200,14 @@ class CostAllocation(AllocationBase):
                 name="unique_cost_per_budget",
             )
         ]
-        ordering = ["-amount"]
+        ordering = ["amount"]
+
+    @property
+    def is_over(self):
+        if not self.cost:
+            return False
+        print(f"Budgeted: {self.cost.amount}, Spent: {self.total_paid}")
+        return -self.total_paid > self.cost.amount
 
 
 class IncomeAllocation(AllocationBase):
@@ -201,3 +220,12 @@ class IncomeAllocation(AllocationBase):
                 name="unique_income_per_budget",
             )
         ]
+
+
+class Bucket(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    name = models.CharField(max_length=50)
+    balance = models.DecimalField(
+        max_digits=10, decimal_places=2, blank=True, default=0
+    )
+    cost = models.ForeignKey(Cost, on_delete=models.SET_NULL, null=True, blank=True)

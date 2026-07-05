@@ -2,7 +2,7 @@
 
 {% block content %}
   <div class="flex items-center justify-center w-full mt-10">
-    <form method="post" class="w-full max-w-sm">
+    <form method="post" action="{% url 'account_signup' %}" class="w-full max-w-sm">
       {% csrf_token %}
       <fieldset class="fieldset bg-base-200 border-base-300 rounded-box border p-6">
         <legend class="fieldset-legend">Create Account</legend>
@@ -18,7 +18,6 @@
               id="{{ field.id_for_label }}"
               class="input w-full {% if field.errors %}input-error{% endif %}"
               placeholder="{{ field.label }}"
-              required
             />
             {% if field.errors %}
               <label class="label">

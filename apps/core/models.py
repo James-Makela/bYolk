@@ -1,6 +1,9 @@
+import uuid
+
 from dateutil.relativedelta import relativedelta
 
 from django.conf import settings
+from django.contrib.auth.base_user import BaseUserManager
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 from django.db.models.functions import Lower
@@ -45,7 +48,7 @@ class FrequencyMixin(models.Model):
         return self.get_delta() == other.get_delta()
 
     def frequency_string(self):
-        unit = self.get_frequency_unit_display()
+        unit = self.get_frequency_unit_display()  # type: ignore
         if self.frequency_value == 1:
             unit = unit.rstrip("(s)")
             value = ""
@@ -68,9 +71,33 @@ class KeywordsMixin:
         ]
 
 
+class UserManager(BaseUserManager):
+    def create_user(self, email, password=None, **extra_fields):
+        if not email:
+            raise ValueError("The Email field must be set")
+        email = self.normalize_email(email)
+        user = self.model(email=email, **extra_fields)
+        user.set_password(password)
+        user.save(using=self._db)
+        return user
+
+    def create_superuser(self, email, password=None, **extra_fields):
+        extra_fields.setdefault("is_staff", True)
+        extra_fields.setdefault("is_superuser", True)
+        extra_fields.setdefault("is_active", True)
+        return self.create_user(email, password, **extra_fields)
+
+
 # Create your models here.
 class User(AbstractUser):
-    pass
+    username = None  # type: ignore
+    email = models.EmailField(unique=True)
+    uid = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
+
+    USERNAME_FIELD = "email"
+    REQUIRED_FIELDS = []
+
+    objects = UserManager()  # type: ignore
 
 
 class UserPreferences(FrequencyMixin, models.Model):
@@ -83,7 +110,45 @@ class UserPreferences(FrequencyMixin, models.Model):
         verbose_name_plural = "User Preferences"
 
     def __str__(self):
-        return f"Preferences for {self.user.username}"
+        return f"Preferences for {self.user.email}"
+
+
+class FinancialItem(KeywordsMixin, FrequencyMixin, models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    name = models.CharField(max_length=255)
+    amount = models.DecimalField(max_digits=10, decimal_places=2)
+    start_date = models.DateField()
+    end_date = models.DateField(null=True, blank=True)
+    keywords = models.CharField(
+        max_length=500, blank=True, help_text="Comma-separated list"
+    )
+
+    class Meta:
+        abstract = True
+        ordering = ["-amount"]
+
+    @property
+    def per_budget_period(self):
+        length_of_budget_period = self.user.preferences.get_delta_days()
+        return (self.amount / self.get_delta_days()) * length_of_budget_period
+
+    @property
+    def per_year(self):
+        return (self.amount / self.get_delta_days()) * 365
+
+    @property
+    def per_week(self):
+        return (self.amount / self.get_delta_days()) * 7
+
+
+class FinancialChange(models.Model):
+    previous_amount = models.DecimalField(max_digits=10, decimal_places=2)
+    new_amount = models.DecimalField(max_digits=10, decimal_places=2)
+    date_changed = models.DateField()
+
+    class Meta:
+        abstract = True
+        ordering = ["date_changed"]
 
 
 class Category(models.Model):
