@@ -72,8 +72,11 @@ def budget_detail(request, id):
     )
 
     grouped_allocations = allocations.grouped_by_name()  # type: ignore
-    ungrouped_allocations = allocations.exclude(
+    ungrouped_allocations_unsorted = allocations.exclude(
         name__in=[g["name"] for g in grouped_allocations]
+    )
+    ungrouped_allocations = sorted(
+        ungrouped_allocations_unsorted, key=lambda x: x.display_amount
     )
 
     incomes = IncomeAllocation.objects.filter(budget_period=budget).prefetch_related(
@@ -405,8 +408,9 @@ def empty_bucket(request, budget_id, bucket_id):
         budget_period__user=request.user,
         budget_period_id=budget_id,
     )
-    print(allocation)
 
+    if not allocation.display_expected_amount:
+        allocation.display_expected_amount = allocation.amount
     allocation.amount -= bucket.balance
     bucket.balance = 0
 
@@ -425,8 +429,9 @@ def fill_bucket(request, budget_id, bucket_id):
         budget_period__user=request.user,
         budget_period_id=budget_id,
     )
-    print(allocation)
 
+    if not allocation.display_expected_amount:
+        allocation.display_expected_amount = allocation.amount
     difference = allocation.remaining
     bucket.balance += difference
     allocation.amount += difference

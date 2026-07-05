@@ -167,6 +167,9 @@ class AllocationBase(models.Model):
     )
     name = models.CharField(max_length=50)
     amount = models.DecimalField(max_digits=10, decimal_places=2, blank=True, default=0)
+    display_expected_amount = models.DecimalField(
+        max_digits=10, decimal_places=2, null=True, blank=True
+    )
     expected_date = models.DateField(null=True, blank=True)
 
     class Meta:
@@ -179,6 +182,14 @@ class AllocationBase(models.Model):
     @property
     def remaining(self):
         return -self.amount + self.total_paid
+
+    @property
+    def display_amount(self):
+        return (
+            self.display_expected_amount
+            if self.display_expected_amount
+            else self.amount
+        )
 
     def __str__(self):
         return f"{self.name} ${self.amount} for Budget {self.budget_period_id}"
