@@ -2,8 +2,10 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render
+from django.utils import timezone
 
-from apps.income.models import Income
+from apps.budget.models import IncomeAllocation
+from apps.income.models import Income, IncomeChange
 
 from .forms import IncomeForm
 
@@ -30,10 +32,40 @@ def income_edit(request, pk=None):
 
     if request.method == "POST":
         form = IncomeForm(request.POST, instance=income, user=request.user)
+        old_amount = income.amount if income else None
         if form.is_valid():
+            new_amount = form.cleaned_data["amount"]
+            log_change = request.POST.get("log_change")
             income_item = form.save(commit=False)
             income_item.user = request.user
+
+            # If the user wants to log this change, we create a change object
+            if log_change and old_amount != new_amount:
+                IncomeChange.objects.update_or_create(
+                    income=income,
+                    date_changed=timezone.now().date(),
+                    defaults={
+                        "new_amount": new_amount,
+                    },
+                    create_defaults={
+                        "new_amount": new_amount,
+                        "previous_amount": old_amount,
+                    },
+                )
+            elif old_amount == new_amount:
+                IncomeChange.objects.filter(
+                    income=income, date_changed=timezone.now().date()
+                ).delete()
             income_item.save()
+
+            IncomeAllocation.objects.filter(
+                income=income_item,
+                expected_date__gt=timezone.now().date(),
+            ).update(
+                amount=form.cleaned_data["amount"],
+                name=form.cleaned_data["name"],
+            )
+
             messages.success(request, message)
             return HttpResponseRedirect(f"/incomes/?updated={income_item.id}")
 
@@ -43,6 +75,7 @@ def income_edit(request, pk=None):
     context = {
         "form": form,
         "title": title,
+        "income": income,
     }
 
     return render(

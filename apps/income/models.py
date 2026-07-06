@@ -12,4 +12,15 @@ class Income(FinancialItem):
 
 
 class IncomeChange(FinancialChange):
-    income = models.ForeignKey(Income, on_delete=models.CASCADE)
+    income = models.ForeignKey(
+        Income,
+        on_delete=models.CASCADE,
+        related_name="income_changes",
+    )
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                "date_changed", "income", name="unique_income_change_per_day"
+            )
+        ]
