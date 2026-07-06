@@ -87,7 +87,10 @@ def cost_edit(request, pk=None):
             CostAllocation.objects.filter(
                 cost=cost_item,
                 expected_date__gt=timezone.now().date(),
-            ).update(amount=-form.cleaned_data["amount"])
+            ).update(
+                amount=-form.cleaned_data["amount"],
+                name=form.cleaned_data["name"],
+            )
 
             messages.success(request, message)
             return HttpResponseRedirect(f"/costs/?updated={cost_item.id}")
