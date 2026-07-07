@@ -76,7 +76,7 @@ def budget_detail(request, id):
         name__in=[g["name"] for g in grouped_allocations]
     )
     ungrouped_allocations = sorted(
-        ungrouped_allocations_unsorted, key=lambda x: x.display_amount
+        ungrouped_allocations_unsorted, key=lambda x: x.expected_amount
     )
 
     incomes = IncomeAllocation.objects.filter(budget_period=budget).prefetch_related(
@@ -201,8 +201,8 @@ def save_allocations(request, allocation_type, allocation_id):
                 or 0
             )
 
+            allocation.expected_amount = total_sum
             allocation.amount = total_sum
-            print("Fine till here")
             allocation.save()
 
         # HX-Refresh tells the browser to reload the whole page to update totals
@@ -412,8 +412,6 @@ def empty_bucket(request, budget_id, bucket_id):
         budget_period_id=budget_id,
     )
 
-    if not allocation.display_expected_amount:
-        allocation.display_expected_amount = allocation.amount
     allocation.amount -= bucket.balance
     bucket.balance = 0
 
@@ -433,8 +431,6 @@ def fill_bucket(request, budget_id, bucket_id):
         budget_period_id=budget_id,
     )
 
-    if not allocation.display_expected_amount:
-        allocation.display_expected_amount = allocation.amount
     difference = allocation.remaining
     bucket.balance += difference
     allocation.amount += difference

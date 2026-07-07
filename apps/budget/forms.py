@@ -31,9 +31,19 @@ class CostAllocationForm(forms.ModelForm):
 class CostAllocationTransactionsForm(forms.ModelForm):
     class Meta:
         model = CostAllocation
-        fields = ["name", "amount", "expected_date", "category", "cost"]
+        fields = [
+            "name",
+            "expected_amount",
+            "amount",
+            "expected_date",
+            "category",
+            "cost",
+        ]
         widgets = {
             "name": forms.TextInput(attrs={"class": "input input-bordered w-full"}),
+            "expected_amount": forms.NumberInput(
+                attrs={"class": "grow w-full", "step": "0.01", "placeholder": "0.00"}
+            ),
             "amount": forms.NumberInput(
                 attrs={"class": "grow w-full", "step": "0.01", "placeholder": "0.00"}
             ),

@@ -118,11 +118,22 @@ class BudgetPeriod(models.Model):
         return result["total"] or 0
 
     @cached_property
+    def get_original_costs(self):
+        result = self.costallocation_set.aggregate(  # type: ignore
+            total=Sum("expected_amount")
+        )
+        return result["total"] or 0
+
+    @cached_property
     def get_total_income(self):
         result = self.incomeallocation_set.aggregate(  # type: ignore
             total=Sum("amount")
         )
         return result["total"] or 0
+
+    @cached_property
+    def theoretical_balance(self):
+        return self.get_total_income + self.get_original_costs
 
     @cached_property
     def balance(self):
@@ -167,7 +178,7 @@ class AllocationBase(models.Model):
     )
     name = models.CharField(max_length=50)
     amount = models.DecimalField(max_digits=10, decimal_places=2, blank=True, default=0)
-    display_expected_amount = models.DecimalField(
+    expected_amount = models.DecimalField(
         max_digits=10, decimal_places=2, null=True, blank=True
     )
     expected_date = models.DateField(null=True, blank=True)
@@ -177,19 +188,16 @@ class AllocationBase(models.Model):
 
     @property
     def total_paid(self):
-        return sum(transaction.amount for transaction in self.transactions.all())
+        return sum(tx.amount for tx in self.transactions.all())  # type: ignore
 
     @property
     def remaining(self):
         return -self.amount + self.total_paid
 
-    @property
-    def display_amount(self):
-        return (
-            self.display_expected_amount
-            if self.display_expected_amount
-            else self.amount
-        )
+    def clean(self):
+        # If the expected amount is not set - set it to the current amount
+        if not self.expected_amount:
+            self.expected_amount = self.amount
 
     def __str__(self):
         return f"{self.name} ${self.amount} for Budget {self.budget_period_id}"
@@ -218,7 +226,7 @@ class CostAllocation(AllocationBase):
         if not self.cost:
             return False
         print(f"Budgeted: {self.cost.amount}, Spent: {self.total_paid}")
-        return self.total_paid < self.display_amount
+        return self.total_paid < self.expected_amount
 
 
 class IncomeAllocation(AllocationBase):
