@@ -73,7 +73,7 @@ class CostAllocationQuerySet(models.QuerySet):  # type: ignore
                     "all_dates": [item.expected_date for item in items],
                     "total_amount": total_amount,
                     "total_paid": total_paid,
-                    "remaining_spend": total_amount - total_paid,
+                    "remaining_spend": -total_amount + total_paid,
                     "original_items": items,
                 }
             )

@@ -222,6 +222,7 @@ def add_single_allocation(request, budget_id):
         if form.is_valid():
             new_allocation = form.save(commit=False)
             new_allocation.budget_period = budget_period
+            new_allocation.amount = -new_allocation.amount
             new_allocation.save()
             messages.success(request, "Cost added!")
             return HttpResponseRedirect(reverse("detail", args=[budget_id]))
@@ -278,6 +279,8 @@ def edit_allocation_with_transactions(request, allocation_type, budget_id, pk=No
         if form.is_valid():
             new_allocation = form.save(commit=False)
             new_allocation.budget_period = budget_period
+            if TargetModel == CostAllocation:
+                new_allocation.amount = -new_allocation.amount
             new_allocation.save()
 
             # Allocate ticked transactions
