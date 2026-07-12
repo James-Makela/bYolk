@@ -286,6 +286,7 @@ def edit_allocation_with_transactions(request, allocation_type, budget_id, pk=No
         allocation = get_object_or_404(
             TargetModel, pk=pk, budget_period__user=request.user
         )
+        allocation.expected_amount = -allocation.expected_amount
         title = "Edit Allocation"
         message = "Allocation updated!"
     else:
@@ -301,6 +302,7 @@ def edit_allocation_with_transactions(request, allocation_type, budget_id, pk=No
             new_allocation.budget_period = budget_period
             if TargetModel == CostAllocation:
                 new_allocation.amount = -new_allocation.amount
+                new_allocation.expected_amount = -new_allocation.expected_amount
             new_allocation.save()
 
             # Allocate ticked transactions

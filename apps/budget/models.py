@@ -198,7 +198,7 @@ class AllocationBase(models.Model):
     def clean(self):
         # If the expected amount is not set - set it to the current amount
         if not self.expected_amount:
-            self.expected_amount = self.amount
+            self.expected_amount = -self.amount
 
     def __str__(self):
         return f"{self.name} ${self.amount} for Budget {self.budget_period_id}"
