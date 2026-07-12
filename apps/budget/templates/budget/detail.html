@@ -32,19 +32,40 @@
     <div class="divider"></div>
     {% include "budget/partials/_bucket_carousel.html" %}
 
-    <div class="card w-96 bg-primary/20 card-md shadow-sm">
-      <div class="card-body">
-        <h2 class="card-title">Left Over:</h2>
-        <p class="text-xl flex justify-between">
-          Theoretical:
-          <span class="{% if budget.theoretical_balance > 0 %}text-success{% elif budget.theoretical_balance == 0 %}text-info{% else %}text-error{% endif %}">${{ budget.theoretical_balance|floatformat:2 }}</span>
-        </p>
-        <p class="text-xl flex justify-between">
-          Actual:
-          <span class="{% if budget.balance > 0 %}text-success{% elif budget.balance == 0 %}text-info{% else %}text-error{% endif %}">${{ budget.balance|floatformat:2 }}</span>
-        </p>
-        <div class="justify-end card-actions">
-          <button class="btn btn-primary">Complete Budget</button>
+    <div class="carousel w-full">
+
+      <div class="carousal-item card w-96 mr-5 bg-primary/20 card-md shadow-sm">
+        <div class="card-body">
+          <h2 class="card-title">Left Over:</h2>
+          <p class="text-xl flex justify-between">
+            Theoretical:
+            <span class="{% if budget.theoretical_balance > 0 %}text-success{% elif budget.theoretical_balance == 0 %}text-info{% else %}text-error{% endif %}">${{ budget.theoretical_balance|floatformat:2 }}</span>
+          </p>
+          <p class="text-xl flex justify-between">
+            Actual:
+            <span class="{% if budget.balance > 0 %}text-success{% elif budget.balance == 0 %}text-info{% else %}text-error{% endif %}">${{ budget.balance|floatformat:2 }}</span>
+          </p>
+          <div class="justify-end card-actions">
+            <button class="btn btn-primary">Complete Budget</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="carousel-item card w-96 mr-5 bg-primary/20 card-md shadow-sm">
+        <div class="card-body">
+          <h2 class="card-title">Savings:</h2>
+          <p class="text-xl flex justify-between">
+            Current Amount:
+            <span class="{% if budget.theoretical_balance > 0 %}text-success{% elif budget.theoretical_balance == 0 %}text-info{% else %}text-error{% endif %}">${{ budget.theoretical_balance|floatformat:2 }}</span>
+          </p>
+          <p class="text-xl flex justify-between">
+            Theoretical Predicted:
+            <span class="{% if budget.theoretical_balance > 0 %}text-success{% elif budget.theoretical_balance == 0 %}text-info{% else %}text-error{% endif %}">${{ budget.theoretical_balance|floatformat:2 }}</span>
+          </p>
+          <p class="text-xl flex justify-between">
+            Actual Predicted:
+            <span class="{% if budget.balance > 0 %}text-success{% elif budget.balance == 0 %}text-info{% else %}text-error{% endif %}">${{ budget.balance|floatformat:2 }}</span>
+          </p>
         </div>
       </div>
     </div>

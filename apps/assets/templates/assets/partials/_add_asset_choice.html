@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+
+{% block title %}Select Asset Type{% endblock %}
+{% block navbar_title %}Select Asset Type{% endblock %}
+
+{% block navbar_actions %}
+  <a href="/assets/" class="btn btn-primary btn-sm mr-8">
+    Cancel
+  </a>
+{% endblock %}
+
+{% block content %}
+  <div class="flex m-auto h-full w-full">
+    <div class="flex flex-col m-auto">
+      <a href="{% url 'add-property' %}" class="btn btn-primary w-64 m-2">Property</a>
+      <a href="{% url 'add-savings' %}" class="btn btn-primary w-64 m-2">Savings</a>
+    </div>
+  </div>
+{% endblock content %}
