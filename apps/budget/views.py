@@ -6,6 +6,7 @@ from django.shortcuts import get_object_or_404, render
 from django.urls import reverse
 from django.utils import timezone
 
+from apps.assets.models import SavingsAccount
 from apps.budget.models import Bucket, BudgetPeriod, CostAllocation, IncomeAllocation
 from apps.core.forms import InitialUserPreferencesForm
 from apps.transaction.models import Transaction
@@ -16,7 +17,11 @@ from .forms import (
     CostAllocationTransactionsForm,
     IncomeAllocationTransactionsForm,
 )
-from .services import generate_next_budget_period, populate_from_costs
+from .services import (
+    generate_next_budget_period,
+    get_running_savings,
+    populate_from_costs,
+)
 
 
 @login_required
@@ -97,6 +102,18 @@ def budget_detail(request, id):
     else:
         complete = False
 
+    primary_savings = get_object_or_404(
+        SavingsAccount, user=request.user, is_primary=True
+    )
+
+    if not complete:
+        theoretical_predicted_savings, actual_predicted_savings = get_running_savings(
+            request.user, budget
+        )
+    else:
+        theoretical_predicted_savings = 0
+        actual_predicted_savings = 0
+
     context = {
         "budget": budget,
         "allocations": ungrouped_allocations,
@@ -110,6 +127,9 @@ def budget_detail(request, id):
         "current_position": current_position,
         "complete": complete,
         "buckets": buckets,
+        "savings": primary_savings,
+        "theoretical_predicted_savings": theoretical_predicted_savings,
+        "actual_predicted_savings": actual_predicted_savings,
     }
 
     return render(

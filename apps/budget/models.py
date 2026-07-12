@@ -108,6 +108,7 @@ class BudgetPeriod(models.Model):
                 name="unique_user_budget_per_period",
             )
         ]
+        ordering = ["start_date"]
 
     def __str__(self):
         return f"Budget {self.id} {self.start_date} -> {self.end_date}"

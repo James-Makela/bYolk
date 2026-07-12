@@ -1,5 +1,9 @@
 from datetime import date, timedelta
 
+from django.shortcuts import get_object_or_404
+from django.utils import timezone
+
+from apps.assets.models import SavingsAccount
 from apps.budget.models import BudgetPeriod, CostAllocation, IncomeAllocation
 from apps.cost.models import Cost
 from apps.income.models import Income
@@ -90,3 +94,27 @@ def populate_from_costs(budget_period, user):
         "cost": cost_allocations,
         "income": income_allocations,
     }
+
+
+def get_running_savings(user, viewed_budget_period):
+    today = timezone.now().date()
+
+    current_savings = get_object_or_404(SavingsAccount, user=user, is_primary=True)
+
+    predicted_balance = current_savings.value
+    theoretical_balance = current_savings.value
+
+    if not current_savings:
+        return 0, 0
+
+    inclusive_periods = BudgetPeriod.objects.filter(
+        user=user,
+        end_date__gte=today,
+        end_date__lte=viewed_budget_period.end_date,
+    ).order_by("start_date")
+
+    for budget_period in inclusive_periods:
+        predicted_balance += budget_period.balance
+        theoretical_balance += budget_period.theoretical_balance
+
+    return predicted_balance, theoretical_balance

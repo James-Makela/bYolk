@@ -51,25 +51,27 @@
         </div>
       </div>
 
-      <div class="carousel-item card w-96 mr-5 bg-primary/20 card-md shadow-sm">
-        <div class="card-body">
-          <h2 class="card-title">Savings:</h2>
-          <p class="text-xl flex justify-between">
-            Current Amount:
-            <span class="{% if budget.theoretical_balance > 0 %}text-success{% elif budget.theoretical_balance == 0 %}text-info{% else %}text-error{% endif %}">${{ budget.theoretical_balance|floatformat:2 }}</span>
-          </p>
-          <p class="text-xl flex justify-between">
-            Theoretical Predicted:
-            <span class="{% if budget.theoretical_balance > 0 %}text-success{% elif budget.theoretical_balance == 0 %}text-info{% else %}text-error{% endif %}">${{ budget.theoretical_balance|floatformat:2 }}</span>
-          </p>
-          <p class="text-xl flex justify-between">
-            Actual Predicted:
-            <span class="{% if budget.balance > 0 %}text-success{% elif budget.balance == 0 %}text-info{% else %}text-error{% endif %}">${{ budget.balance|floatformat:2 }}</span>
-          </p>
+      {% if theoretical_predicted_savings  %}
+        <div class="carousel-item card w-96 mr-5 bg-primary/20 card-md shadow-sm">
+          <div class="card-body">
+            <h2 class="card-title">Savings:</h2>
+            <p class="text-xl flex justify-between">
+              Current Amount:
+              <span class="{% if savings.value > 0 %}text-success{% elif savings.value == 0 %}text-info{% else %}text-error{% endif %}">${{ savings.value|floatformat:2 }}</span>
+            </p>
+            <p class="text-xl flex justify-between">
+              Theoretical Predicted:
+              <span class="{% if theoretical_predicted_savings > 0 %}text-success{% elif theoretical_predicted_savings == 0 %}text-info{% else %}text-error{% endif %}">${{ theoretical_predicted_savings|floatformat:2 }}</span>
+            </p>
+            <p class="text-xl flex justify-between">
+              Actual Predicted:
+              <span class="{% if actual_predicted_savings > 0 %}text-success{% elif actual_predicted_savings == 0 %}text-info{% else %}text-error{% endif %}">${{ actual_predicted_savings|floatformat:2 }}</span>
+            </p>
+          </div>
         </div>
-      </div>
-    </div>
+      {% endif %}
 
+    </div>
     <div class="divider"></div>
     {% include "budget/partials/_matching_transactions_container.html" %}
 
