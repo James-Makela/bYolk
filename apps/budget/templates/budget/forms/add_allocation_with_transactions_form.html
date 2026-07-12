@@ -127,7 +127,9 @@
         checkboxes.forEach(cb => {
           cb.addEventListener('change', updateTotal);
         });
-        updateTotal();
+        if (checkboxes.length > 0) {
+          updateTotal();
+        }
       });
 
       document.addEventListener('DOMContentLoaded', function () {

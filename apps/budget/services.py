@@ -75,6 +75,7 @@ def populate_from_costs(budget_period, user):
                         income=income,
                         name=income.name,
                         amount=income.amount,
+                        expected_amount=income.amount,
                         expected_date=current_occurrence,
                     )
                 )
@@ -117,4 +118,4 @@ def get_running_savings(user, viewed_budget_period):
         predicted_balance += budget_period.balance
         theoretical_balance += budget_period.theoretical_balance
 
-    return predicted_balance, theoretical_balance
+    return theoretical_balance, predicted_balance

@@ -287,6 +287,7 @@ def edit_allocation_with_transactions(request, allocation_type, budget_id, pk=No
             TargetModel, pk=pk, budget_period__user=request.user
         )
         allocation.expected_amount = -allocation.expected_amount
+        allocation.amount = -allocation.amount
         title = "Edit Allocation"
         message = "Allocation updated!"
     else:
