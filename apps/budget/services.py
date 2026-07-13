@@ -1,6 +1,5 @@
 from datetime import date, timedelta
 
-from django.shortcuts import get_object_or_404
 from django.utils import timezone
 
 from apps.assets.models import SavingsAccount
@@ -100,13 +99,13 @@ def populate_from_costs(budget_period, user):
 def get_running_savings(user, viewed_budget_period):
     today = timezone.now().date()
 
-    current_savings = get_object_or_404(SavingsAccount, user=user, is_primary=True)
-
-    predicted_balance = current_savings.value
-    theoretical_balance = current_savings.value
+    current_savings = SavingsAccount.objects.filter(user=user, is_primary=True).first()
 
     if not current_savings:
         return 0, 0
+
+    predicted_balance = current_savings.value
+    theoretical_balance = current_savings.value
 
     inclusive_periods = BudgetPeriod.objects.filter(
         user=user,

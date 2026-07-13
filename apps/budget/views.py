@@ -102,11 +102,11 @@ def budget_detail(request, id):
     else:
         complete = False
 
-    primary_savings = get_object_or_404(
-        SavingsAccount, user=request.user, is_primary=True
-    )
+    primary_savings = SavingsAccount.objects.filter(
+        user=request.user, is_primary=True
+    ).first()
 
-    if not complete:
+    if not complete or not primary_savings:
         theoretical_predicted_savings, actual_predicted_savings = get_running_savings(
             request.user, budget
         )
