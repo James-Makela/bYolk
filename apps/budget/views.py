@@ -110,9 +110,6 @@ def budget_detail(request, id):
         theoretical_predicted_savings, actual_predicted_savings = get_running_savings(
             request.user, budget
         )
-    else:
-        theoretical_predicted_savings = 0
-        actual_predicted_savings = 0
 
     context = {
         "budget": budget,
