@@ -23,4 +23,22 @@
 
   {% include "transaction/partials/_table.html" %}
 
+  <div class="pagination flex my-2">
+    <span class="mx-auto p-2 rounded-md bg-primary/30">
+      {% if transactions.has_previous %}
+        <a class="btn my-auto" href="?page=1">&laquo; first</a>
+        <a class="btn my-auto" href="?page={{ transactions.previous_page_number }}">previous</a>
+      {% endif %}
+
+      <span class="current mx-5 my-2">
+        Page {{ transactions.number }} of {{ transactions.paginator.num_pages }}
+      </span>
+
+      {% if transactions.has_next %}
+        <a class="btn my-auto" href="?page={{ transactions.next_page_number }}">next</a>
+        <a class="btn my-auto" href="?page={{ transactions.paginator.num_pages }}">last &raquo;</a>
+      {% endif %}
+    </span>
+  </div>
+
 {% endblock content %}
