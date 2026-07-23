@@ -1,0 +1,12 @@
+
+<div class="pagination flex my-2">
+  <span class="mx-auto p-2 rounded-md bg-primary/30">
+    <a class="btn btn-sm btn-circle mx-auto{% if not transactions.has_previous %} btn-disabled{% endif %}" href="?page=1">&laquo;</a>
+    <a class="btn btn-sm btn-circle mx-auto{% if not transactions.has_previous %} btn-disabled{% else %}" href="?page={{ transactions.previous_page_number }}{% endif %}">&lsaquo;</a>
+    <span class="current mx-5 my-2">
+      Page {{ transactions.number }} of {{ transactions.paginator.num_pages }}
+    </span>
+    <a class="btn btn-sm btn-circle mx-auto{% if not transactions.has_next %} btn-disabled{% else %}" href="?page={{ transactions.next_page_number }}{% endif %}">&rsaquo;</a>
+    <a class="btn btn-sm btn-circle mx-auto{% if not transactions.has_next %} btn-disabled{% endif %}" href="?page={{ transactions.paginator.num_pages }}">&raquo;</a>
+  </span>
+</div>
