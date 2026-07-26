@@ -359,7 +359,6 @@ def move_cost_allocation(request, allocation_id, budget_id):
 
     # Check if there are associated costs with the allocation
     if allocation.transactions.all().exists():
-        print(allocation.transactions)
         messages.error(request, "Unable to move allocation with transactions")
 
         return HttpResponseRedirect(reverse("detail", args=[current_budget]))
