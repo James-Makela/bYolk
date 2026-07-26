@@ -22,6 +22,6 @@
 {% block content %}
 
   {% include "transaction/partials/_table.html" %}
-  {% include "partials/_paginator.html" %}
+  {% include "partials/_paginator.html" with page_object=transactions %}
 
 {% endblock content %}
