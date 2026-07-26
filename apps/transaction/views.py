@@ -2,6 +2,7 @@ import pymupdf
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.core.paginator import Paginator
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
 
@@ -18,8 +19,12 @@ def transactions_page(request):
 @login_required
 def transaction_list(request):
     transactions = Transaction.objects.filter(user=request.user).order_by("-date")
+    paginator = Paginator(transactions, 25)
 
-    context = {"transactions": transactions}
+    page_number = request.GET.get("page")
+    transactions_page_obj = paginator.get_page(page_number)
+
+    context = {"transactions": transactions_page_obj}
     return render(request, "transaction/index.html", context)
 
 
