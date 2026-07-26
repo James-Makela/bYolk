@@ -63,11 +63,21 @@ def process_transaction_upload(user, csv_file):
     df["Date"] = pd.to_datetime(df["Date"], dayfirst=True)
 
     transactions_to_create = []
+
+    # Duplicate tracking to ignore corrections and reversals
+    seen_unique_hash = set()
+    duplicates = []
+
     for _, row in df.iterrows():
         amount = row["Credit"] if pd.notnull(row.get("Credit")) else row.get("Debit", 0)
         hash = generate_unique_hash(
             row["Description"], amount, row["Balance"], user.uid
         )
+        if hash in seen_unique_hash:
+            duplicates.append(hash)
+        else:
+            seen_unique_hash.add(hash)
+
         vendor, purchase_type, receipt_details = process_description(row["Description"])
         date = get_actual_date(row["Description"])
         if not date:
@@ -76,6 +86,8 @@ def process_transaction_upload(user, csv_file):
         if (
             not Transaction.objects.filter(unique_hash=hash).exists()
             and "Internal" not in vendor
+            and purchase_type != "Internal"
+            and hash not in duplicates
         ):
             transactions_to_create.append(
                 Transaction(
