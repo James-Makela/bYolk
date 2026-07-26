@@ -16,7 +16,7 @@ def generate_unique_hash(description, amount, balance, uid):
         return f"{receipt_number[0]}_{stripped_amount}{uid}"
 
 
-def process_description(description):
+def process_description_ing(description):
     description_string = f"{description}"
     if description_string == "":
         return "", "", ""
@@ -58,7 +58,7 @@ def get_actual_date(description):
             return None
 
 
-def process_transaction_upload(user, csv_file):
+def process_transaction_upload_ing(user, csv_file):
     df = pd.read_csv(csv_file)
     df["Date"] = pd.to_datetime(df["Date"], dayfirst=True)
 
@@ -68,7 +68,9 @@ def process_transaction_upload(user, csv_file):
         hash = generate_unique_hash(
             row["Description"], amount, row["Balance"], user.uid
         )
-        vendor, purchase_type, receipt_details = process_description(row["Description"])
+        vendor, purchase_type, receipt_details = process_description_ing(
+            row["Description"]
+        )
         date = get_actual_date(row["Description"])
         if not date:
             date = row["Date"].date()

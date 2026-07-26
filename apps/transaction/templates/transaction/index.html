@@ -4,7 +4,7 @@
 {% block navbar_title %}Transactions{% endblock %}
 
 {% block navbar_actions %}
-  <form action="{% url 'upload-csv' %}" method="post" enctype="multipart/form-data" id="csv-form">
+  <form action="{% url 'upload-csv-ing' %}" method="post" enctype="multipart/form-data" id="csv-form">
     {% csrf_token %}
     <label class="btn btn-primary btn-sm font-bold mr-8">
       <span>+ Upload transactions .csv</span>

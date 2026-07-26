@@ -4,5 +4,5 @@ from apps.transaction import views
 
 urlpatterns = [
     path("", views.transaction_list, name="transactions-page"),
-    path("upload-csv/", views.upload_csv, name="upload-csv"),
+    path("upload-csv-ing/", views.upload_csv_ing, name="upload-csv-ing"),
 ]
