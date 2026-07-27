@@ -1,13 +1,34 @@
+<div class="grid grid-cols-[1fr_auto_1fr] items-center w-full py-3">
 
-<div class="pagination flex my-2">
-  <span class="mx-auto p-2 rounded-md bg-primary/30">
-    <a class="btn btn-sm btn-circle mx-auto{% if not page_object.has_previous %} btn-disabled{% endif %}" href="?page=1">&laquo;</a>
-    <a class="btn btn-sm btn-circle mx-auto{% if not page_object.has_previous %} btn-disabled{% else %}" href="?page={{ page_object.previous_page_number }}{% endif %}">&lsaquo;</a>
-    <span class="current mx-5 my-2">
-      Page {{ page_object.number }} of {{ page_object.paginator.num_pages }}
+  <div></div>
+
+  <div class="pagination justify-self-center">
+    <span class="flex items-center justify-center gap-1 px-4 py-1 rounded-md bg-primary/30">
+      <a class="btn btn-sm btn-circle mx-auto{% if not page_object.has_previous %} btn-disabled{% endif %}" href="?page=1&per_page={{ per_page }}">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-first-icon lucide-chevron-first"><path d="m17 18-6-6 6-6"/><path d="M7 6v12"/></svg>
+      </a>
+      <a class="btn btn-sm btn-circle mx-auto{% if not page_object.has_previous %} btn-disabled{% else %}" href="?page={{ page_object.previous_page_number }}&per_page={{ per_page }}{% endif %}">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-left-icon lucide-chevron-left"><path d="m15 18-6-6 6-6"/></svg>
+      </a>
+      <span class="current mx-5 my-2">
+        Page {{ page_object.number }} of {{ page_object.paginator.num_pages }}
+      </span>
+      <a class="btn btn-sm btn-circle mx-auto{% if not page_object.has_next %} btn-disabled{% else %}" href="?page={{ page_object.next_page_number }}&per_page={{ per_page }}{% endif %}">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-right-icon lucide-chevron-right"><path d="m9 18 6-6-6-6"/></svg>
+      </a>
+      <a class="btn btn-sm btn-circle mx-auto{% if not page_object.has_next %} btn-disabled{% endif %}" href="?page={{ page_object.paginator.num_pages }}&per_page={{ per_page }}">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-last-icon lucide-chevron-last"><path d="m7 18 6-6-6-6"/><path d="M17 6v12"/></svg>
+      </a>
     </span>
-    <a class="btn btn-sm btn-circle mx-auto{% if not page_object.has_next %} btn-disabled{% else %}" href="?page={{ page_object.next_page_number }}{% endif %}">&rsaquo;</a>
-    <a class="btn btn-sm btn-circle mx-auto{% if not page_object.has_next %} btn-disabled{% endif %}" href="?page={{ page_object.paginator.num_pages }}">&raquo;</a>
-  </span>
-  <!-- <p class="absolute right-0">Select Number of Pages</p> -->
+  </div>
+
+  <div class="per-page-selector justify-self-end" style="absolute right-4 mx-auto h-full">
+    <form method="get" id="perPageForm">
+      <select name="per_page" id="per_page" class="select select-sm w-auto mx-auto" onchange="document.getElementById('perPageForm').submit();">
+        <option value=25 {% if per_page == "25" %}selected{% endif %}>25/page</option>
+        <option value=50 {% if per_page == "50" %}selected{% endif %}>50/page</option>
+        <option value=100 {% if per_page == "100" %}selected{% endif %}>100/page</option>
+      </select>
+    </form>
+  </div>
 </div>

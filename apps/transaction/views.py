@@ -17,12 +17,19 @@ def transactions_page(request):
 @login_required
 def transaction_list(request):
     transactions = Transaction.objects.filter(user=request.user).order_by("-date")
-    paginator = Paginator(transactions, 25)
+    per_page = request.GET.get("per_page", 25)
+    if per_page not in ["25", "50", "100"]:
+        per_page = 25
+
+    paginator = Paginator(transactions, per_page)
 
     page_number = request.GET.get("page")
     transactions_page_obj = paginator.get_page(page_number)
 
-    context = {"transactions": transactions_page_obj}
+    context = {
+        "transactions": transactions_page_obj,
+        "per_page": per_page,
+    }
     return render(request, "transaction/index.html", context)
 
 
