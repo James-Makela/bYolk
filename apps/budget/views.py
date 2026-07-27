@@ -110,6 +110,9 @@ def budget_detail(request, id):
         theoretical_predicted_savings, actual_predicted_savings = get_running_savings(
             request.user, budget
         )
+    else:
+        theoretical_predicted_savings = 0
+        actual_predicted_savings = 0
 
     context = {
         "budget": budget,
@@ -356,7 +359,6 @@ def move_cost_allocation(request, allocation_id, budget_id):
 
     # Check if there are associated costs with the allocation
     if allocation.transactions.all().exists():
-        print(allocation.transactions)
         messages.error(request, "Unable to move allocation with transactions")
 
         return HttpResponseRedirect(reverse("detail", args=[current_budget]))

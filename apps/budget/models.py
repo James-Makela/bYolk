@@ -226,7 +226,6 @@ class CostAllocation(AllocationBase):
     def is_over(self):
         if not self.cost:
             return False
-        print(f"Budgeted: {self.cost.amount}, Spent: {self.total_paid}")
         return self.total_paid < self.expected_amount
 
 
