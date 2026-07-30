@@ -3,7 +3,7 @@ import datetime
 from django.contrib.auth import get_user_model
 from django.test import TestCase
 
-from .services import generate_unique_hash, get_actual_date, process_description
+from .services import generate_unique_hash, get_actual_date, process_description_ing
 
 User = get_user_model()
 
@@ -63,7 +63,7 @@ class TestProcessDescription(TestCase):
             "CX - Visa Purchase - Receipt 130360Date 20 May 2026 Card xxxxxxxxxxxxxxxx"
         )
 
-        vendor, purchase_type, receipt_details = process_description(description)
+        vendor, purchase_type, receipt_details = process_description_ing(description)
 
         self.assertEqual(vendor, "CX")
         self.assertEqual(purchase_type, "Visa Purchase")
@@ -74,7 +74,7 @@ class TestProcessDescription(TestCase):
     def test_processes_blank_description_as_blank(self):
         description = ""
 
-        vendor, purchase_type, receipt_details = process_description(description)
+        vendor, purchase_type, receipt_details = process_description_ing(description)
 
         self.assertEqual(vendor, "")
         self.assertEqual(purchase_type, "")
@@ -83,7 +83,7 @@ class TestProcessDescription(TestCase):
     def test_processes_description_with_no_purchase_type(self):
         description = "MCARE BENEFITS   335139846 IYWQ  - Receipt 120800"
 
-        vendor, purchase_type, receipt_details = process_description(description)
+        vendor, purchase_type, receipt_details = process_description_ing(description)
 
         self.assertEqual(vendor, "MCARE BENEFITS   335139846 IYWQ")
         self.assertEqual(purchase_type, "")
@@ -92,7 +92,7 @@ class TestProcessDescription(TestCase):
     def test_processes_description_with_no_purchase_type_or_reciept_details(self):
         description = "Utility Bill Cashback"
 
-        vendor, purchase_type, receipt_details = process_description(description)
+        vendor, purchase_type, receipt_details = process_description_ing(description)
 
         self.assertEqual(vendor, "Utility Bill Cashback")
         self.assertEqual(purchase_type, "")

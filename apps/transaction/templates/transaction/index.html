@@ -4,23 +4,46 @@
 {% block navbar_title %}Transactions{% endblock %}
 
 {% block navbar_actions %}
-  <form action="{% url 'upload-csv' %}" method="post" enctype="multipart/form-data" id="csv-form">
-    {% csrf_token %}
-    <label class="btn btn-primary btn-sm font-bold mr-8">
-      <span>+ Upload transactions .csv</span>
-      <input
-        type="file"
-        name="csv_file"
-        class="hidden"
-        accept=".csv"
-        onchange="document.getElementById('csv-form').submit();"
-      >
-    </label>
-  </form>
+  <div class="dropdown dropdown-end">
+    <div tabindex="0" role="button" class="btn btn-primary btn-sm m-1 mr-8">Upload Transactions</div>
+    <ul tabindex="-1" class="dropdown-content menu bg-base-100 rounded-box z-1 w-52 p-2 shadow-sm">
+      <li>
+        <form action="{% url 'upload-csv-ing' %}" method="post" enctype="multipart/form-data" id="csv-form" tabindex="1">
+          {% csrf_token %}
+          <label class="font-bold">
+            <span>+ Upload ING .csv</span>
+            <input
+              type="file"
+              name="csv_file"
+              class="hidden"
+              accept=".csv"
+              onchange="document.getElementById('csv-form').submit();"
+            >
+          </label>
+        </form>
+      </li>
+      <li>
+        <form action="{% url 'upload-pdf-anzplus' %}" method="post" enctype="multipart/form-data" id="pdf-form" tabindex="2">
+          {% csrf_token %}
+          <label class="font-bold">
+            <span>+ Upload ANZ+ .pdf</span>
+            <input
+              type="file"
+              name="pdf_file"
+              class="hidden"
+              accept=".pdf"
+              onchange="document.getElementById('pdf-form').submit();"
+            >
+          </label>
+        </form>
+      </li>
+    </ul>
+  </div>
 {% endblock %}
 
 {% block content %}
 
   {% include "transaction/partials/_table.html" %}
+  {% include "partials/_paginator.html" with page_object=transactions %}
 
 {% endblock content %}

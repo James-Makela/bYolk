@@ -1,5 +1,8 @@
 from datetime import date, timedelta
 
+from django.utils import timezone
+
+from apps.assets.models import SavingsAccount
 from apps.budget.models import BudgetPeriod, CostAllocation, IncomeAllocation
 from apps.cost.models import Cost
 from apps.income.models import Income
@@ -36,6 +39,9 @@ def populate_from_costs(budget_period, user):
         delta = cost.get_delta()
         current_occurrence = cost.start_date
 
+        if cost.end_date and cost.end_date < budget_period.start_date:
+            break
+
         while current_occurrence <= budget_period.end_date:
             if current_occurrence >= budget_period.start_date:
                 if cost.category is not None:
@@ -46,6 +52,7 @@ def populate_from_costs(budget_period, user):
                         cost=cost,
                         name=cost.name,
                         amount=-cost.amount,
+                        expected_amount=-cost.amount,
                         expected_date=current_occurrence,
                         category=category,
                     )
@@ -67,6 +74,7 @@ def populate_from_costs(budget_period, user):
                         income=income,
                         name=income.name,
                         amount=income.amount,
+                        expected_amount=income.amount,
                         expected_date=current_occurrence,
                     )
                 )
@@ -86,3 +94,27 @@ def populate_from_costs(budget_period, user):
         "cost": cost_allocations,
         "income": income_allocations,
     }
+
+
+def get_running_savings(user, viewed_budget_period):
+    today = timezone.now().date()
+
+    current_savings = SavingsAccount.objects.filter(user=user, is_primary=True).first()
+
+    if not current_savings:
+        return 0, 0
+
+    predicted_balance = current_savings.value
+    theoretical_balance = current_savings.value
+
+    inclusive_periods = BudgetPeriod.objects.filter(
+        user=user,
+        end_date__gte=today,
+        end_date__lte=viewed_budget_period.end_date,
+    ).order_by("start_date")
+
+    for budget_period in inclusive_periods:
+        predicted_balance += budget_period.balance
+        theoretical_balance += budget_period.theoretical_balance
+
+    return theoretical_balance, predicted_balance

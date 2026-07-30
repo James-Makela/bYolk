@@ -24,7 +24,20 @@
               {% if field.field.required %}<span class="text-error">*</span>{% endif %}
             </label>
 
-            {% if field.name == 'amount' %}
+            {% if field.name == 'expected_amount' %}
+              <div class="input input-bordered flex items-center gap-0 p-0 overflow-hidden w-full {% if field.errors %}input-error{% endif %}">
+                <span class="pl-3 opacity-70 flex-none">$</span>
+                <input
+                  type="number"
+                  step="0.01"
+                  name="{{ field.html_name }}"
+                  id="{{ field.id_for_label }}"
+                  {# Use 'value' but ensure we handle None safely #}
+                  value="{{ field.value|default_if_none:'' }}"
+                  class="cost-expected-amount-input grow bg-transparent h-full px-2 outline-none"
+                />
+              </div>
+            {% elif field.name == 'amount' %}
               <div class="input input-bordered flex items-center gap-0 p-0 overflow-hidden w-full {% if field.errors %}input-error{% endif %}">
                 <span class="pl-3 opacity-70 flex-none">$</span>
                 <input
@@ -106,7 +119,7 @@
             // 3. Update the input field
             // toFixed(2) ensures we see $10.50 instead of $10.5
           if (amountInput) {
-            amountInput.value = total.toFixed(2);
+            amountInput.value = -total.toFixed(2);
           }
         }
 
@@ -114,7 +127,9 @@
         checkboxes.forEach(cb => {
           cb.addEventListener('change', updateTotal);
         });
-        updateTotal();
+        if (checkboxes.length > 0) {
+          updateTotal();
+        }
       });
 
       document.addEventListener('DOMContentLoaded', function () {

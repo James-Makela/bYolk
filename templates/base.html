@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="dark">
+<html lang="en" data-theme="{{ user.preferences.theme|default:'dark' }}">
   <head>
     {% load static %}
     <link rel="icon" type="image/png" href="{% static 'images/favicon.png' %}">
@@ -56,7 +56,7 @@
             </li>
             <div class="divider mt-1"></div>
             {% if user.is_authenticated %}
-                <!-- Dashboard -->
+              <!-- Dashboard -->
               <li>
                 <a href="{% url 'core:dashboard' %}"
                    class="is-drawer-close:tooltip is-drawer-close:tooltip-right"
@@ -68,7 +68,7 @@
                   <span class="is-drawer-close:hidden">Dashboard</span>
                 </a>
               </li>
-                <!-- Budget - Dollar bill -->
+              <!-- Budget - Dollar bill -->
               <li>
                 <a href="{% url 'budgets-page' %}"
                    class="is-drawer-close:tooltip is-drawer-close:tooltip-right"
@@ -81,7 +81,7 @@
                 </a>
               </li>
 
-                <!-- Income - Dollar sign -->
+              <!-- Income - Dollar sign -->
               <li>
                 <a href="{% url 'incomes-page' %}"
                    class="is-drawer-close:tooltip is-drawer-close:tooltip-right"
@@ -96,7 +96,7 @@
                 </a>
               </li>
 
-                <!-- Costs - Coin -->
+              <!-- Costs - Coin -->
               <li>
                 <a href="{% url 'costs-page' %}"
                    class="is-drawer-close:tooltip is-drawer-close:tooltip-right"
@@ -110,7 +110,7 @@
                 </a>
               </li>
 
-                <!-- Transactions - Bank card -->
+              <!-- Transactions - Bank card -->
               <li>
                 <a href="{% url 'transactions-page' %}"
                    class="is-drawer-close:tooltip is-drawer-close:tooltip-right"
@@ -122,7 +122,7 @@
                   <span class="is-drawer-close:hidden">Transactions</span>
                 </a>
               </li>
-                <!-- Categories - Tag -->
+              <!-- Categories - Tag -->
               <li>
                 <a href="{% url 'core:categories-page' %}"
                    class="is-drawer-close:tooltip is-drawer-close:tooltip-right"
@@ -133,8 +133,43 @@
                   <span class="is-drawer-close:hidden">Categories</span>
                 </a>
               </li>
-                <!-- Help - ? -->
-              <li class="mt-auto mb-5">
+
+              <!-- Savings & Assets - Piggy Bank -->
+              <li>
+                <a href="{% url 'assets-page' %}"
+                   class="is-drawer-close:tooltip is-drawer-close:tooltip-right"
+                   data-tip="Assets">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-piggy-bank-icon lucide-piggy-bank"><path d="M11 17h3v2a1 1 0 0 0 1 1h2a1 1 0 0 0 1-1v-3a3.16 3.16 0 0 0 2-2h1a1 1 0 0 0 1-1v-2a1 1 0 0 0-1-1h-1a5 5 0 0 0-2-4V3a4 4 0 0 0-3.2 1.6l-.3.4H11a6 6 0 0 0-6 6v1a5 5 0 0 0 2 4v3a1 1 0 0 0 1 1h2a1 1 0 0 0 1-1z"/><path d="M16 10h.01"/><path d="M2 8v1a2 2 0 0 0 2 2h1"/>
+
+                  </svg>
+                  <span class="is-drawer-close:hidden">Savings & Assets</span>
+                </a>
+              </li>
+
+              <!-- Theme selector -->
+              <li class="mt-auto">
+                {% csrf_token %}
+                <div class="form-control w-full max-w-xs">
+                  <label class="label">
+                    <span class="label-text text-xs font-bold opacity-60">Theme</span>
+                  </label>
+                  <select class="select select-bordered select-xs w-full"
+                          name="theme"
+                          hx-post="{% url 'core:change-theme' %}"
+                          hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'
+                          hx-trigger="change"
+                          hx-swap="none"
+                          onchange="document.documentElement.setAttribute('data-theme', this.value)">
+                    {% for value, label in user.preferences.get_all_themes %}
+                      <option value="{{ value }}" {% if user.preferences.theme == value %}selected{% endif %}>
+                        {{ label }}
+                      </option>
+                    {% endfor %}
+                  </select>
+                </div>
+              </li>
+              <!-- Help - ? -->
+              <li class="mb-5">
                 <a href="{% url 'core:categories-page' %}"
                    class="is-drawer-close:tooltip is-drawer-close:tooltip-right"
                    data-tip="Help">

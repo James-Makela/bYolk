@@ -1,11 +1,14 @@
+import pymupdf
+
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.core.paginator import Paginator
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
 
 from apps.transaction.models import Transaction
 
-from .services import process_transaction_upload
+from .services import process_transaction_upload_anzplus, process_transaction_upload_ing
 
 
 # Create your views here.
@@ -16,18 +19,47 @@ def transactions_page(request):
 @login_required
 def transaction_list(request):
     transactions = Transaction.objects.filter(user=request.user).order_by("-date")
+    per_page = request.GET.get("per_page", 25)
+    if per_page not in ["25", "50", "100"]:
+        per_page = 25
 
-    context = {"transactions": transactions}
+    paginator = Paginator(transactions, per_page)
+
+    page_number = request.GET.get("page")
+    transactions_page_obj = paginator.get_page(page_number)
+
+    context = {
+        "transactions": transactions_page_obj,
+        "per_page": per_page,
+    }
     return render(request, "transaction/index.html", context)
 
 
 @login_required
-def upload_csv(request):
+def upload_csv_ing(request):
     if request.method == "POST" and request.FILES.get("csv_file"):
         try:
-            created_count = process_transaction_upload(
+            created_count = process_transaction_upload_ing(
                 request.user, request.FILES["csv_file"]
             )
+            messages.success(
+                request, f"Successfully uploaded {len(created_count)} items."
+            )
+        except Exception as e:
+            messages.error(request, f"Upload failed: {str(e)}")
+
+    return HttpResponseRedirect("/transactions/")
+
+
+@login_required
+def upload_pdf_anzplus(request):
+    if request.method == "POST" and request.FILES.get("pdf_file"):
+        uploaded_file = request.FILES["pdf_file"]
+        pdf_bytes = uploaded_file.read()
+        doc = pymupdf.open(stream=pdf_bytes, filetype="pdf")
+
+        try:
+            created_count = process_transaction_upload_anzplus(request.user, doc)
             messages.success(
                 request, f"Successfully uploaded {len(created_count)} items."
             )

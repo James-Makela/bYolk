@@ -1,6 +1,7 @@
 from django.db import models
+from django.utils import timezone
 
-from apps.core.models import Category, FinancialItem
+from apps.core.models import Category, FinancialChange, FinancialItem
 
 
 class Cost(FinancialItem):
@@ -16,3 +17,23 @@ class Cost(FinancialItem):
         if frequency_string:
             frequency_string = frequency_string[0].lower() + frequency_string[1:]
         return f"{self.name}, ${self.amount} {frequency_string}"
+
+    @property
+    def passed(self):
+        if self.end_date and self.end_date < timezone.now().date():
+            return True
+
+
+class CostChange(FinancialChange):
+    cost = models.ForeignKey(
+        Cost, on_delete=models.CASCADE, related_name="cost_changes"
+    )
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                "date_changed",
+                "cost",
+                name="unique_cost_change_per_day",
+            )
+        ]

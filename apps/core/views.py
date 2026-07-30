@@ -1,6 +1,6 @@
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from django.http import HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render
 
 from apps.cost.models import Cost
@@ -138,3 +138,11 @@ def category_edit(request, pk=None):
             "title": title,
         },
     )
+
+
+@login_required
+def theme_select(request):
+    request.user.preferences.theme = request.POST.get("theme")
+    request.user.preferences.save()
+
+    return HttpResponse(status=200)

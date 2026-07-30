@@ -46,6 +46,18 @@
           </div>
         {% endfor %}
 
+        {% if income  %}
+          <div class="mt-2">
+            <input
+              type="checkbox"
+              name="log_change"
+              class="checkbox checkbox-sm checkbox-accent"
+              checked="checked"
+            />
+            <span class="text-sm align-middle">Log income change</span>
+          </div>
+        {% endif %}
+
         <button type="submit" class="btn btn-primary mt-6 w-full">Save Income</button>
       </fieldset>
     </form>

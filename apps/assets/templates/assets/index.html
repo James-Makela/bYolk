@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+{% block title %}Assets{% endblock %}
+{% block navbar_title %}Assets{% endblock %}
+
+{% block navbar_actions %}
+  <a href="{% url 'add-asset-choice' %}" class="btn btn-primary btn-sm mr-8">
+    + Add New Asset
+  </a>
+{% endblock %}
+
+{% block content %}
+
+  {% include "assets/partials/_properties_container.html" %}
+  {% include "assets/partials/_savings_container.html" %}
+
+{% endblock content %}

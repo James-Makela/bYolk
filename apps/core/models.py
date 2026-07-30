@@ -101,10 +101,48 @@ class User(AbstractUser):
 
 
 class UserPreferences(FrequencyMixin, models.Model):
+    THEME_CHOICES = [
+        ("light", "Light"),
+        ("dark", "Dark"),
+        ("cupcake", "Cupcake"),
+        ("bumblebee", "Bumblebee"),
+        ("emerald", "Emerald"),
+        ("corporate", "Corporate"),
+        ("synthwave", "Synthwave"),
+        ("retro", "Retro"),
+        ("cyberpunk", "Cyberpunk"),
+        ("valentine", "Valentine"),
+        ("halloween", "Halloween"),
+        ("garden", "Garden"),
+        ("forest", "Forest"),
+        ("aqua", "Aqua"),
+        ("lofi", "Lofi"),
+        ("pastel", "Pastel"),
+        ("fantasy", "Fantasy"),
+        ("wireframe", "Wireframe"),
+        ("black", "Black"),
+        ("luxury", "Luxury"),
+        ("dracula", "Dracula"),
+        ("cmyk", "Cmyk"),
+        ("autumn", "Autumn"),
+        ("business", "Business"),
+        ("acid", "Acid"),
+        ("lemonade", "Lemonade"),
+        ("night", "Night"),
+        ("coffee", "Coffee"),
+        ("winter", "Winter"),
+        ("dim", "Dim"),
+        ("nord", "Nord"),
+        ("sunset", "Sunset"),
+        ("caramellatte", "Caramellatte"),
+        ("abyss", "Abyss"),
+        ("silk", "Silk"),
+    ]
     user = models.OneToOneField(
         settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="preferences"
     )
     first_budget_date = models.DateField(default=timezone.now)
+    theme = models.CharField(max_length=30, choices=THEME_CHOICES, default="light")
 
     class Meta:
         verbose_name_plural = "User Preferences"
@@ -112,12 +150,16 @@ class UserPreferences(FrequencyMixin, models.Model):
     def __str__(self):
         return f"Preferences for {self.user.email}"
 
+    def get_all_themes(self):
+        return self.THEME_CHOICES
+
 
 class FinancialItem(KeywordsMixin, FrequencyMixin, models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     name = models.CharField(max_length=255)
     amount = models.DecimalField(max_digits=10, decimal_places=2)
     start_date = models.DateField()
+    end_date = models.DateField(null=True, blank=True)
     keywords = models.CharField(
         max_length=500, blank=True, help_text="Comma-separated list"
     )
@@ -138,6 +180,16 @@ class FinancialItem(KeywordsMixin, FrequencyMixin, models.Model):
     @property
     def per_week(self):
         return (self.amount / self.get_delta_days()) * 7
+
+
+class FinancialChange(models.Model):
+    previous_amount = models.DecimalField(max_digits=10, decimal_places=2)
+    new_amount = models.DecimalField(max_digits=10, decimal_places=2)
+    date_changed = models.DateField()
+
+    class Meta:
+        abstract = True
+        ordering = ["date_changed"]
 
 
 class Category(models.Model):

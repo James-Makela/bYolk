@@ -6,6 +6,7 @@ from django.shortcuts import get_object_or_404, render
 from django.urls import reverse
 from django.utils import timezone
 
+from apps.assets.models import SavingsAccount
 from apps.budget.models import Bucket, BudgetPeriod, CostAllocation, IncomeAllocation
 from apps.core.forms import InitialUserPreferencesForm
 from apps.transaction.models import Transaction
@@ -16,7 +17,11 @@ from .forms import (
     CostAllocationTransactionsForm,
     IncomeAllocationTransactionsForm,
 )
-from .services import generate_next_budget_period, populate_from_costs
+from .services import (
+    generate_next_budget_period,
+    get_running_savings,
+    populate_from_costs,
+)
 
 
 @login_required
@@ -72,8 +77,11 @@ def budget_detail(request, id):
     )
 
     grouped_allocations = allocations.grouped_by_name()  # type: ignore
-    ungrouped_allocations = allocations.exclude(
+    ungrouped_allocations_unsorted = allocations.exclude(
         name__in=[g["name"] for g in grouped_allocations]
+    )
+    ungrouped_allocations = sorted(
+        ungrouped_allocations_unsorted, key=lambda x: x.expected_amount
     )
 
     incomes = IncomeAllocation.objects.filter(budget_period=budget).prefetch_related(
@@ -94,6 +102,18 @@ def budget_detail(request, id):
     else:
         complete = False
 
+    primary_savings = SavingsAccount.objects.filter(
+        user=request.user, is_primary=True
+    ).first()
+
+    if not complete or not primary_savings:
+        theoretical_predicted_savings, actual_predicted_savings = get_running_savings(
+            request.user, budget
+        )
+    else:
+        theoretical_predicted_savings = 0
+        actual_predicted_savings = 0
+
     context = {
         "budget": budget,
         "allocations": ungrouped_allocations,
@@ -107,6 +127,9 @@ def budget_detail(request, id):
         "current_position": current_position,
         "complete": complete,
         "buckets": buckets,
+        "savings": primary_savings,
+        "theoretical_predicted_savings": theoretical_predicted_savings,
+        "actual_predicted_savings": actual_predicted_savings,
     }
 
     return render(
@@ -158,7 +181,7 @@ def get_allocation_picker(request, allocation_type, allocation_id):
 
     return render(
         request,
-        "budget/partials/allocation_modal.html",
+        "budget/partials/_allocation_modal.html",
         {
             "allocation": allocation,
             "eligible_transactions": sorted_transactions,
@@ -198,8 +221,8 @@ def save_allocations(request, allocation_type, allocation_id):
                 or 0
             )
 
+            allocation.expected_amount = total_sum
             allocation.amount = total_sum
-            print("Fine till here")
             allocation.save()
 
         # HX-Refresh tells the browser to reload the whole page to update totals
@@ -219,6 +242,7 @@ def add_single_allocation(request, budget_id):
         if form.is_valid():
             new_allocation = form.save(commit=False)
             new_allocation.budget_period = budget_period
+            new_allocation.amount = -new_allocation.amount
             new_allocation.save()
             messages.success(request, "Cost added!")
             return HttpResponseRedirect(reverse("detail", args=[budget_id]))
@@ -262,6 +286,8 @@ def edit_allocation_with_transactions(request, allocation_type, budget_id, pk=No
         allocation = get_object_or_404(
             TargetModel, pk=pk, budget_period__user=request.user
         )
+        allocation.expected_amount = -allocation.expected_amount
+        allocation.amount = -allocation.amount
         title = "Edit Allocation"
         message = "Allocation updated!"
     else:
@@ -275,6 +301,9 @@ def edit_allocation_with_transactions(request, allocation_type, budget_id, pk=No
         if form.is_valid():
             new_allocation = form.save(commit=False)
             new_allocation.budget_period = budget_period
+            if TargetModel == CostAllocation:
+                new_allocation.amount = -new_allocation.amount
+                new_allocation.expected_amount = -new_allocation.expected_amount
             new_allocation.save()
 
             # Allocate ticked transactions
@@ -326,8 +355,14 @@ def move_cost_allocation(request, allocation_id, budget_id):
         pk=allocation_id,
         budget_period__user=request.user,
     )
-
     current_budget = allocation.budget_period.id
+
+    # Check if there are associated costs with the allocation
+    if allocation.transactions.all().exists():
+        messages.error(request, "Unable to move allocation with transactions")
+
+        return HttpResponseRedirect(reverse("detail", args=[current_budget]))
+
     budget_to_assign = get_object_or_404(BudgetPeriod, pk=budget_id, user=request.user)
 
     allocation.budget_period = budget_to_assign
@@ -398,7 +433,6 @@ def empty_bucket(request, budget_id, bucket_id):
         budget_period__user=request.user,
         budget_period_id=budget_id,
     )
-    print(allocation)
 
     allocation.amount -= bucket.balance
     bucket.balance = 0
@@ -422,7 +456,6 @@ def fill_bucket(request, budget_id, bucket_id):
         budget_period__user=request.user,
         budget_period_id=budget_id,
     )
-    print(allocation)
 
     difference = allocation.remaining
     bucket.balance += difference
