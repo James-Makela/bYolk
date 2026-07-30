@@ -450,19 +450,20 @@ def empty_bucket(request, budget_id, bucket_id):
 @login_required
 def fill_bucket(request, budget_id, bucket_id):
     bucket = get_object_or_404(Bucket, pk=bucket_id, user=request.user)
-    allocation = get_object_or_404(
-        CostAllocation.objects.select_related("budget_period"),
+
+    allocations = CostAllocation.objects.filter(
         cost=bucket.cost_id,
         budget_period__user=request.user,
         budget_period_id=budget_id,
     )
 
-    difference = allocation.remaining
-    bucket.balance += difference
-    allocation.amount += difference
-    allocation.note = "Remainder sent to bucket"
+    for allocation in allocations:
+        difference = allocation.remaining
+        bucket.balance += difference
+        allocation.amount += difference
+        allocation.note = "Remainder sent to bucket"
+        allocation.save()
 
     bucket.save()
-    allocation.save()
 
     return HttpResponseRedirect(reverse("detail", args=[budget_id]))
