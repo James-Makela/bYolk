@@ -10,7 +10,9 @@ from .models import Transaction
 # Functions for ING .csv
 def generate_unique_hash(description, amount, balance, uid, receipt_number=None):
     if not receipt_number:
-        receipt_number = re.findall(r"(?<=Receipt )\d{4,6}", description)[0]
+        receipt_numbers = re.findall(r"(?<=Receipt )\d{4,6}", description)
+        if receipt_numbers:
+            receipt_number = receipt_numbers[0]
     stripped_amount = str(amount).replace(".", "_").strip("-")
     stripped_balance = str(balance).replace(".", "_").strip("-")
     if not receipt_number:
