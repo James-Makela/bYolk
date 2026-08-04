@@ -66,7 +66,7 @@ class CostAllocationQuerySet(models.QuerySet):  # type: ignore
         for name in duplicate_names:
             items = list(self.filter(name=name).prefetch_related("transactions"))
             total_paid = sum(item.total_paid for item in items)
-            total_amount = sum(item.amount for item in items)
+            total_amount = sum(item.expected_amount for item in items)
             grouped.append(
                 {
                     "name": name,
@@ -211,6 +211,7 @@ class CostAllocation(AllocationBase):
     category = models.ForeignKey(
         Category, on_delete=models.SET_NULL, null=True, blank=True
     )
+    note = models.CharField(max_length=50, null=True, blank=True)
 
     class Meta:
         constraints = [
