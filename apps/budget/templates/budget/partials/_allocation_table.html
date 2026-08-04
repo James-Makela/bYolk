@@ -3,9 +3,9 @@
 <div class="flex flex-col bg-base-200/30 rounded-lg overflow-visible">
   {% for allocation in allocations %}
     <div class="group relative hover:bg-base-300 focus-within:z-50 border-b border-base-200 last:border-none{% if allocation.note %} tooltip tooltip-warning tooltip-start {% endif %}" data-tip="{{ allocation.note }}">
-      <input type="checkbox" id="toggle_{{ allocation.id|unlocalize }}" class="peer hidden" />
+      <input type="checkbox" id="toggle_{{ allocation.id|unlocalize }}_{{ allocation.name}}" class="peer hidden" />
       <div class="grid grid-cols-10 w-full gap-2 py-0 px-4 items-center cursor-pointer select-none relative">
-        <label for="toggle_{{ allocation.id|unlocalize }}" class="absolute inset-0 z-0 cursor-pointer"></label>
+        <label for="toggle_{{ allocation.id|unlocalize }}_{{ allocation.name }}" class="absolute inset-0 z-0 cursor-pointer"></label>
         <div class="flex items-center font-medium truncate col-span-3 text-lg relative z-10 pointer-events-none p-0">
           {{ allocation.name }}
           {% if allocation.category %}
