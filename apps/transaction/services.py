@@ -10,13 +10,15 @@ from .models import Transaction
 # Functions for ING .csv
 def generate_unique_hash(description, amount, balance, uid, receipt_number=None):
     if not receipt_number:
-        receipt_number = re.findall(r"(?<=Receipt )\d{4,6}", description)
+        receipt_numbers = re.findall(r"(?<=Receipt )\d{4,6}", description)
+        if receipt_numbers:
+            receipt_number = receipt_numbers[0]
     stripped_amount = str(amount).replace(".", "_").strip("-")
     stripped_balance = str(balance).replace(".", "_").strip("-")
     if not receipt_number:
         return f"000000_{stripped_amount}{stripped_balance}{uid}"
     else:
-        return f"{receipt_number[0]}_{stripped_amount}{uid}"
+        return f"{receipt_number}_{stripped_amount}{uid}"
 
 
 def process_description_ing(description):
@@ -206,7 +208,7 @@ def process_transaction_upload_anzplus(user, document):
                 break
 
             # Ignore transfers and round ups
-            if "ROUND UP" in line or "TRANSFER" in line:
+            if "ROUND UP" in line or "TRANSFER FROM" in line or "TRANSFER TO" in line:
                 continue
 
             space_count = line.split("$")[1].count(" ")
