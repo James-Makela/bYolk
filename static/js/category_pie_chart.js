@@ -1,6 +1,16 @@
-function renderChart(labels, series, colors) {
+function renderChart(labels, series, colors, hideValues) {
+  const formatCurrency = (val) => {
+    if (hideValues) return "$x.xx";
+    return typeof val === 'number' ? `$${val.toFixed(2)}` : `$${val}`;
+  };
   const options = {
-    chart: { type: 'pie', width: '100%', height: '90%', background: 'transparent', parentHeightOffset: 0 },
+    chart: {
+      type: 'pie',
+      width: '90%',
+      height: '90%',
+      background: 'transparent',
+      parentHeightOffset: 0
+    },
     series: series,
     labels: labels,
     colors: colors,
@@ -27,7 +37,7 @@ function renderChart(labels, series, colors) {
             show: true,
             formatter: function(name, opts) {
               const amount = opts.w.globals.series[opts.seriesIndex];
-              return `${name}: $${amount.toFixed(2)}`;
+              return `${name}: ${formatCurrency(amount.toFixed(2))}`;
             }
           }
         }
@@ -55,7 +65,7 @@ function renderChart(labels, series, colors) {
           const total = seriesArr.reduce((a, b) => a + b, 0);
           const percent = total > 0 ? ((val / total) * 100).toFixed(2) : '0.00';
 
-          return `$${val.toFixed(2)} (${percent}%)`;
+          return `$${formatCurrency(val.toFixed(2))} (${percent}%)`;
         }
       }
     }

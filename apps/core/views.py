@@ -8,35 +8,56 @@ from apps.income.models import Income
 
 from .forms import CategoryForm, InitialUserPreferencesForm
 from .models import Category
-from .services import calculate_period_totals, get_cost_graph_data
+from .services import calculate_period_totals, get_graph_data, get_total_spend_data
 
 
 # Create your views here.
 @login_required
 def dashboard(request, view_type="categories"):
     charts = []
+    income_graph = []
     costs = Cost.objects.filter(user=request.user)
     incomes = Income.objects.filter(user=request.user)
     categories = Category.objects.filter(user=request.user)
 
     if view_type == "costs":
         for cost in costs:
-            graph_data = get_cost_graph_data(request.user, cost=cost)
+            graph_data = get_graph_data(request.user, cost=cost)
             if graph_data:
                 charts.append(graph_data)
 
     if view_type == "categories":
         for category in categories:
-            graph_data = get_cost_graph_data(request.user, category=category)
+            graph_data = get_graph_data(request.user, category=category)
             if graph_data:
                 charts.append(graph_data)
 
     cost_totals = calculate_period_totals(costs)
     income_totals = calculate_period_totals(incomes)
 
+    for income in incomes:
+        income_data = get_graph_data(request.user, income=income)
+        if income_data:
+            income_graph.append(income_data)
+
+    income_dates = income_graph[0]["dates"]
+    income_amounts = []
+    income_titles = []
+    for income in income_graph:
+        income_amounts.append(income["amounts"])
+        income_titles.append(income["title"])
+
+    total_spend_amounts = get_total_spend_data(request.user)
+
     context = {
+        # Cost Graphs
         "charts": charts,
         "view_type": view_type,
+        # Income graph
+        "income_dates": income_dates,
+        "income_titles": income_titles,
+        "income_amounts": income_amounts,
+        "total_spend_amounts": total_spend_amounts,
         # Costs
         "total_yearly": cost_totals["yearly"],
         "total_monthly": cost_totals["yearly"] / 12,

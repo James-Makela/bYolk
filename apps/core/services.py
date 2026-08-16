@@ -4,7 +4,7 @@ from datetime import timedelta
 
 from django.utils import timezone
 
-from apps.budget.models import BudgetPeriod, CostAllocation
+from apps.budget.models import BudgetPeriod, CostAllocation, IncomeAllocation
 from apps.cost.models import Cost
 
 
@@ -21,13 +21,47 @@ def calculate_period_totals(financial_items):
     }
 
 
-# Type to get either Budgeted costs - or Categories
-def get_cost_graph_data(user, cost=None, category=None):
+def get_total_spend_data(user):
     today = timezone.now().date()
-    six_months_ago = today - timedelta(days=183)
+    # six_months_ago = today - timedelta(days=183)
+    one_year_ago = today - timedelta(days=365)
 
     budget_periods = BudgetPeriod.objects.filter(
-        user=user, start_date__lte=today, start_date__gte=six_months_ago
+        user=user, start_date__lte=today, start_date__gte=one_year_ago
+    ).order_by("start_date")
+
+    allocations = CostAllocation.objects.filter(
+        budget_period__user=user,
+        budget_period__in=budget_periods,
+    )
+    allocation_map = defaultdict(float)
+    for allocation in allocations:
+        allocation_map[allocation.budget_period_id] += float(allocation.total_paid)
+    amounts = []
+    dates = []
+    for period in budget_periods:
+        allocation = allocation_map.get(period.id)
+        amounts.append(float(allocation_map.get(period.id, 0.0)))
+        dates.append(period.end_date.strftime("%d, %b, %y"))
+
+    if sum(amounts) == 0:
+        return None
+
+    dates, amounts = pad_graph_data_to_window(
+        dates, amounts, budget_periods, one_year_ago
+    )
+
+    return amounts
+
+
+# Type to get either Budgeted costs - or Categories
+def get_graph_data(user, cost=None, income=None, category=None):
+    today = timezone.now().date()
+    # six_months_ago = today - timedelta(days=183)
+    one_year_ago = today - timedelta(days=365)
+
+    budget_periods = BudgetPeriod.objects.filter(
+        user=user, start_date__lte=today, start_date__gte=one_year_ago
     ).order_by("start_date")
 
     if cost:
@@ -36,6 +70,13 @@ def get_cost_graph_data(user, cost=None, category=None):
             cost__name=cost.name,
             budget_period__in=budget_periods,
         )
+    elif income:
+        allocations = IncomeAllocation.objects.filter(
+            budget_period__user=user,
+            income__name=income.name,
+            budget_period__in=budget_periods,
+        )
+
     elif category:
         allocations = CostAllocation.objects.filter(
             budget_period__user=user,
@@ -51,12 +92,18 @@ def get_cost_graph_data(user, cost=None, category=None):
 
     allocation_map = defaultdict(float)
     for allocation in allocations:
-        allocation_map[allocation.budget_period_id] += -float(allocation.total_paid)
+        if income:
+            allocation_map[allocation.budget_period_id] += float(allocation.total_paid)
+        else:
+            allocation_map[allocation.budget_period_id] += -float(allocation.total_paid)
 
     dates = []
     amounts = []
     for period in budget_periods:
-        dates.append(period.end_date.strftime("%d, %b, %y"))
+        if income:
+            dates.append(period.end_date)
+        else:
+            dates.append(period.end_date.strftime("%d, %b, %y"))
         allocation = allocation_map.get(period.id)
         amounts.append(float(allocation_map.get(period.id, 0.0)))
 
@@ -66,7 +113,7 @@ def get_cost_graph_data(user, cost=None, category=None):
     average_per_budget = sum(amounts) / len(amounts)
 
     dates, amounts = pad_graph_data_to_window(
-        dates, amounts, budget_periods, six_months_ago
+        dates, amounts, budget_periods, one_year_ago
     )
 
     if cost:
@@ -78,6 +125,13 @@ def get_cost_graph_data(user, cost=None, category=None):
             "color": cost.category.color,
             "budgeted_amount": float(cost.amount),
             "average": float(average_per_budget),
+        }
+
+    elif income:
+        return {
+            "title": income.name,
+            "dates": dates,
+            "amounts": amounts,
         }
 
     elif category:

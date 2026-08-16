@@ -45,7 +45,7 @@ function renderChart(chartID, color, title, amounts, dates, budgetedAmount, hide
     plotOptions: {
       bar: {
         minHeight: 10,
-        borderRadius: 5,
+        borderRadius: 2,
         dataLabels: {
           position: 'top', // top, center, bottom
         },

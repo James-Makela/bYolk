@@ -13,5 +13,10 @@
   const labels = JSON.parse(document.getElementById('chart-labels-data').textContent);
   const series = JSON.parse(document.getElementById('chart-series-data').textContent);
   const colors = JSON.parse(document.getElementById('chart-colors-data').textContent);
-  renderChart(labels, series, colors)
+  renderChart(
+    labels,
+    series,
+    colors,
+    {{ request.session.privacy_mode|yesno:"true,false" }}
+  )
 </script>

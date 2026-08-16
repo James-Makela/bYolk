@@ -18,11 +18,15 @@
 
 {% block content %}
   <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+  <script src="{% static 'js/income_area_chart.js' %}"></script>
   <script src="{% static 'js/spent_chart.js' %}"></script>
   <div class="flex flex-wrap max-w-6xl mx-auto gap-8 mb-8">
     {% include "cost/partials/_total_costs_card.html" %}
     {% include "income/partials/_total_incomes_card.html" %}
     {% include "partials/_total_savings_card.html" %}
+  </div>
+  <div class="max-w-6xl mx-auto gap-8 mb-8">
+    {% include "partials/_income_area_graph.html" %}
   </div>
   <div class="flex flex-wrap max-w-6xl mx-auto gap-8">
     {% for chart in charts %}
