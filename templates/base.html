@@ -42,19 +42,20 @@
         </main>
       </div>
 
+      <!-- Side Bar -->
       <div class="drawer-side is-drawer-close:overflow-visible z-40">
         <label for="main-drawer" aria-label="close sidebar" class="drawer-overlay"></label>
         <div class="flex min-h-full flex-col items-start bg-base-200 is-drawer-close:w-14 is-drawer-open:w-64 transition-all duration-200">
           <ul class="menu w-full grow pt-2">
-            <li class="is-drawer-close:hidden pointer-events-none">
+            <li>
               <div>
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-egg-icon lucide-egg">
                   <path d="M12 2C8 2 4 8 4 14a8 8 0 0 0 16 0c0-6-4-12-8-12"/>
                 </svg>
-                <span class="text-3xl">bYolk</span>
+                <span class="text-3xl is-drawer-close:hidden pointer-events-none">bYolk</span>
               </div>
             </li>
-            <div class="divider mt-1"></div>
+            <div class="divider my-1 is-drawer-close:hidden pointer-events-none"></div>
             {% if user.is_authenticated %}
               <!-- Dashboard -->
               <li>
@@ -140,14 +141,31 @@
                    class="is-drawer-close:tooltip is-drawer-close:tooltip-right"
                    data-tip="Assets">
                   <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-piggy-bank-icon lucide-piggy-bank"><path d="M11 17h3v2a1 1 0 0 0 1 1h2a1 1 0 0 0 1-1v-3a3.16 3.16 0 0 0 2-2h1a1 1 0 0 0 1-1v-2a1 1 0 0 0-1-1h-1a5 5 0 0 0-2-4V3a4 4 0 0 0-3.2 1.6l-.3.4H11a6 6 0 0 0-6 6v1a5 5 0 0 0 2 4v3a1 1 0 0 0 1 1h2a1 1 0 0 0 1-1z"/><path d="M16 10h.01"/><path d="M2 8v1a2 2 0 0 0 2 2h1"/>
-
                   </svg>
                   <span class="is-drawer-close:hidden">Savings & Assets</span>
                 </a>
               </li>
 
-              <!-- Theme selector -->
+              <div class="divider my-1 is-drawer-close:hidden pointer-events-none"></div>
+
+              <li class="pointer-events-none">
+                <h3>Account Balances:</h3>
+              </li>
+              <!-- Help - ? -->
               <li class="mt-auto">
+                <a href="{% url 'core:categories-page' %}"
+                   class="is-drawer-close:tooltip is-drawer-close:tooltip-right"
+                   data-tip="Help">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-badge-question-mark-icon lucide-badge-question-mark">
+                    <path d="M3.85 8.62a4 4 0 0 1 4.78-4.77 4 4 0 0 1 6.74 0 4 4 0 0 1 4.78 4.78 4 4 0 0 1 0 6.74 4 4 0 0 1-4.77 4.78 4 4 0 0 1-6.75 0 4 4 0 0 1-4.78-4.77 4 4 0 0 1 0-6.76Z"/>
+                    <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/>
+                    <line x1="12" x2="12.01" y1="17" y2="17"/>
+                  </svg>
+                  <span class="is-drawer-close:hidden">Help</span>
+                </a>
+              </li>
+              <!-- Theme selector -->
+              <li class="is-drawer-close:hidden">
                 {% csrf_token %}
                 <div class="form-control w-full max-w-xs">
                   <label class="label">
@@ -169,7 +187,7 @@
                 </div>
               </li>
               <!-- Privacy Toggle -->
-              <li>
+              <li class="is-drawer-close:hidden mb-5">
                 <form action="{% url 'core:toggle-privacy' %}" method="POST" id="privacy-toggle-form" class="hidden">
                   {% csrf_token %}
                 </form>
@@ -182,19 +200,6 @@
                     pointer-events-none
                   />
                 </label>
-              </li>
-              <!-- Help - ? -->
-              <li class="mb-5">
-                <a href="{% url 'core:categories-page' %}"
-                   class="is-drawer-close:tooltip is-drawer-close:tooltip-right"
-                   data-tip="Help">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-badge-question-mark-icon lucide-badge-question-mark">
-                    <path d="M3.85 8.62a4 4 0 0 1 4.78-4.77 4 4 0 0 1 6.74 0 4 4 0 0 1 4.78 4.78 4 4 0 0 1 0 6.74 4 4 0 0 1-4.77 4.78 4 4 0 0 1-6.75 0 4 4 0 0 1-4.78-4.77 4 4 0 0 1 0-6.76Z"/>
-                    <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/>
-                    <line x1="12" x2="12.01" y1="17" y2="17"/>
-                  </svg>
-                  <span class="is-drawer-close:hidden">Help</span>
-                </a>
               </li>
               <div class="is-drawer-close:hidden">
                 <form method="post" action="{% url 'account_logout' %}" class="inline">
@@ -210,7 +215,7 @@
 
     </div>
 
-<!-- Hacky script to persist drawer state -->
+    <!-- Hacky script to persist drawer state -->
     <script>
       const drawer = document.getElementById('main-drawer');
       const icon = document.getElementById('drawer-icon');
@@ -238,13 +243,13 @@
             <div>
               <span>{{ message }}</span>
             </div>
-        <!-- Optional: Close button if you want to dismiss early -->
+            <!-- Optional: Close button if you want to dismiss early -->
             <button class="btn btn-ghost btn-xs" onclick="this.parentElement.parentElement.remove()">✕</button>
           </div>
         {% endfor %}
       </div>
 
-  <!-- Auto-hide script so the toast disappears after 5 seconds -->
+      <!-- Auto-hide script so the toast disappears after 5 seconds -->
       <script>
         setTimeout(() => {
           const toasts = document.querySelectorAll('.toast');
