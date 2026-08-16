@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% load l10n %}
+{% load static %}
 
 {% block title %}{{ budget.start_date }}{% endblock %}
 {% block navbar_title %}
@@ -18,6 +19,8 @@
 {% endblock %}
 
 {% block content %}
+  <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+  <script src="{% static 'js/category_pie_chart.js' %}"></script>
   <div class="max-w-6xl mx-auto p-4">
     <div class="relative w-full">
       <progress class="h-[32px] progress progress-primary w-full" value="{{ current_position }}" max="{{ budget_length }}"></progress>
@@ -30,6 +33,7 @@
     {% include "budget/partials/_cost_budget_container.html" with type="cost" %}
 
     <div class="divider"></div>
+
     {% include "budget/partials/_bucket_carousel.html" %}
 
     <div class="carousel w-full">
@@ -85,6 +89,10 @@
       {% endif %}
 
     </div>
+
+    <div class="divider"></div>
+
+    {% include "partials/_category_pie.html" %}
     <div class="divider"></div>
     {% include "budget/partials/_matching_transactions_container.html" %}
 

@@ -26,7 +26,7 @@
   </div>
   <div class="flex flex-wrap max-w-6xl mx-auto gap-8">
     {% for chart in charts %}
-      {% include 'partials/_mini_graph.html' with dates=chart.dates amounts=chart.amounts chart_id=chart.chart_id title=chart.title color=chart.color budgeted_amount=chart.budgeted_amount average=chart.average %}
+      {% include "partials/_mini_graph.html" with dates=chart.dates amounts=chart.amounts chart_id=chart.chart_id title=chart.title color=chart.color budgeted_amount=chart.budgeted_amount average=chart.average %}
     {% endfor %}
   </div>
 {% endblock content %}
