@@ -80,6 +80,7 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "django.contrib.auth.middleware.LoginRequiredMiddleware",
     "allauth.account.middleware.AccountMiddleware",
+    "budgetmaker.middleware.DemoObfuscationMiddleware",
 ]
 
 ROOT_URLCONF = "budgetmaker.urls"

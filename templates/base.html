@@ -168,6 +168,21 @@
                   </select>
                 </div>
               </li>
+              <!-- Privacy Toggle -->
+              <li>
+                <form action="{% url 'core:toggle-privacy' %}" method="POST" id="privacy-toggle-form" class="hidden">
+                  {% csrf_token %}
+                </form>
+                <label class="label flex justify-between items-center" onclick="document.getElementById('privacy-toggle-form').submit();">
+                  <span class="label-text text-xs font-bold opacity-60">Privacy Mode</span>
+                  <input
+                    type="checkbox"
+                    class="toggle toggle-primary"
+                    {% if request.session.privacy_mode %}checked{% endif %}
+                    pointer-events-none
+                  />
+                </label>
+              </li>
               <!-- Help - ? -->
               <li class="mb-5">
                 <a href="{% url 'core:categories-page' %}"

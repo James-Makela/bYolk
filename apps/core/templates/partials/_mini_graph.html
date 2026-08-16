@@ -6,12 +6,15 @@
   </div>
 </div>
 <script>
+  const hideValues = {{ request.session.privacy_mode|yesno:"true,false" }};
+
   renderChart(
     "{{ chart_id }}",
     "{{ color }}",
     "{{ title }}",
     {{ amounts|safe }},
     {{ dates|safe }},
-    {{ budgeted_amount|safe }}
+    {{ budgeted_amount|safe }},
+    hideValues
   );
 </script>

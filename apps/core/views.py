@@ -1,7 +1,7 @@
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse, HttpResponseRedirect
-from django.shortcuts import get_object_or_404, render
+from django.shortcuts import get_object_or_404, redirect, render
 
 from apps.cost.models import Cost
 from apps.income.models import Income
@@ -146,3 +146,11 @@ def theme_select(request):
     request.user.preferences.save()
 
     return HttpResponse(status=200)
+
+
+@login_required
+def toggle_privacy_mode(request):
+    current_state = request.session.get("privacy_mode", False)
+    request.session["privacy_mode"] = not current_state
+
+    return redirect(request.META.get("HTTP_REFERER", "/"))

@@ -1,10 +1,14 @@
-function renderChart(chartID, color, title, amounts, dates, budgetedAmount) {
+function renderChart(chartID, color, title, amounts, dates, budgetedAmount, hideValues = false) {
   const hasBudget = budgetedAmount > 0;
   const maxActual = Math.max(...amounts.filter(a => a > 0), 0);
   const max = hasBudget ? Math.max(maxActual, budgetedAmount) : maxActual;
   const stub = Math.max(maxActual, budgetedAmount) * 0.02;
   const displayAmounts = amounts.map(a => a === 0 ? stub : a);
   const isStub = amounts.map(a => a === 0);
+  const formatCurrency = (val) => {
+    if (hideValues) return "$x.xx";
+    return typeof val === 'number' ? `$${val.toFixed(2)}` : `$${val}`;
+  };
 
   var options = {
     series: [{
@@ -24,7 +28,7 @@ function renderChart(chartID, color, title, amounts, dates, budgetedAmount) {
     },
     tooltip: {
       y: {
-        formatter: (val, opts) => isStub[opts.dataPointIndex] ? "$0.00" : `$${val.toFixed(2)}`
+        formatter: (val, opts) => isStub[opts.dataPointIndex] ? "$0.00" : formatCurrency(`${val.toFixed(2)}`)
       },
       theme: 'dark',
     },
@@ -50,7 +54,7 @@ function renderChart(chartID, color, title, amounts, dates, budgetedAmount) {
     dataLabels: {
       enabled: false,
       formatter: function (val) {
-        return "$" + val;
+        formatCurrency(val);
       },
       style: {
         fontSize: '12px',
@@ -61,7 +65,7 @@ function renderChart(chartID, color, title, amounts, dates, budgetedAmount) {
       yaxis: hasBudget ? [{
         y: budgetedAmount,
         label: {
-          text: `$${budgetedAmount.toFixed(2)}`,
+          text: formatCurrency(`${budgetedAmount.toFixed(2)}`),
           position: 'left',
           borderWidth: 0,
           style: {
@@ -112,7 +116,7 @@ function renderChart(chartID, color, title, amounts, dates, budgetedAmount) {
       labels: {
         show: false,
         formatter: function (val) {
-          return "$" + val;
+          formatCurrency(val);
         },
       }
     },
