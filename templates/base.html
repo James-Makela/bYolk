@@ -45,7 +45,7 @@
       <!-- Side Bar -->
       <div class="drawer-side is-drawer-close:overflow-visible z-40">
         <label for="main-drawer" aria-label="close sidebar" class="drawer-overlay"></label>
-        <div class="flex min-h-full flex-col items-start bg-base-200 is-drawer-close:w-14 is-drawer-open:w-64 transition-all duration-200">
+        <div class="flex min-h-full flex-col items-start bg-base-200 is-drawer-close:w-16 is-drawer-open:w-64 transition-all duration-200">
           <ul class="menu w-full grow pt-2">
             <li>
               <div>
@@ -148,9 +148,9 @@
 
               <div class="divider my-1 is-drawer-close:hidden pointer-events-none"></div>
 
-              <li class="pointer-events-none">
-                <h3>Account Balances:</h3>
-              </li>
+              <!-- Account balances -->
+              <!-- TODO: Add accounts and balances here -->
+
               <!-- Help - ? -->
               <li class="mt-auto">
                 <a href="{% url 'core:categories-page' %}"
@@ -164,6 +164,9 @@
                   <span class="is-drawer-close:hidden">Help</span>
                 </a>
               </li>
+
+              <div class="divider my-1 is-drawer-close:hidden pointer-events-none"></div>
+
               <!-- Theme selector -->
               <li class="is-drawer-close:hidden">
                 {% csrf_token %}
@@ -201,12 +204,17 @@
                   />
                 </label>
               </li>
-              <div class="is-drawer-close:hidden">
-                <form method="post" action="{% url 'account_logout' %}" class="inline">
+
+              <!-- Logout -->
+              <li>
+                <form method="post" action="{% url 'account_logout' %}" class="contents">
                   {% csrf_token %}
-                  <button type="submit" class="btn btn-soft btn-error btn-wide">Logout</button>
+                  <button type="submit" class="btn btn-soft btn-error btn-sm w-full flex items-center mb-2 is-drawer-close:tooltip is-drawer-close:tooltip-right is-drawer-close:w-auto is-drawer-close:btn-square" data-tip="Logout">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-log-out-icon lucide-log-out"><path d="m16 17 5-5-5-5"/><path d="M21 12H9"/><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/></svg>
+                    <span class="is-drawer-close:hidden">Logout</span>
+                  </button>
                 </form>
-              </div>
+              </li>
             {% endif %}
 
           </ul>
