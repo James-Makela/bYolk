@@ -101,42 +101,10 @@ class User(AbstractUser):
 
 
 class UserPreferences(FrequencyMixin, models.Model):
+    # TODO: remove theme from user preferences
     THEME_CHOICES = [
         ("light", "Light"),
         ("dark", "Dark"),
-        ("cupcake", "Cupcake"),
-        ("bumblebee", "Bumblebee"),
-        ("emerald", "Emerald"),
-        ("corporate", "Corporate"),
-        ("synthwave", "Synthwave"),
-        ("retro", "Retro"),
-        ("cyberpunk", "Cyberpunk"),
-        ("valentine", "Valentine"),
-        ("halloween", "Halloween"),
-        ("garden", "Garden"),
-        ("forest", "Forest"),
-        ("aqua", "Aqua"),
-        ("lofi", "Lofi"),
-        ("pastel", "Pastel"),
-        ("fantasy", "Fantasy"),
-        ("wireframe", "Wireframe"),
-        ("black", "Black"),
-        ("luxury", "Luxury"),
-        ("dracula", "Dracula"),
-        ("cmyk", "Cmyk"),
-        ("autumn", "Autumn"),
-        ("business", "Business"),
-        ("acid", "Acid"),
-        ("lemonade", "Lemonade"),
-        ("night", "Night"),
-        ("coffee", "Coffee"),
-        ("winter", "Winter"),
-        ("dim", "Dim"),
-        ("nord", "Nord"),
-        ("sunset", "Sunset"),
-        ("caramellatte", "Caramellatte"),
-        ("abyss", "Abyss"),
-        ("silk", "Silk"),
     ]
     user = models.OneToOneField(
         settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="preferences"

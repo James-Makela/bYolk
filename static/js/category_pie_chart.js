@@ -1,12 +1,14 @@
-function renderChart(labels, series, colors, hideValues) {
+function renderChart(labels, series, colors, hideValues, theme) {
+  const isDark = theme.includes('dark');
   const formatCurrency = (val) => {
     if (hideValues) return "$x.xx";
     return typeof val === 'number' ? `$${val.toFixed(2)}` : `$${val}`;
   };
+  console.log(hideValues);
   const options = {
     chart: {
       type: 'pie',
-      width: '90%',
+      width: '100%',
       height: '90%',
       background: 'transparent',
       parentHeightOffset: 0
@@ -21,14 +23,20 @@ function renderChart(labels, series, colors, hideValues) {
       }
     },
     legend: {
-      enabled: true
+      enabled: true,
+      position: 'right',
+      horizontalAlign: 'left',
+      formatter: function(name, opts) {
+        const amount = opts.w.globals.series[opts.seriesIndex];
+        return `${name}: ${formatCurrency(amount.toFixed(2))}`;
+      },
     },
     stroke: {
-      width: 1,
-      colors: ['#000000']
+      width: 4,
+      lineCap: 'round',
     },
     theme: {
-      mode: 'dark'
+      mode: isDark ? 'dark' : 'light',
     },
     plotOptions: {
       pie: {
@@ -44,7 +52,7 @@ function renderChart(labels, series, colors, hideValues) {
       }
     },
     tooltip: {
-      theme: 'dark',
+      theme: isDark ? 'dark' : 'light',
       fillSeriesColor: false,
       style: {
         fontSize: '13px',
@@ -65,12 +73,50 @@ function renderChart(labels, series, colors, hideValues) {
           const total = seriesArr.reduce((a, b) => a + b, 0);
           const percent = total > 0 ? ((val / total) * 100).toFixed(2) : '0.00';
 
-          return `$${formatCurrency(val.toFixed(2))} (${percent}%)`;
+          return `${formatCurrency(val.toFixed(2))} (${percent}%)`;
         }
       }
-    }
+    },
+    responsive: [
+      {
+        breakpoint: 700,
+        options: {
+          legend: {
+            position: 'bottom',
+          },
+          plotOptions: {
+            pie: {
+              dataLabels: {
+                external: {
+                  show: false,
+                },
+              },
+            },
+          },
+        },
+      },
+      {
+        breakpoint: 710,
+        options: {
+          legend: {
+            position: 'right',
+          },
+          plotOptions: {
+            pie: {
+              dataLabels: {
+                external: {
+                  show: true,
+                },
+              },
+            },
+          },
+        },
+      },
+    ],
   };
 
   var chart = new ApexCharts(document.querySelector("#category-pie-chart"), options);
   chart.render();
+
+  ChartManager.register(chart, '#category-pie-chart');
 }

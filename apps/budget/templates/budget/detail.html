@@ -92,7 +92,9 @@
 
     <div class="divider"></div>
 
-    {% include "partials/_category_pie.html" %}
+    {% if pie_category_labels %}
+      {% include "partials/_category_pie.html" %}
+    {% endif %}
 
     <div class="divider"></div>
 

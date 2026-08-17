@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="{{ user.preferences.theme|default:'dark' }}">
+<html lang="en" data-theme="{{ request.session.theme|default:'dark' }}">
   <head>
     {% load static %}
     <link rel="icon" type="image/png" href="{% static 'images/favicon.png' %}">
@@ -10,6 +10,9 @@
 
     <!-- HTMX -->
     <script src="{% static 'js/htmx.min.js' %}"></script>
+
+    <!-- Handles Tooltip Themes (Apex Charts) -->
+    <script src="{% static 'js/main.js' %}"></script>
 
   </head>
   <body class="min-h-screen">
@@ -159,9 +162,12 @@
                           hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'
                           hx-trigger="change"
                           hx-swap="none"
-                          onchange="document.documentElement.setAttribute('data-theme', this.value)">
+                          onchange="
+                                    document.documentElement.setAttribute('data-theme', this.value)
+                                    window.dispatchEvent(new CustomEvent('themeChanged', { detail: { theme: this.value } }));
+                                   ">
                     {% for value, label in user.preferences.get_all_themes %}
-                      <option value="{{ value }}" {% if user.preferences.theme == value %}selected{% endif %}>
+                      <option value="{{ value }}" {% if request.session.theme == value %}selected{% endif %}>
                         {{ label }}
                       </option>
                     {% endfor %}

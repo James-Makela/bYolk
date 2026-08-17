@@ -1,4 +1,5 @@
-function renderChart(chartID, color, title, amounts, dates, budgetedAmount, hideValues = false) {
+function renderChart(chartID, color, title, amounts, dates, budgetedAmount, hideValues = false, theme) {
+  const isDark = theme.includes('dark');
   const hasBudget = budgetedAmount > 0;
   const maxActual = Math.max(...amounts.filter(a => a > 0), 0);
   const max = hasBudget ? Math.max(maxActual, budgetedAmount) : maxActual;
@@ -10,27 +11,38 @@ function renderChart(chartID, color, title, amounts, dates, budgetedAmount, hide
     return typeof val === 'number' ? `$${val.toFixed(2)}` : `$${val}`;
   };
 
-  var options = {
+  const options = {
     series: [{
       name: title,
       data: displayAmounts,
     }],
     chart: {
-      height: 250,
+      height: 200,
+      width: '100%',
       type: 'bar',
       parentHeightOffset: 0,
+      background: 'transparent',
       toolbar: {
         show: false,
       },
     },
+    theme: {
+      mode: isDark ? 'dark' : 'light',
+    },
     grid: {
       show: false,
+      padding: {
+        left: -10,
+        right: 0,
+        top: 0,
+        bottom: 0,
+      },
     },
     tooltip: {
       y: {
         formatter: (val, opts) => isStub[opts.dataPointIndex] ? "$0.00" : formatCurrency(`${val.toFixed(2)}`)
       },
-      theme: 'dark',
+      theme: isDark ? 'dark' : 'light',
     },
 
     colors:  [
@@ -53,26 +65,13 @@ function renderChart(chartID, color, title, amounts, dates, budgetedAmount, hide
     },
     dataLabels: {
       enabled: false,
-      formatter: function (val) {
-        formatCurrency(val);
-      },
-      style: {
-        fontSize: '12px',
-        colors: ["#304758"]
-      }
     },
     annotations: {
       yaxis: hasBudget ? [{
         y: budgetedAmount,
-        label: {
-          text: formatCurrency(`${budgetedAmount.toFixed(2)}`),
-          position: 'left',
-          borderWidth: 0,
-          style: {
-            background: 'transparent',
-            color: '#ffffff',
-          },
-        },
+        strokeDashArray: 0,
+        borderWidth: 0.5,
+        opacity: 0.08,
       }] : [],
     },
 
@@ -122,6 +121,12 @@ function renderChart(chartID, color, title, amounts, dates, budgetedAmount, hide
     },
   };
 
-  var chart = new ApexCharts(document.querySelector("#chart-" + chartID), options);
-  chart.render();
+  setTimeout(() => {
+    var chart = new ApexCharts(
+      document.querySelector('#chart-' + chartID),
+      options
+    );
+    chart.render();
+    ChartManager.register(chart, '#chart-' + chartID);
+  }, 0);
 }

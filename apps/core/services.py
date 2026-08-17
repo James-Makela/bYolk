@@ -1,4 +1,3 @@
-import json
 from collections import defaultdict
 from datetime import timedelta
 
@@ -21,48 +20,44 @@ def calculate_period_totals(financial_items):
     }
 
 
-def get_total_spend_data(user):
+def get_budget_periods(user, time_period=365):
     today = timezone.now().date()
-    # six_months_ago = today - timedelta(days=183)
-    one_year_ago = today - timedelta(days=365)
+    past_date = today - timedelta(days=time_period)
 
     budget_periods = BudgetPeriod.objects.filter(
-        user=user, start_date__lte=today, start_date__gte=one_year_ago
+        user=user, start_date__lte=today, start_date__gte=past_date
     ).order_by("start_date")
+
+    return budget_periods, past_date
+
+
+def get_total_spend_data(user):
+    budget_periods, past_date = get_budget_periods(user)
 
     allocations = CostAllocation.objects.filter(
         budget_period__user=user,
         budget_period__in=budget_periods,
     )
+
     allocation_map = defaultdict(float)
     for allocation in allocations:
         allocation_map[allocation.budget_period_id] += float(allocation.total_paid)
+
     amounts = []
-    dates = []
     for period in budget_periods:
-        allocation = allocation_map.get(period.id)
         amounts.append(float(allocation_map.get(period.id, 0.0)))
-        dates.append(period.end_date.strftime("%d, %b, %y"))
 
     if sum(amounts) == 0:
         return None
 
-    dates, amounts = pad_graph_data_to_window(
-        dates, amounts, budget_periods, one_year_ago
-    )
+    _, amounts = pad_graph_data_to_window(amounts, budget_periods, past_date)
 
     return amounts
 
 
 # Type to get either Budgeted costs - or Categories
 def get_graph_data(user, cost=None, income=None, category=None):
-    today = timezone.now().date()
-    # six_months_ago = today - timedelta(days=183)
-    one_year_ago = today - timedelta(days=365)
-
-    budget_periods = BudgetPeriod.objects.filter(
-        user=user, start_date__lte=today, start_date__gte=one_year_ago
-    ).order_by("start_date")
+    budget_periods, past_date = get_budget_periods(user)
 
     if cost:
         allocations = CostAllocation.objects.filter(
@@ -100,11 +95,7 @@ def get_graph_data(user, cost=None, income=None, category=None):
     dates = []
     amounts = []
     for period in budget_periods:
-        if income:
-            dates.append(period.end_date)
-        else:
-            dates.append(period.end_date.strftime("%d, %b, %y"))
-        allocation = allocation_map.get(period.id)
+        dates.append(period.end_date)
         amounts.append(float(allocation_map.get(period.id, 0.0)))
 
     if sum(amounts) == 0:
@@ -112,16 +103,14 @@ def get_graph_data(user, cost=None, income=None, category=None):
 
     average_per_budget = sum(amounts) / len(amounts)
 
-    dates, amounts = pad_graph_data_to_window(
-        dates, amounts, budget_periods, one_year_ago
-    )
+    dates, amounts = pad_graph_data_to_window(amounts, budget_periods, past_date, dates)
 
     if cost:
         return {
             "title": cost.name,
             "chart_id": cost.name.lower().replace(" ", ""),
-            "dates": json.dumps(dates),
-            "amounts": json.dumps(amounts),
+            "dates": dates,
+            "amounts": amounts,
             "color": cost.category.color,
             "budgeted_amount": float(cost.amount),
             "average": float(average_per_budget),
@@ -138,15 +127,15 @@ def get_graph_data(user, cost=None, income=None, category=None):
         return {
             "title": category.name,
             "chart_id": category.name.lower().replace(" ", ""),
-            "dates": json.dumps(dates),
-            "amounts": json.dumps(amounts),
+            "dates": dates,
+            "amounts": amounts,
             "color": category.color or "#888888",
             "budgeted_amount": allocated_per_budget,
             "average": float(average_per_budget),
         }
 
 
-def pad_graph_data_to_window(dates, amounts, budget_periods, window_start):
+def pad_graph_data_to_window(amounts, budget_periods, window_start, dates=None):
     """
     Prepends zero-value entries to dates/amounts for any gap between
     window_start and the earliest existing budget period.
@@ -164,7 +153,8 @@ def pad_graph_data_to_window(dates, amounts, budget_periods, window_start):
 
     pad_date = budget_periods.first().start_date - timedelta(days=period_length)
     while pad_date >= window_start:
-        dates.insert(0, pad_date.strftime("%d %b %y"))
+        if dates:
+            dates.insert(0, pad_date.strftime("%d %b %y"))
         amounts.insert(0, 0.0)
         pad_date -= timedelta(days=period_length)
 

@@ -122,14 +122,16 @@ def budget_detail(request, id):
         .values("category__name", "category__color")
         .annotate(total_spent=Coalesce(Sum("transactions__amount"), Decimal(0.0)))
         .order_by("total_spent")
+        .exclude(total_spent=0)
     )
-    pie_category_labels = [
-        item["category__name"] or "Uncategorized" for item in category_totals
-    ]
-    pie_category_series = [abs(float(item["total_spent"])) for item in category_totals]
-    pie_category_colors = [
-        item["category__color"] or "#999999" for item in category_totals
-    ]
+    pie_category_labels = []
+    pie_category_series = []
+    pie_category_colors = []
+
+    for item in category_totals:
+        pie_category_labels.append(item["category__name"] or "Uncategorized")
+        pie_category_series.append(abs(float(item["total_spent"])))
+        pie_category_colors.append(item["category__color"] or "#999999")
 
     context = {
         "budget": budget,
