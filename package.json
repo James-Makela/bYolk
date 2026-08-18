@@ -1,11 +1,14 @@
 {
   "scripts": {
     "build:css": "npx @tailwindcss/cli -i ./static/css/input.css -o ./static/css/output.css",
-    "watch:css": "npx @tailwindcss/cli -i ./static/css/input.css -o ./static/css/output.css --watch"
+    "watch:css": "npx @tailwindcss/cli -i ./static/css/input.css -o ./static/css/output.css --watch",
+    "copy-vendor": "mkdir -p static/vendor/apexcharts && cp node_modules/apexcharts/dist/apexcharts.min.js static/vendor/apexcharts/",
+    "postinstall": "npm run copy-vendor"
   },
   "dependencies": {
     "@tailwindcss/cli": "^4.0.0",
     "@tailwindcss/typography": "^0.5.19",
+    "apexcharts": "github:James-Makela/apexcharts.js#fix/bars-in-combo-chart",
     "daisyui": "^5.0.0",
     "tailwindcss": "^4.0.0"
   }
