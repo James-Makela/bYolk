@@ -76,8 +76,8 @@ function renderCashFlowChart(dates, titles, amounts, totalSpend, hideValues = fa
             { offset: 100, color: '#33cc44', opacity: 0.04 },
           ],
           [
-            { offset: 0, color: '#ef4444', opacity: 0.04 },
-            { offset: 100, color: '#ef4444', opacity: 0.5 },
+            { offset: 0, color: '#ff2222', opacity: 0.04 },
+            { offset: 100, color: '#ff2222', opacity: 0.5 },
           ],
         ]
       }
