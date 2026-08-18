@@ -14,7 +14,7 @@ from .services import calculate_period_totals, get_graph_data, get_total_spend_d
 # Create your views here.
 @login_required
 def dashboard(request, view_type="categories"):
-    time_period = request.session["graph_period"]
+    time_period = request.session.get("graph_period", default=365)
     if not time_period:
         time_period = 365
     charts = []
