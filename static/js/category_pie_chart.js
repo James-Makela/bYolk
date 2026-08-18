@@ -1,0 +1,122 @@
+function renderChart(labels, series, colors, hideValues, theme) {
+  const isDark = theme.includes('dark');
+  const formatCurrency = (val) => {
+    if (hideValues) return "$x.xx";
+    return typeof val === 'number' ? `$${val.toFixed(2)}` : `$${val}`;
+  };
+  console.log(hideValues);
+  const options = {
+    chart: {
+      type: 'pie',
+      width: '100%',
+      height: '90%',
+      background: 'transparent',
+      parentHeightOffset: 0
+    },
+    series: series,
+    labels: labels,
+    colors: colors,
+    dataLabels: {
+      enabled: false,
+      formatter: function(val) {
+        return `${val.toFixed(1)}%`;
+      }
+    },
+    legend: {
+      enabled: true,
+      position: 'right',
+      horizontalAlign: 'left',
+      formatter: function(name, opts) {
+        const amount = opts.w.globals.series[opts.seriesIndex];
+        return `${name}: ${formatCurrency(amount.toFixed(2))}`;
+      },
+    },
+    stroke: {
+      width: 4,
+      lineCap: 'round',
+    },
+    theme: {
+      mode: isDark ? 'dark' : 'light',
+    },
+    plotOptions: {
+      pie: {
+        dataLabels: {
+          external: {
+            show: true,
+            formatter: function(name, opts) {
+              const amount = opts.w.globals.series[opts.seriesIndex];
+              return `${name}: ${formatCurrency(amount.toFixed(2))}`;
+            }
+          }
+        }
+      }
+    },
+    tooltip: {
+      theme: isDark ? 'dark' : 'light',
+      fillSeriesColor: false,
+      style: {
+        fontSize: '13px',
+        fontFamily: 'inherit'
+      },
+      onDatasetHover: {
+        highlightDataSeries: true
+      },
+      marker: {
+        show: true
+      },
+      y: {
+        title: {
+          formatter: (seriesName) => `${seriesName}:`
+        },
+        formatter: function (val, opts) {
+          const seriesArr = opts && opts.w ? opts.w.config.series : series;
+          const total = seriesArr.reduce((a, b) => a + b, 0);
+          const percent = total > 0 ? ((val / total) * 100).toFixed(2) : '0.00';
+
+          return `${formatCurrency(val.toFixed(2))} (${percent}%)`;
+        }
+      }
+    },
+    responsive: [
+      {
+        breakpoint: 700,
+        options: {
+          legend: {
+            position: 'bottom',
+          },
+          plotOptions: {
+            pie: {
+              dataLabels: {
+                external: {
+                  show: false,
+                },
+              },
+            },
+          },
+        },
+      },
+      {
+        breakpoint: 710,
+        options: {
+          legend: {
+            position: 'right',
+          },
+          plotOptions: {
+            pie: {
+              dataLabels: {
+                external: {
+                  show: true,
+                },
+              },
+            },
+          },
+        },
+      },
+    ],
+  };
+
+  var chart = new ApexCharts(document.querySelector("#category-pie-chart"), options);
+  chart.render();
+
+  ChartManager.register(chart, '#category-pie-chart');
+}

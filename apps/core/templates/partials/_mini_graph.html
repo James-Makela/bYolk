@@ -1,18 +1,18 @@
-<div class="card w-80 bg-base-200 card-md shadow-sm mb-5">
-  <div class="card-body p-4 ps-8">
-    <h2 class="card-title">{{ title }}</h2>
-    <p class="card-content">Average: ${{ average|floatformat:2 }}</p>
-    <div id="chart-{{ chart_id }}"></div>
+{% load l10n %}
+<div class="card flex-1 basis-0 min-w-70 shrink bg-base-200 card-md shadow-sm mini-chart-card">
+  <div class="card-body">
+    <h2 class="card-title">{{ chart.title }}</h2>
+    <p class="card-content">Average: ${{ chart.average|floatformat:2 }}</p>
+    <p class="card-content">Budgeted: ${{ chart.budgeted_amount|floatformat:2 }}</p>
+    <div class="w-full">
+      <div
+        class="chart-target bg-transparent"
+        id="chart-{{ chart.chart_id }}"
+        data-chart-id="{{ chart.chart_id }}"
+        data-privacy="{{ request.session.privacy_mode|yesno:'true,false' }}"
+        data-theme="{{request.session.theme }}"
+      ></div>
+    </div>
   </div>
 </div>
-<script>
-  renderChart(
-    "{{ chart_id }}",
-    "{{ color }}",
-    "{{ title }}",
-    {{ amounts|safe }},
-    {{ dates|safe }},
-    {{ budgeted_amount|safe }},
-    {{ request.session.privacy_mode|yesno:"true,false" }}
-  );
-</script>
+{{ chart|json_script:chart.chart_id }}

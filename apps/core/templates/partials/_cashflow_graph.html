@@ -1,0 +1,30 @@
+<div class="card bg-base-200">
+  <div class="card-body">
+    <h2 class="card-title">Cash Flow</h2>
+    <div id="cashflow-chart" class="w-full h-80 overflow-hidden"></div>
+  </div>
+</div>
+
+{{ income_dates|json_script:"income-dates" }}
+{{ income_titles|json_script:"income-titles" }}
+{{ income_amounts|json_script:"income-amounts" }}
+{{ total_spend_amounts|json_script:"total-spend-amounts" }}
+{{ request.session.privacy_mode|json_script:"chart-privacy-data" }}
+{{ request.session.theme|json_script:"chart-theme-data" }}
+<script>
+  const dates = JSON.parse(document.getElementById('income-dates').textContent);
+  const titles = JSON.parse(document.getElementById('income-titles').textContent);
+  const amounts = JSON.parse(document.getElementById('income-amounts').textContent);
+  const totalSpend = JSON.parse(document.getElementById('total-spend-amounts').textContent);
+  const privacyMode = JSON.parse(document.getElementById('chart-privacy-data').textContent);
+  const theme = JSON.parse(document.getElementById('chart-theme-data').textContent);
+
+  renderCashFlowChart(
+    dates,
+    titles,
+    amounts,
+    totalSpend,
+    privacyMode,
+    theme
+  );
+</script>

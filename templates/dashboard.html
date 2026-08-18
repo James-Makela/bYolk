@@ -5,6 +5,11 @@
 {% block navbar_title %}Dashboard{% endblock %}
 
 {% block navbar_actions %}
+  <div class="join mr-2">
+    <a href="{% url 'core:select-graph-period' 90 %}" class="join-item btn btn-soft {% if request.session.graph_period == 90 %}btn-primary{% endif %} btn-sm">3 Months</a>
+    <a href="{% url 'core:select-graph-period' 183 %}" class="join-item btn btn-soft {% if request.session.graph_period == 183 %}btn-primary{% endif %} btn-sm">6 Months</a>
+    <a href="{% url 'core:select-graph-period' 365 %}" class="join-item btn btn-soft {% if request.session.graph_period == 365 %}btn-primary{% endif %} btn-sm">1 Year</a>
+  </div>
   {% if view_type == 'categories' %}
     <a href="{% url 'core:chosen-dashboard' 'costs' %}" class="btn btn-primary btn-sm mr-8">
       view by cost
@@ -18,15 +23,20 @@
 
 {% block content %}
   <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+  <script src="{% static 'js/cashflow_chart.js' %}"></script>
   <script src="{% static 'js/spent_chart.js' %}"></script>
   <div class="flex flex-wrap max-w-6xl mx-auto gap-8 mb-8">
     {% include "cost/partials/_total_costs_card.html" %}
     {% include "income/partials/_total_incomes_card.html" %}
     {% include "partials/_total_savings_card.html" %}
   </div>
+  <div class="max-w-6xl mx-auto gap-8 mb-8">
+    {% include "partials/_cashflow_graph.html" %}
+  </div>
   <div class="flex flex-wrap max-w-6xl mx-auto gap-8">
     {% for chart in charts %}
-      {% include 'partials/_mini_graph.html' with dates=chart.dates amounts=chart.amounts chart_id=chart.chart_id title=chart.title color=chart.color budgeted_amount=chart.budgeted_amount average=chart.average %}
+      {% include "partials/_mini_graph.html" %}
     {% endfor %}
   </div>
+  <script src="{% static 'js/render_mini_charts.js' %}"></script>
 {% endblock content %}

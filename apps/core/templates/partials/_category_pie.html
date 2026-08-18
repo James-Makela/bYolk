@@ -1,0 +1,28 @@
+<div class="card bg-base-200">
+  <div class="card-body">
+    <h2 class="card-title">Category Spends</h2>
+    <div id="category-pie-chart" class="w-full h-80 overflow-hidden"></div>
+  </div>
+</div>
+{{ pie_category_labels|json_script:"chart-labels-data" }}
+{{ pie_category_series|json_script:"chart-series-data" }}
+{{ pie_category_colors|json_script:"chart-colors-data" }}
+{{ request.session.privacy_mode|json_script:"chart-privacy-data" }}
+{{ request.session.theme|json_script:"chart-theme-data" }}
+
+<script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+<script>
+  const labels = JSON.parse(document.getElementById('chart-labels-data').textContent);
+  const series = JSON.parse(document.getElementById('chart-series-data').textContent);
+  const colors = JSON.parse(document.getElementById('chart-colors-data').textContent);
+  const privacyMode = JSON.parse(document.getElementById('chart-privacy-data').textContent);
+  const theme = JSON.parse(document.getElementById('chart-theme-data').textContent);
+
+  renderChart(
+    labels,
+    series,
+    colors,
+    privacyMode,
+    theme
+  );
+</script>

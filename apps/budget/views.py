@@ -1,6 +1,9 @@
+from decimal import Decimal
+
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.db.models import BooleanField, Case, Sum, Value, When
+from django.db.models.functions import Coalesce
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render
 from django.urls import reverse
@@ -114,6 +117,22 @@ def budget_detail(request, id):
         theoretical_predicted_savings = 0
         actual_predicted_savings = 0
 
+    category_totals = (
+        CostAllocation.objects.filter(budget_period=budget)
+        .values("category__name", "category__color")
+        .annotate(total_spent=Coalesce(Sum("transactions__amount"), Decimal(0.0)))
+        .order_by("total_spent")
+        .exclude(total_spent=0)
+    )
+    pie_category_labels = []
+    pie_category_series = []
+    pie_category_colors = []
+
+    for item in category_totals:
+        pie_category_labels.append(item["category__name"] or "Uncategorized")
+        pie_category_series.append(abs(float(item["total_spent"])))
+        pie_category_colors.append(item["category__color"] or "#999999")
+
     context = {
         "budget": budget,
         "allocations": ungrouped_allocations,
@@ -130,6 +149,9 @@ def budget_detail(request, id):
         "savings": primary_savings,
         "theoretical_predicted_savings": theoretical_predicted_savings,
         "actual_predicted_savings": actual_predicted_savings,
+        "pie_category_labels": pie_category_labels,
+        "pie_category_series": pie_category_series,
+        "pie_category_colors": pie_category_colors,
     }
 
     return render(
