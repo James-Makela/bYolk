@@ -67,10 +67,19 @@ function renderCashFlowChart(dates, titles, amounts, totalSpend, hideValues = fa
       type: ['solid', 'gradient', 'gradient'],
       gradient: {
         shade: isDark ? 'dark' : 'light',
+        inverseColors: true,
         shadeIntensity: 0.8,
-        opacityFrom: [1, 0.2, 0.9],
-        opacityTo: [1, 0.9, 0.2],
-        stops: [0, 80],
+        gradientToColors: undefined,
+        colorStops: [
+          [
+            { offset: 0, color: '#33cc44', opacity: 0.5 },
+            { offset: 100, color: '#33cc44', opacity: 0.04 },
+          ],
+          [
+            { offset: 0, color: '#ef4444', opacity: 0.04 },
+            { offset: 100, color: '#ef4444', opacity: 0.5 },
+          ],
+        ]
       }
     },
     plotOptions: {
