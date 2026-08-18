@@ -10,7 +10,8 @@
 {{ request.session.privacy_mode|json_script:"chart-privacy-data" }}
 {{ request.session.theme|json_script:"chart-theme-data" }}
 
-<script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+<script src="{% static 'vendor/apexcharts/apexcharts.min.js' %}"></script>
+
 <script>
   const labels = JSON.parse(document.getElementById('chart-labels-data').textContent);
   const series = JSON.parse(document.getElementById('chart-series-data').textContent);

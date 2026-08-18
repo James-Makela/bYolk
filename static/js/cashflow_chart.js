@@ -138,6 +138,9 @@ function renderCashFlowChart(dates, titles, amounts, totalSpend, hideValues = fa
       show: true,
       borderColor: isDark ? 'rgba(255, 255, 255, 0.08)' :  'rgba(0, 0, 0, 0.08)',
       strokeDashArray: 0,
+      padding: {
+        ignoreBarPad: true,
+      },
       xaxis: {
         lines: {
           show: false,

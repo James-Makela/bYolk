@@ -230,3 +230,6 @@ output.css
 # Podman/docker
 .containers
 staticfiles/
+
+# Vendor files
+/static/vendor/
