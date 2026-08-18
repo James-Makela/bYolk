@@ -5,6 +5,11 @@
 {% block navbar_title %}Dashboard{% endblock %}
 
 {% block navbar_actions %}
+  <div class="join mr-2">
+    <a href="{% url 'core:select-graph-period' 90 %}" class="join-item btn btn-soft {% if request.session.graph_period == 90 %}btn-primary{% endif %} btn-sm">3 Months</a>
+    <a href="{% url 'core:select-graph-period' 183 %}" class="join-item btn btn-soft {% if request.session.graph_period == 183 %}btn-primary{% endif %} btn-sm">6 Months</a>
+    <a href="{% url 'core:select-graph-period' 365 %}" class="join-item btn btn-soft {% if request.session.graph_period == 365 %}btn-primary{% endif %} btn-sm">1 Year</a>
+  </div>
   {% if view_type == 'categories' %}
     <a href="{% url 'core:chosen-dashboard' 'costs' %}" class="btn btn-primary btn-sm mr-8">
       view by cost

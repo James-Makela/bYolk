@@ -40,6 +40,7 @@ function renderCashFlowChart(dates, titles, amounts, totalSpend, hideValues = fa
     series: series,
     chart: {
       height: 350,
+      width: '100%',
       type: 'area',
       zoom: {
         enabled: false,
@@ -116,7 +117,6 @@ function renderCashFlowChart(dates, titles, amounts, totalSpend, hideValues = fa
           return formatCurrency(val);
         },
       },
-      forceNiceScale: true,
       tickAmount: 10,
       axisTicks: {
         show: false,
@@ -143,8 +143,13 @@ function renderCashFlowChart(dates, titles, amounts, totalSpend, hideValues = fa
     },
   };
 
-  var chart = new ApexCharts(document.querySelector("#cashflow-chart"), options);
-  chart.render()
+  const chart = new ApexCharts(document.querySelector("#cashflow-chart"), options);
+  // Works to ensure the chart is the correct size on load - while preserving the animation
+  requestAnimationFrame(() => {
+    chart.render().then(() => {
+      preserveZeroLabel();
+    });
+  });
 
   ChartManager.register(chart, '#cashflow-chart', (isDark) => {
     preserveZeroLabel('#cashflow-chart');

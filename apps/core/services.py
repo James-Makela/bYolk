@@ -31,8 +31,8 @@ def get_budget_periods(user, time_period=365):
     return budget_periods, past_date
 
 
-def get_total_spend_data(user):
-    budget_periods, past_date = get_budget_periods(user)
+def get_total_spend_data(user, time_period=365):
+    budget_periods, past_date = get_budget_periods(user, time_period)
 
     allocations = CostAllocation.objects.filter(
         budget_period__user=user,
@@ -56,8 +56,8 @@ def get_total_spend_data(user):
 
 
 # Type to get either Budgeted costs - or Categories
-def get_graph_data(user, cost=None, income=None, category=None):
-    budget_periods, past_date = get_budget_periods(user)
+def get_graph_data(user, cost=None, income=None, category=None, time_period=365):
+    budget_periods, past_date = get_budget_periods(user, time_period)
 
     if cost:
         allocations = CostAllocation.objects.filter(
@@ -98,7 +98,7 @@ def get_graph_data(user, cost=None, income=None, category=None):
         dates.append(period.end_date)
         amounts.append(float(allocation_map.get(period.id, 0.0)))
 
-    if sum(amounts) == 0:
+    if sum(amounts) == 0 and not income:
         return None
 
     average_per_budget = sum(amounts) / len(amounts)

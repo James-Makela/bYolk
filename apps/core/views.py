@@ -14,6 +14,9 @@ from .services import calculate_period_totals, get_graph_data, get_total_spend_d
 # Create your views here.
 @login_required
 def dashboard(request, view_type="categories"):
+    time_period = request.session["graph_period"]
+    if not time_period:
+        time_period = 365
     charts = []
     income_graph = []
     costs = Cost.objects.filter(user=request.user)
@@ -22,13 +25,17 @@ def dashboard(request, view_type="categories"):
 
     if view_type == "costs":
         for cost in costs:
-            graph_data = get_graph_data(request.user, cost=cost)
+            graph_data = get_graph_data(
+                request.user, cost=cost, time_period=time_period
+            )
             if graph_data:
                 charts.append(graph_data)
 
     if view_type == "categories":
         for category in categories:
-            graph_data = get_graph_data(request.user, category=category)
+            graph_data = get_graph_data(
+                request.user, category=category, time_period=time_period
+            )
             if graph_data:
                 charts.append(graph_data)
 
@@ -36,7 +43,9 @@ def dashboard(request, view_type="categories"):
     income_totals = calculate_period_totals(incomes)
 
     for income in incomes:
-        income_data = get_graph_data(request.user, income=income)
+        income_data = get_graph_data(
+            request.user, income=income, time_period=time_period
+        )
         if income_data:
             income_graph.append(income_data)
 
@@ -47,7 +56,7 @@ def dashboard(request, view_type="categories"):
         income_amounts.append(income["amounts"])
         income_titles.append(income["title"])
 
-    total_spend_amounts = get_total_spend_data(request.user)
+    total_spend_amounts = get_total_spend_data(request.user, time_period)
 
     context = {
         # Cost Graphs
@@ -172,5 +181,12 @@ def theme_select(request):
 def toggle_privacy_mode(request):
     current_state = request.session.get("privacy_mode", False)
     request.session["privacy_mode"] = not current_state
+
+    return redirect(request.META.get("HTTP_REFERER", "/"))
+
+
+@login_required
+def select_graph_period(request, days):
+    request.session["graph_period"] = days
 
     return redirect(request.META.get("HTTP_REFERER", "/"))

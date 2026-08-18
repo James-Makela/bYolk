@@ -14,4 +14,9 @@ urlpatterns = [
     path("delete-category/<int:pk>/", views.delete_category, name="delete-category"),
     path("change-theme/", views.theme_select, name="change-theme"),
     path("toggle-privacy/", views.toggle_privacy_mode, name="toggle-privacy"),
+    path(
+        "select-graph-period/<int:days>/",
+        views.select_graph_period,
+        name="select-graph-period",
+    ),
 ]
