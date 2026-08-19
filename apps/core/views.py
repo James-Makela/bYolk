@@ -42,19 +42,21 @@ def dashboard(request, view_type="categories"):
     cost_totals = calculate_period_totals(costs)
     income_totals = calculate_period_totals(incomes)
 
-    for income in incomes:
-        income_data = get_graph_data(
-            request.user, income=income, time_period=time_period
-        )
-        if income_data:
-            income_graph.append(income_data)
-
-    income_dates = income_graph[0]["dates"]
+    income_dates = []
     income_amounts = []
     income_titles = []
-    for income in income_graph:
-        income_amounts.append(income["amounts"])
-        income_titles.append(income["title"])
+    if incomes:
+        for income in incomes:
+            income_data = get_graph_data(
+                request.user, income=income, time_period=time_period
+            )
+            if income_data:
+                income_graph.append(income_data)
+
+        income_dates = income_graph[0]["dates"]
+        for income in income_graph:
+            income_amounts.append(income["amounts"])
+            income_titles.append(income["title"])
 
     total_spend_amounts = get_total_spend_data(request.user, time_period)
 

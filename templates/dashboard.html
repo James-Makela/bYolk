@@ -31,7 +31,9 @@
     {% include "partials/_total_savings_card.html" %}
   </div>
   <div class="max-w-6xl mx-auto gap-8 mb-8">
-    {% include "partials/_cashflow_graph.html" %}
+    {% if income_dates %}
+      {% include "partials/_cashflow_graph.html" %}
+    {% endif %}
   </div>
   <div class="flex flex-wrap max-w-6xl mx-auto gap-8">
     {% for chart in charts %}
