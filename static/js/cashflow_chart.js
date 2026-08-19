@@ -1,9 +1,11 @@
 function renderCashFlowChart(dates, titles, amounts, totalSpend, hideValues = false, theme) {
   const isDark = theme.includes('dark');
+
   const formatCurrency = (val) => {
     if (hideValues) return "$x.xx";
     return typeof val === 'number' ? `$${val.toFixed(2)}` : `$${val}`;
   };
+
   const series = titles.map((title, index) => ({
     name: title,
     type: 'line',
@@ -15,6 +17,9 @@ function renderCashFlowChart(dates, titles, amounts, totalSpend, hideValues = fa
   );
 
   const delta = totalData.map((val, i) => Number(val) + (Number(totalSpend[i]) || 0));
+
+  const xAnnotationOne = new Date(dates[dates.length - 1]).getTime();
+  const xAnnotationTwo = new Date(dates[dates.length - 2]).getTime();
 
   series.unshift({
     name: 'Total Income',
@@ -108,6 +113,16 @@ function renderCashFlowChart(dates, titles, amounts, totalSpend, hideValues = fa
       markers: {
         strokeWidth: 0,
       },
+    },
+    annotations: {
+      xaxis: [
+        {
+          x: xAnnotationOne,
+          x2: xAnnotationTwo,
+          fillColor: isDark ? 'rgb(255, 255, 255)' :  'rgb(0, 0, 0)',
+          opacity: 0.03,
+        },
+      ],
     },
     xaxis: {
       type: 'datetime',

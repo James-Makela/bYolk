@@ -14,6 +14,8 @@ from .services import calculate_period_totals, get_graph_data, get_total_spend_d
 # Create your views here.
 @login_required
 def dashboard(request, view_type="categories"):
+    initialise_session_preferences(request)
+
     time_period = request.session.get("graph_period", default=365)
     if not time_period:
         time_period = 365
@@ -170,6 +172,20 @@ def category_edit(request, pk=None):
             "title": title,
         },
     )
+
+
+@login_required
+def initialise_session_preferences(request):
+    if not request.session.get("theme"):
+        request.session["theme"] = "dark"
+
+    if not request.session.get("privacy_mode"):
+        request.session["privacy_mode"] = False
+
+    if not request.session.get("graph_period"):
+        request.session["graph_period"] = 365
+
+    return redirect(request.META.get("HTTP_REFERER", "/"))
 
 
 @login_required

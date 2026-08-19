@@ -30,3 +30,8 @@ svg {
 .apexcharts-pie-series path.apexcharts-pie-area {
   stroke: var(--color-base-200);
 }
+
+.apexcharts-annotation-rect {
+  fill: var(--fallback-bc, currentColor) !important;
+  opacity: 0.08 !important;
+}
