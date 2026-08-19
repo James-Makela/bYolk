@@ -119,8 +119,8 @@ function renderCashFlowChart(dates, titles, amounts, totalSpend, hideValues = fa
         {
           x: xAnnotationOne,
           x2: xAnnotationTwo,
-          fillColor: isDark ? 'rgb(0, 0, 0)' :  'rgb(255, 255, 255)',
-          opacity: 0.08,
+          fillColor: isDark ? 'rgb(255, 255, 255)' :  'rgb(0, 0, 0)',
+          opacity: 0.03,
         },
       ],
     },
