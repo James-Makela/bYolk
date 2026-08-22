@@ -29,6 +29,9 @@ class Transaction(models.Model):
         related_name="transactions",
     )
 
+    class Meta:
+        indexes = [models.Index(fields=["user", "date"], name="tx_user_date_idx")]
+
     @property
     def is_positive(self):
         if self.amount > 0:
