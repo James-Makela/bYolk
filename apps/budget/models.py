@@ -1,5 +1,5 @@
 from django.db import models
-from django.db.models import Count, DecimalField, OuterRef, Subquery, Sum, Value
+from django.db.models import Count, DecimalField, OuterRef, Q, Subquery, Sum, Value
 from django.db.models.functions import Abs, Coalesce
 from django.utils.functional import cached_property
 
@@ -8,48 +8,41 @@ from apps.cost.models import Cost
 from apps.income.models import Income
 
 
-class BudgetQuerySet(models.QuerySet):  # type: ignore
+class BudgetQuerySet(models.QuerySet):
     def with_transaction_stats(self):
         from apps.transaction.models import Transaction
 
-        spent_subquery = (
-            Transaction.objects.filter(
-                user=OuterRef("user"),
-                date__gte=OuterRef("start_date"),
-                date__lte=OuterRef("end_date"),
-                amount__lt=0,
-            )
-            .exclude(purchase_type__iexact="Internal Transfer")
-            .values("user")
+        base_transactions = Transaction.objects.filter(
+            user_id=OuterRef("user_id"),
+            date__gte=OuterRef("start_date"),
+            date__lte=OuterRef("end_date"),
+        ).exclude(purchase_type__iexact="Internal Transfer")
+
+        spent_total = (
+            base_transactions.values("user_id")
+            .annotate(total=Sum("amount", filter=Q(amount__lt=0)))
+            .values("total")
+        )
+
+        income_total = (
+            base_transactions.values("user_id")
+            .annotate(total=Sum("amount", filter=Q(amount__gt=0)))
+            .values("total")
+        )
+
+        costs_total = (
+            CostAllocation.objects.filter(budget_period_id=OuterRef("pk"))
+            .values("budget_period_id")
             .annotate(total=Sum("amount"))
             .values("total")
         )
 
-        income_subquery = (
-            Transaction.objects.filter(
-                user=OuterRef("user"),
-                date__gte=OuterRef("start_date"),
-                date__lte=OuterRef("end_date"),
-                amount__gt=0,
-            )
-            .exclude(purchase_type__iexact="Internal Transfer")
-            .values("user")
-            .annotate(total=Sum("amount"))
-            .values("total")
-        )
+        decimal_zero = Value(0, output_field=DecimalField())
 
         return self.annotate(
-            annotated_costs=Coalesce(
-                Sum("costallocation_set__amount"), Value(0), output_field=DecimalField()
-            ),
-            annotated_spend=Abs(
-                Coalesce(
-                    Subquery(spent_subquery), Value(0), output_field=DecimalField()
-                )
-            ),
-            annotated_income=Coalesce(
-                Subquery(income_subquery), Value(0), output_field=DecimalField()
-            ),
+            annotated_costs=Coalesce(Subquery(costs_total), decimal_zero),
+            annotated_spend=Abs(Coalesce(Subquery(spent_total), decimal_zero)),
+            annotated_income=Coalesce(Subquery(income_total), decimal_zero),
         )
 
 

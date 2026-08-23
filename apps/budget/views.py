@@ -39,8 +39,8 @@ def budgets_list(request):
                 output_field=BooleanField(),
             )
         )
-        .with_transaction_stats()
         .order_by("-start_date")
+        .with_transaction_stats()
     )
 
     current_budget = budget_periods.filter(is_current_period=True).first()
@@ -58,9 +58,8 @@ def budgets_list(request):
 @login_required
 def budget_detail(request, id):
     budget = get_object_or_404(
-        BudgetPeriod.objects.with_transaction_stats(),  # type: ignore
+        BudgetPeriod.objects.filter(user=request.user),
         pk=id,
-        user=request.user,
     )
     previous_period = (
         BudgetPeriod.objects.filter(id__lt=id, user=request.user)
