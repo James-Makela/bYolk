@@ -13,7 +13,7 @@
     </div>
   {% endif %}
   <h3 class="font-bold text-lg mb-4">Allocate funds from {{ bucket.name }}</h3>
-  <div class="stats border border-base-300 bg-base-200 mb-4">
+  <div class="stats border border-base-300 bg-base-200 mb-4 overflow-visible">
     <div class="stat">
       <div class="stat-title">Bucket Balance</div>
       <div class="stat-value{% if bucket.balance >= 0 %} text-success{% else %} text-error{% endif %}">${{ bucket.balance }}</div>
