@@ -1,8 +1,28 @@
+{% load l10n %}
 <form hx-post="{% url 'allocate-from-bucket' budget.id bucket.id %}"
       hx-target="#modal_container"
       class="flex flex-col max-h-[80vh]">
   {% csrf_token %}
+  {{ formset.management_form }}
+
+  {% if formset.non_form_errors %}
+    <div class="alert alert-error mb-2">
+      {% for error in formset.non_form_errors %}
+        <span>{{ error }}</span>
+      {% endfor %}
+    </div>
+  {% endif %}
   <h3 class="font-bold text-lg mb-4">Allocate funds from {{ bucket.name }}</h3>
+  <div class="stats border border-base-300 bg-base-200 mb-4">
+    <div class="stat">
+      <div class="stat-title">Bucket Balance</div>
+      <div class="stat-value{% if bucket.balance >= 0 %} text-success{% else %} text-error{% endif %}">${{ bucket.balance }}</div>
+    </div>
+    <div class="stat">
+      <div class="stat-title">Allocating</div>
+      <div class="stat-value" id="allocation-total" data-bucket-balance="{{ bucket.balance|unlocalize }}">$0.00</div>
+    </div>
+  </div>
   {% include "budget/partials/_selectable_table.html" with hide_footer=True %}
   <div class="modal-action w-full flex">
     <button type="submit" class="btn btn-primary">Allocate to selected</button>

@@ -2,6 +2,7 @@ from decimal import Decimal
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.db import transaction as db_transaction
 from django.db.models import BooleanField, Case, Sum, Value, When
 from django.db.models.functions import Coalesce
 from django.http import HttpResponse, HttpResponseRedirect
@@ -15,6 +16,7 @@ from apps.core.forms import InitialUserPreferencesForm
 from apps.transaction.models import Transaction
 
 from .forms import (
+    BucketEmptyFormSet,
     BucketForm,
     CostAllocationForm,
     CostAllocationTransactionsForm,
@@ -449,12 +451,13 @@ def add_bucket(request, budget_id):
 def empty_bucket(request, budget_id, bucket_id):
     bucket = get_object_or_404(Bucket, pk=bucket_id, user=request.user)
     budget = get_object_or_404(BudgetPeriod, pk=budget_id, user=request.user)
-    # TODO: Create an allocation picker that can be used to select where the
-    # money from the bucket should go
+
     allocations = CostAllocation.objects.filter(
         budget_period__user=request.user,
         budget_period_id=budget_id,
     )
+
+    formset = BucketEmptyFormSet(queryset=allocations)
 
     return render(
         request,
@@ -462,24 +465,47 @@ def empty_bucket(request, budget_id, bucket_id):
         {
             "bucket": bucket,
             "budget": budget,
-            "allocations": allocations,
+            "formset": formset,
         },
     )
 
 
 @login_required
 def allocate_from_bucket(request, budget_id, bucket_id):
-    # TODO: Complete
-    # To somewhat mirror the way we select transactions to allocate them to costs
     bucket = get_object_or_404(Bucket, pk=bucket_id, user=request.user)
+    budget = get_object_or_404(BudgetPeriod, pk=budget_id, user=request.user)
 
-    selected_ids = request.POST.getlist("allocation_ids")
+    if request.method != "POST":
+        return HttpResponse(status=405)
+
+    allocations = CostAllocation.objects.filter(
+        budget_period__user=request.user,
+        budget_period_id=budget_id,
+    )
+
+    formset = BucketEmptyFormSet(request.POST, queryset=allocations)
+
+    if not formset.is_valid():
+        return render(
+            request,
+            "budget/partials/_allocation_picker_modal.html",
+            {"bucket": bucket, "budget": budget, "formset": formset},
+        )
+
+    selected_forms = [form for form in formset if form.cleaned_data.get("selected")]
+    total = sum(form.cleaned_data["amount"] for form in selected_forms)
+
+    with db_transaction.atomic():
+        bucket.balance -= total
+        bucket.save()
+        for form in selected_forms:
+            form.instance.amount -= form.cleaned_data["amount"]
+            form.instance.save()
 
     response = HttpResponse("Saved")
     response["HX-Refresh"] = "true"
-    print(bucket, selected_ids)
 
-    return HttpResponse(status=405)
+    return response
 
 
 @login_required

@@ -1,4 +1,4 @@
-{% load l10n %}
+{% load static l10n %}
 <div class="overflow-x-auto rounded-lg border border-base-300">
   <table class="table w-full">
     <thead class="bg-base-200 text-base-content">
@@ -9,46 +9,53 @@
         <th class="w-32">Move</th>
       </tr>
     </thead>
-    <tbody>
-      {% for allocation in allocations %}
+    <tbody id="toggle-list">
+      {% for form in formset %}
         <tr class="hover:bg-base-300 has-[:checked]:bg-primary/10 cursor-pointer"
             onclick="this.querySelector('.allocation-checkbox').click()">
           <td class="p-1">
+            {{ form.id }}
             <input
               type="checkbox"
-              id="check-{{ transaction.id|unlocalize }}"
-              name="allocation_ids"
-              value="{{ transaction.id|unlocalize }}"
+              id="{{ form.selected.id_for_label }}"
+              name="{{ form.selected.html_name }}"
               class="allocation-checkbox checkbox checkbox-md checkbox-accent m-3"
               onclick="event.stopPropagation()"
-              {% if transaction.is_match %}checked{% endif %}
+              {% if form.selected.value %}checked{% endif %}
             >
           </td>
 
           <td class="p-1">
-            {{ allocation.name }}
+            {{ form.instance.name }}
           </td>
           <td class="p-1">
-            ${{ allocation.amount }}
+            ${{ form.instance.amount }}
           </td>
           <td class="p-1">
-            <div class="input input-bordered flex items-center gap-0 p-0 overflow-hidden w-full {% if field.errors %}input-error{% endif %}">
+            <div class="input input-bordered flex items-center gap-0 p-0 overflow-hidden w-full {% if allocation.field.errors %}input-error{% endif %}">
               <span class="pl-3 opacity-70 flex-none">$</span>
               <input
                 type="number"
                 step="0.01"
-                name="{{ field.html_name }}"
-                id="{{ field.id_for_label }}"
-                {# Use 'value' but ensure we handle None safely #}
-                value="{{ field.value|default_if_none:'' }}"
-                class="allocation-move-amount-input bg-transparent h-full px-2 outline-none w-32"
+                name="{{ form.amount.html_name }}"
+                id="{{ form.amount.id_for_label }}"
+                class="allocation-move-amount-input bg-transparent h-full px-2 outline-none w-32 disabled:pointer-events-none"
+                onclick="event.stopPropagation()"
+                {% if not form.selected.value %}disabled{% endif %}
               />
             </div>
+            {% if form.non_field_errors %}
+              <p class="text-error text-sm mt-1">{{ form.non_field_errors.0 }}</p>
+            {% endif %}
+            {% if form.amount.errors %}
+              <p class="text-error text-sm mt-1">{{ form.amount.errors.0 }}</p>
+            {% endif %}
           </td>
         </tr>
       {% empty %}
-        <tr><td colspan="6" class="text-center text-lg p-2">No allocations available</td></tr>
+        <tr><td colspan="4" class="text-center text-lg p-2">No allocations available</td></tr>
       {% endfor %}
     </tbody>
   </table>
 </div>
+<script src="{% static "js/list_input_toggle.js" %}"></script>
