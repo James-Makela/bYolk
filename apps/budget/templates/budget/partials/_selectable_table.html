@@ -1,0 +1,54 @@
+{% load l10n %}
+<div class="overflow-x-auto rounded-lg border border-base-300">
+  <table class="table w-full">
+    <thead class="bg-base-200 text-base-content">
+      <tr>
+        <th class="w-12">Select</th>
+        <th class="">Allocation</th>
+        <th class="">Amount</th>
+        <th class="w-32">Move</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for allocation in allocations %}
+        <tr class="hover:bg-base-300 has-[:checked]:bg-primary/10 cursor-pointer"
+            onclick="this.querySelector('.allocation-checkbox').click()">
+          <td class="p-1">
+            <input
+              type="checkbox"
+              id="check-{{ transaction.id|unlocalize }}"
+              name="allocation_ids"
+              value="{{ transaction.id|unlocalize }}"
+              class="allocation-checkbox checkbox checkbox-md checkbox-accent m-3"
+              onclick="event.stopPropagation()"
+              {% if transaction.is_match %}checked{% endif %}
+            >
+          </td>
+
+          <td class="p-1">
+            {{ allocation.name }}
+          </td>
+          <td class="p-1">
+            ${{ allocation.amount }}
+          </td>
+          <td class="p-1">
+            <div class="input input-bordered flex items-center gap-0 p-0 overflow-hidden w-full {% if field.errors %}input-error{% endif %}">
+              <span class="pl-3 opacity-70 flex-none">$</span>
+              <input
+                type="number"
+                step="0.01"
+                name="{{ field.html_name }}"
+                id="{{ field.id_for_label }}"
+                {# Use 'value' but ensure we handle None safely #}
+                value="{{ field.value|default_if_none:'' }}"
+                class="allocation-move-amount-input bg-transparent h-full px-2 outline-none w-32"
+              />
+            </div>
+          </td>
+        </tr>
+      {% empty %}
+        <tr><td colspan="6" class="text-center text-lg p-2">No allocations available</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>

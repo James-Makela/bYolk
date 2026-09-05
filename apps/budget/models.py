@@ -60,13 +60,14 @@ class CostAllocationQuerySet(models.QuerySet):  # type: ignore
             items = list(self.filter(name=name).prefetch_related("transactions"))
             total_paid = sum(item.total_paid for item in items)
             total_amount = sum(item.expected_amount for item in items)
+            remaining = sum(item.remaining for item in items)
             grouped.append(
                 {
                     "name": name,
                     "all_dates": [item.expected_date for item in items],
                     "total_amount": total_amount,
                     "total_paid": total_paid,
-                    "remaining_spend": -total_amount + total_paid,
+                    "remaining_spend": remaining,
                     "original_items": items,
                 }
             )

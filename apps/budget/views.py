@@ -202,7 +202,7 @@ def get_allocation_picker(request, allocation_type, allocation_id):
 
     return render(
         request,
-        "budget/partials/_allocation_modal.html",
+        "budget/partials/_transaction_picker_modal.html",
         {
             "allocation": allocation,
             "eligible_transactions": sorted_transactions,
@@ -448,24 +448,38 @@ def add_bucket(request, budget_id):
 @login_required
 def empty_bucket(request, budget_id, bucket_id):
     bucket = get_object_or_404(Bucket, pk=bucket_id, user=request.user)
-    allocation = get_object_or_404(
-        CostAllocation.objects.select_related("budget_period"),
-        cost=bucket.cost_id,
+    budget = get_object_or_404(BudgetPeriod, pk=budget_id, user=request.user)
+    # TODO: Create an allocation picker that can be used to select where the
+    # money from the bucket should go
+    allocations = CostAllocation.objects.filter(
         budget_period__user=request.user,
         budget_period_id=budget_id,
     )
 
-    allocation.amount -= bucket.balance
-    bucket.balance = 0
-    if -allocation.amount == allocation.cost.amount:
-        allocation.note = None
-    else:
-        allocation.note = "Adjusted from bucket"
+    return render(
+        request,
+        "budget/partials/_allocation_picker_modal.html",
+        {
+            "bucket": bucket,
+            "budget": budget,
+            "allocations": allocations,
+        },
+    )
 
-    bucket.save()
-    allocation.save()
 
-    return HttpResponseRedirect(reverse("detail", args=[budget_id]))
+@login_required
+def allocate_from_bucket(request, budget_id, bucket_id):
+    # TODO: Complete
+    # To somewhat mirror the way we select transactions to allocate them to costs
+    bucket = get_object_or_404(Bucket, pk=bucket_id, user=request.user)
+
+    selected_ids = request.POST.getlist("allocation_ids")
+
+    response = HttpResponse("Saved")
+    response["HX-Refresh"] = "true"
+    print(bucket, selected_ids)
+
+    return HttpResponse(status=405)
 
 
 @login_required

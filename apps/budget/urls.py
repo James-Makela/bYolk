@@ -61,4 +61,9 @@ urlpatterns = [
         views.fill_bucket,
         name="fill-bucket",
     ),
+    path(
+        "bucket/allocate/<int:budget_id>/<int:bucket_id>",
+        views.allocate_from_bucket,
+        name="allocate-from-bucket",
+    ),
 ]

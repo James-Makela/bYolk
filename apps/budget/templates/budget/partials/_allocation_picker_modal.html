@@ -1,0 +1,11 @@
+<form hx-post="{% url 'allocate-from-bucket' budget.id bucket.id %}"
+      hx-target="#modal_container"
+      class="flex flex-col max-h-[80vh]">
+  {% csrf_token %}
+  <h3 class="font-bold text-lg mb-4">Allocate funds from {{ bucket.name }}</h3>
+  {% include "budget/partials/_selectable_table.html" with hide_footer=True %}
+  <div class="modal-action w-full flex">
+    <button type="submit" class="btn btn-primary">Allocate to selected</button>
+    <button type="button" class="btn" onclick="transaction_picker_modal.close()">Cancel</button>
+  </div>
+</form>
