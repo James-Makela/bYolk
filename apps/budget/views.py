@@ -2,6 +2,7 @@ from decimal import Decimal
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.db import transaction as db_transaction
 from django.db.models import BooleanField, Case, Sum, Value, When
 from django.db.models.functions import Coalesce
 from django.http import HttpResponse, HttpResponseRedirect
@@ -15,6 +16,7 @@ from apps.core.forms import InitialUserPreferencesForm
 from apps.transaction.models import Transaction
 
 from .forms import (
+    BucketEmptyFormSet,
     BucketForm,
     CostAllocationForm,
     CostAllocationTransactionsForm,
@@ -202,7 +204,7 @@ def get_allocation_picker(request, allocation_type, allocation_id):
 
     return render(
         request,
-        "budget/partials/_allocation_modal.html",
+        "budget/partials/_transaction_picker_modal.html",
         {
             "allocation": allocation,
             "eligible_transactions": sorted_transactions,
@@ -448,24 +450,63 @@ def add_bucket(request, budget_id):
 @login_required
 def empty_bucket(request, budget_id, bucket_id):
     bucket = get_object_or_404(Bucket, pk=bucket_id, user=request.user)
-    allocation = get_object_or_404(
-        CostAllocation.objects.select_related("budget_period"),
-        cost=bucket.cost_id,
+    budget = get_object_or_404(BudgetPeriod, pk=budget_id, user=request.user)
+
+    allocations = CostAllocation.objects.filter(
         budget_period__user=request.user,
         budget_period_id=budget_id,
     )
 
-    allocation.amount -= bucket.balance
-    bucket.balance = 0
-    if -allocation.amount == allocation.cost.amount:
-        allocation.note = None
-    else:
-        allocation.note = "Adjusted from bucket"
+    formset = BucketEmptyFormSet(queryset=allocations)
 
-    bucket.save()
-    allocation.save()
+    return render(
+        request,
+        "budget/partials/_allocation_picker_modal.html",
+        {
+            "bucket": bucket,
+            "budget": budget,
+            "formset": formset,
+        },
+    )
 
-    return HttpResponseRedirect(reverse("detail", args=[budget_id]))
+
+@login_required
+def allocate_from_bucket(request, budget_id, bucket_id):
+    bucket = get_object_or_404(Bucket, pk=bucket_id, user=request.user)
+    budget = get_object_or_404(BudgetPeriod, pk=budget_id, user=request.user)
+
+    if request.method != "POST":
+        return HttpResponse(status=405)
+
+    allocations = CostAllocation.objects.filter(
+        budget_period__user=request.user,
+        budget_period_id=budget_id,
+    )
+
+    formset = BucketEmptyFormSet(request.POST, queryset=allocations)
+
+    if not formset.is_valid():
+        return render(
+            request,
+            "budget/partials/_allocation_picker_modal.html",
+            {"bucket": bucket, "budget": budget, "formset": formset},
+        )
+
+    selected_forms = [form for form in formset if form.cleaned_data.get("selected")]
+    total = sum(form.cleaned_data["amount"] for form in selected_forms)
+
+    # TODO: Add/remove note as required when allocating from a bucket
+    with db_transaction.atomic():
+        bucket.balance -= total
+        bucket.save()
+        for form in selected_forms:
+            form.instance.amount -= form.cleaned_data["amount"]
+            form.instance.save()
+
+    response = HttpResponse("Saved")
+    response["HX-Refresh"] = "true"
+
+    return response
 
 
 @login_required

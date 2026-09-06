@@ -1,4 +1,6 @@
 from django import forms
+from django.core.exceptions import ValidationError
+from django.forms import BaseModelFormSet, modelformset_factory
 
 from apps.budget.models import Bucket, CostAllocation, IncomeAllocation
 from apps.core.models import Category
@@ -98,3 +100,37 @@ class BucketForm(forms.ModelForm):
         super(BucketForm, self).__init__(*args, **kwargs)
         if user:
             self.fields["cost"].queryset = Cost.objects.filter(user=user)
+
+
+class BucketEmptyForm(forms.ModelForm):
+    selected = forms.BooleanField(required=False)
+    amount = forms.DecimalField(max_digits=10, decimal_places=2, required=False)
+
+    class Meta:
+        model = CostAllocation
+        fields = []
+
+    def clean(self):
+        cleaned = super().clean()
+        if cleaned.get("selected") and cleaned.get("amount") is None:
+            raise ValidationError("Amount is required.")
+        return cleaned
+
+
+class BaseBucketEmptyFormSet(BaseModelFormSet):
+    def clean(self):
+        super().clean()
+        if any(self.errors):
+            return
+
+        selected = [form for form in self.forms if form.cleaned_data.get("selected")]
+        if not selected:
+            raise ValidationError("Select at least one allocation.")
+
+
+BucketEmptyFormSet = modelformset_factory(
+    CostAllocation,
+    form=BucketEmptyForm,
+    formset=BaseBucketEmptyFormSet,
+    extra=0,
+)

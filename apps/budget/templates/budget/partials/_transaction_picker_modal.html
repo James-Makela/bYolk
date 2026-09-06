@@ -5,9 +5,9 @@
   <h3 class="font-bold text-lg mb-4">Link Transactions to {{ allocation.name }}</h3>
   {% include "transaction/partials/_selectable_table.html" with transactions=eligible_transactions hide_footer=True %}
   <div class="modal-action w-full flex">
-    <input type="checkbox" class="checkbox chackbox-xs checkbox-accent" name="update_amount"/>
+    <input type="checkbox" class="checkbox checkbox-xs checkbox-accent" name="update_amount"/>
     <p class="mr-auto">Update Allocated amount</p>
     <button type="submit" class="btn btn-primary">Link Selected</button>
-    <button type="button" class="btn" onclick="allocation_modal.close()">Cancel</button>
+    <button type="button" class="btn" onclick="picker_modal.close()">Cancel</button>
   </div>
 </form>

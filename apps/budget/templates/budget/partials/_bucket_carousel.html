@@ -1,18 +1,18 @@
 {% load l10n %}
 <div class="carousel h-48 w-full">
   <!-- To loop through all bucket items displaying a card for each -->
-  <div class="carousel-item">
-    {% if buckets %}
-      {% for bucket in buckets %}
-        {% include "budget/partials/_bucket_card.html" %}
-      {% endfor %}
-    {% endif %}
-    <div class="card w-96 h-40 bg-primary/20 card-md shadow-sm">
-      <div class="card-body mb-0">
-        <h2 class="card-title">Create a Bucket</h2>
-        <p class="text-l">Buckets allow you to move spare money around or handle over spending</p>
-        <div class="justify-end card-actions">
-          <a href="{% url 'add-bucket' budget.id|unlocalize %}" class="btn btn-primary">Create bucket</a>
+  {% if buckets %}
+    {% for bucket in buckets %}
+      {% include "budget/partials/_bucket_card.html" %}
+    {% endfor %}
+  {% endif %}
+  <div class="carousel-item w-64 mb-5 mr-5">
+    <div class="stats border border-base-300 bg-base-200 shadow-sm">
+      <div class="stat">
+        <h2 class="stat-title">Create a Bucket</h2>
+        <p class="stat-desc text-wrap">Buckets allow you to move spare money around or handle over spending</p>
+        <div class="stat-actions">
+          <a href="{% url 'add-bucket' budget.id|unlocalize %}" class="btn btn-primary btn-soft btn-sm w-25">Create bucket</a>
         </div>
       </div>
     </div>

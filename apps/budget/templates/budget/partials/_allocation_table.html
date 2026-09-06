@@ -2,7 +2,7 @@
 {% load color_utils %}
 <div class="flex flex-col bg-base-200/30 rounded-lg overflow-visible">
   {% for allocation in allocations %}
-    <div class="group relative hover:bg-base-300 focus-within:z-50 border-b border-base-200 last:border-none{% if allocation.note %} tooltip tooltip-warning{% endif %}" data-tip="{{ allocation.note }}">
+    <div class="group relative hover:bg-base-300 focus-within:z-50 border-b border-base-200 last:border-none">
       <input type="checkbox" id="toggle_{{ allocation.id|unlocalize }}_{{ allocation.name}}" class="peer hidden" />
       <div class="grid grid-cols-10 w-full gap-2 py-0 px-4 items-center cursor-pointer select-none relative">
         <label for="toggle_{{ allocation.id|unlocalize }}_{{ allocation.name }}" class="absolute inset-0 z-0 cursor-pointer"></label>
@@ -12,7 +12,7 @@
             {% include "partials/_category_badge.html" with category=allocation.category %}
           {% endif %}
           {% if allocation.note %}
-            <div class="tooltip mx-2" data-tip="{{ allocation.note }}">
+            <div class="mx-2">
               <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-pen-line-icon lucide-pen-line"><path d="M13 21h8"/><path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"/></svg>
             </div>
           {% endif %}
@@ -28,39 +28,63 @@
             class="btn btn-sm btn-soft w-full"
             hx-get="{% url 'get-allocation-picker' type allocation.id|unlocalize %}"
             hx-target="#modal_container"
-            onclick="allocation_modal.showModal()">
+            onclick="picker_modal.showModal()"
+          >
             Allocate
           </button>
-
           <div class="dropdown">
             <div tabindex="0" role="button" class="btn btn-sm btn-soft w-full">Actions</div>
             <ul tabindex="-1" class="dropdown-content menu bg-base-100 rounded-box z-[100] w-42 p-2 shadow-xl border border-base-200">
-              <li><a href="{% if next %}{% url 'move-cost-allocation' allocation.id|unlocalize next.id|unlocalize %}{% else %}#{% endif %}" class="flex justify-between items-center hover:text-primary {% if not next %}hidden{% endif %}">Move to next Budget</a></li>
-              <li><a href="{% if previous %}{% url 'move-cost-allocation' allocation.id|unlocalize previous.id|unlocalize %}{% else %}#{% endif %}" class="flex justify-between items-center hover:text-primary {% if not previous %}hidden{% endif %}">Move to previous Budget</a></li>
               <li>
-                <li>
-                  <a href="{% url 'edit-allocation' type allocation.id|unlocalize budget.id|unlocalize %}" class="flex justify-between items-center hover:text-primary">Edit Allocation</a>
-                </li>
-                <li>
-                  <form action="{% url 'delete-allocation' type allocation.id|unlocalize budget.id|unlocalize %}" method="post" onsubmit="return confirm('Are you sure?')">
-                    {% csrf_token %}
-                    <button type="submit" class="text-error cursor-pointer">
-                      Delete allocation
-                    </button>
-                  </form>
-                </li>
-              </ul>
-            </div>
-          </div>
-        </div>
-
-        <div class="grid grid-rows-[0fr] transition-all duration-300 peer-checked:grid-rows-[1fr]">
-          <div class="overflow-hidden">
-            <div class="px-4 pb-4 pt-2 border-t border-base-300/30">
-              {% include "transaction/partials/_table.html" with transactions=allocation.transactions.all %}
-            </div>
+                <a href="{% if next %}{% url 'move-cost-allocation' allocation.id|unlocalize next.id|unlocalize %}{% else %}#{% endif %}" class="flex justify-between items-center hover:text-primary {% if not next %}hidden{% endif %}">Move to next Budget</a>
+              </li>
+              <li>
+                <a href="{% if previous %}{% url 'move-cost-allocation' allocation.id|unlocalize previous.id|unlocalize %}{% else %}#{% endif %}" class="flex justify-between items-center hover:text-primary {% if not previous %}hidden{% endif %}">Move to previous Budget</a>
+              </li>
+              <li>
+                <a href="{% url 'edit-allocation' type allocation.id|unlocalize budget.id|unlocalize %}" class="flex justify-between items-center hover:text-primary">Edit Allocation</a>
+              </li>
+              <li>
+                <form action="{% url 'delete-allocation' type allocation.id|unlocalize budget.id|unlocalize %}" method="post" onsubmit="return confirm('Are you sure?')">
+                  {% csrf_token %}
+                  <button type="submit" class="text-error cursor-pointer">
+                    Delete allocation
+                  </button>
+                </form>
+              </li>
+            </ul>
           </div>
         </div>
       </div>
+      <div class="grid grid-rows-[0fr] transition-all duration-300 peer-checked:grid-rows-[1fr]">
+        <div class="overflow-hidden">
+        <!-- Allocation details -->
+          <div class="stats stats-xs mx-4 px-4 rounded-lg border border-base-300 bg-base-100">
+            <div class="stat">
+              <div class="stat-title">
+                Calculated amount:
+              </div>
+              <div class="stat-value text-sm">
+                ${{ allocation.amount }}
+              </div>
+            </div>
+            {% if allocation.note %}
+              <div class="stat">
+                <div class="stat-title">
+                  Notes:
+                </div>
+                <div class="stat-desc">
+                  {{ allocation.note }}
+                </div>
+              </div>
+            {% endif %}
+          </div>
+        <!-- Transactions list -->
+          <div class="px-4 pb-4 pt-2">
+            {% include "transaction/partials/_table.html" with transactions=allocation.transactions.all %}
+          </div>
+        </div>
+      </div>
+    </div>
   {% endfor %}
 </div>
