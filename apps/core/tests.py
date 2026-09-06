@@ -7,6 +7,7 @@ from django.test import TestCase
 from django.urls import reverse
 
 from apps.cost.models import Cost
+from apps.income.models import Income
 
 from .models import Category, FrequencyMixin, UserPreferences
 from .services import calculate_period_totals
@@ -51,6 +52,27 @@ class FinancialTestBase(TestCase):
                     user=cls.user,
                     name="Petrol",
                     amount=80.00,
+                    start_date=start_date,
+                    frequency_value=2,
+                    frequency_unit="weeks",
+                ),
+            ]
+        )
+
+        cls.incomes = Income.objects.bulk_create(
+            [
+                Income(
+                    user=cls.user,
+                    name="Wages 1",
+                    amount=2000.00,
+                    start_date=start_date,
+                    frequency_value=2,
+                    frequency_unit="weeks",
+                ),
+                Income(
+                    user=cls.user,
+                    name="Wages 2",
+                    amount=1000.00,
                     start_date=start_date,
                     frequency_value=2,
                     frequency_unit="weeks",
