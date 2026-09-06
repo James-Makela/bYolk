@@ -1,4 +1,9 @@
 function renderChart(labels, series, colors, hideValues, theme) {
+  const el = document.querySelector("#category-pie-chart");
+  if (el.chartInstance) {
+    el.chartInstance.destroy();
+  }
+
   const isDark = theme.includes('dark');
   const formatCurrency = (val) => {
     if (hideValues) return "$x.xx";

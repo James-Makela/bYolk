@@ -7,6 +7,7 @@ from django.db.models import BooleanField, Case, Sum, Value, When
 from django.db.models.functions import Coalesce
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render
+from django.template.loader import render_to_string
 from django.urls import reverse
 from django.utils import timezone
 
@@ -118,24 +119,9 @@ def budget_detail(request, id):
         theoretical_predicted_savings = 0
         actual_predicted_savings = 0
 
-    category_totals = (
-        CostAllocation.objects.filter(budget_period=budget)
-        .values("category__name", "category__color")
-        .annotate(total_spent=Coalesce(Sum("transactions__amount"), Decimal(0.0)))
-        .order_by("total_spent")
-        .exclude(total_spent=0)
-    )
-    pie_category_labels = []
-    pie_category_series = []
-    pie_category_colors = []
-
-    for item in category_totals:
-        pie_category_labels.append(item["category__name"] or "Uncategorized")
-        pie_category_series.append(abs(float(item["total_spent"])))
-        pie_category_colors.append(item["category__color"] or "#999999")
-
     context = {
         "budget": budget,
+        "budget_id": budget.id,
         "allocations": ungrouped_allocations,
         "grouped_allocations": grouped_allocations,
         "incomes": incomes,
@@ -150,9 +136,9 @@ def budget_detail(request, id):
         "savings": primary_savings,
         "theoretical_predicted_savings": theoretical_predicted_savings,
         "actual_predicted_savings": actual_predicted_savings,
-        "pie_category_labels": pie_category_labels,
-        "pie_category_series": pie_category_series,
-        "pie_category_colors": pie_category_colors,
+        **get_category_pie_context(request, id),
+        "forecast": False,
+        "next_forecast_value": True,
     }
 
     return render(
@@ -529,3 +515,71 @@ def fill_bucket(request, budget_id, bucket_id):
     bucket.save()
 
     return HttpResponseRedirect(reverse("detail", args=[budget_id]))
+
+
+@login_required
+def category_pie_chart(request, budget_id):
+    forecast = request.GET.get("forecast") == "true"
+    chart_context = get_category_pie_context(request, budget_id, forecast=forecast)
+    chart_html = render_to_string(
+        "partials/_category_pie_chart.html", chart_context, request=request
+    )
+    button_context = {
+        "budget_id": budget_id,
+        "forecast": forecast,
+        "next_forecast_value": not forecast,
+        "hx_oob": True,
+    }
+    button_html = render_to_string(
+        "partials/_forecast_toggle_button.html", button_context, request=request
+    )
+    return HttpResponse(chart_html + button_html)
+
+
+@login_required
+def get_category_pie_context(request, budget_id, forecast=False):
+    budget = get_object_or_404(
+        BudgetPeriod.objects.filter(user=request.user),
+        pk=budget_id,
+    )
+
+    if forecast:
+        category_totals = (
+            CostAllocation.objects.filter(budget_period=budget)
+            .values("category__name", "category__color")
+            .annotate(total=Coalesce(Sum("expected_amount"), Decimal(0.0)))
+            .order_by("total")
+        )
+    else:
+        category_totals = (
+            CostAllocation.objects.filter(budget_period=budget)
+            .values("category__name", "category__color")
+            .annotate(total=Coalesce(Sum("transactions__amount"), Decimal(0.0)))
+            .order_by("total")
+            .exclude(total=0)
+        )
+
+    pie_category_labels = []
+    pie_category_series = []
+    pie_category_colors = []
+
+    if len(category_totals) > 0:
+        print(category_totals[0])
+
+    if forecast:
+        for item in category_totals:
+            pie_category_labels.append(item["category__name"] or "Uncategorized")
+            pie_category_series.append(abs(float(item["total"])))
+            pie_category_colors.append(item["category__color"] or "#999999")
+    else:
+        for item in category_totals:
+            pie_category_labels.append(item["category__name"] or "Uncategorized")
+            pie_category_series.append(abs(float(item["total"])))
+            pie_category_colors.append(item["category__color"] or "#999999")
+
+    return {
+        "pie_category_labels": pie_category_labels,
+        "pie_category_series": pie_category_series,
+        "pie_category_colors": pie_category_colors,
+        "budget": budget,
+    }

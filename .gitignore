@@ -232,4 +232,4 @@ output.css
 staticfiles/
 
 # Vendor files
-/static/vendor/
+static/vendor/

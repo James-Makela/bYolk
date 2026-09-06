@@ -1,0 +1,21 @@
+<div id="category-pie-chart" class="h-80 w-full"></div>
+
+{{ pie_category_labels|json_script:"chart-labels-data" }}
+{{ pie_category_series|json_script:"chart-series-data" }}
+{{ pie_category_colors|json_script:"chart-colors-data" }}
+{{ request.session.privacy_mode|json_script:"chart-privacy-data" }}
+{{ request.session.theme|json_script:"chart-theme-data" }}
+
+<script>
+  (function () {
+    const labels = JSON.parse(document.getElementById('chart-labels-data').textContent);
+    const series = JSON.parse(document.getElementById('chart-series-data').textContent);
+    const colors = JSON.parse(document.getElementById('chart-colors-data').textContent);
+    const privacyMode = JSON.parse(document.getElementById('chart-privacy-data').textContent);
+    const theme = JSON.parse(document.getElementById('chart-theme-data').textContent);
+
+    requestAnimationFrame(() => {
+      renderChart(labels, series, colors, privacyMode, theme);
+    });
+  })();
+</script>

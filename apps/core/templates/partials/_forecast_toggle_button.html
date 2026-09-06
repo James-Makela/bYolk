@@ -1,0 +1,11 @@
+<button
+  id="forecast-toggle-btn"
+  {% if hx_oob %}hx-swap-oob="true"{% endif %}
+  type="button"
+  class="btn btn-primary btn-soft btn-sm w-32"
+  hx-get="{% url 'category-pie-chart' budget_id %}"
+  hx-vals='{"forecast": "{{ next_forecast_value|lower }}"}'
+  hx-target="#category-pie-chart-wrapper"
+  hx-swap="innerHTML">
+  {% if forecast %}Show Actual{% else %}Show Forecasted{% endif %}
+</button>
