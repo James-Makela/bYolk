@@ -22,7 +22,7 @@
 
       <div class="drawer-content flex flex-col">
         <!-- Navbar -->
-        <nav class="navbar w-full bg-base-300/20 shadow-md sticky top-0 z-30 backdrop-blur-md">
+        <nav class="navbar w-full bg-base-300/50 border-b border-base-300 shadow-md sticky top-0 z-30 backdrop-blur-md">
           <label for="main-drawer" aria-label="open sidebar" class="btn btn-square btn-ghost">
             <svg id="drawer-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
                  stroke-linejoin="round" stroke-linecap="round" stroke-width="2"
@@ -46,9 +46,9 @@
       </div>
 
       <!-- Side Bar -->
-      <div class="drawer-side is-drawer-close:overflow-visible z-40">
+      <div class="drawer-side z-40">
         <label for="main-drawer" aria-label="close sidebar" class="drawer-overlay"></label>
-        <div class="flex min-h-full flex-col items-start bg-base-200 is-drawer-close:w-16 is-drawer-open:w-64 transition-all duration-200">
+        <div class="flex min-h-full flex-col items-start bg-base-200 border-r border-base-300 is-drawer-close:w-16 is-drawer-open:w-64 transition-[width] duration-200">
           <ul class="menu w-full grow pt-2">
             <li>
               <div>
@@ -229,7 +229,7 @@
 
     </div>
 
-    <!-- Hacky script to persist drawer state -->
+    <!-- Script to persist drawer state -->
     <script>
       const drawer = document.getElementById('main-drawer');
       const icon = document.getElementById('drawer-icon');

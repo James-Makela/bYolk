@@ -23,7 +23,7 @@
   <script src="{% static 'js/category_pie_chart.js' %}"></script>
   <div class="max-w-6xl mx-auto p-4">
     <div class="relative w-full">
-      <progress class="h-[32px] progress progress-primary w-full" value="{{ current_position }}" max="{{ budget_length }}"></progress>
+      <progress class="h-[32px] progress progress-primary w-full border border-base-300 shadow-md" value="{{ current_position }}" max="{{ budget_length }}"></progress>
       <div class="absolute font-bold inset-0 flex -top-2 items-center justify-center text-white text-xs">
         <p class="text-center">{% if complete %}Complete{% elif current_position < 0 %}{% else %}Day {{ current_position }} of {{ budget_length }}{% endif %}</p>
       </div>
@@ -36,9 +36,9 @@
 
     {% include "budget/partials/_bucket_carousel.html" %}
 
-    <div class="carousel w-full">
+    <div class="carousel w-full overflow-visible">
 
-      <div class="carousal-item card w-96 mr-5 bg-primary/20 card-md shadow-sm">
+      <div class="carousal-item card w-96 mr-5 border border-base-300 bg-primary/20 card-md shadow-md">
         <div class="card-body">
           <h2 class="card-title">Left Over:</h2>
           <p class="text-xl flex justify-between">
@@ -56,7 +56,7 @@
       </div>
 
       {% if theoretical_predicted_savings and savings  %}
-        <div class="carousel-item card w-96 mr-5 bg-primary/20 card-md shadow-sm">
+        <div class="carousel-item card w-96 mr-5 border border-base-300 bg-primary/20 card-md shadow-md">
           <div class="card-body">
             <h2 class="card-title">Savings:</h2>
             <p class="text-xl flex justify-between">
@@ -74,7 +74,7 @@
           </div>
         </div>
       {% else %}
-        <div class="carousel-item card w-96 mr-5 bg-primary/20 card-md shadow-sm">
+        <div class="carousel-item card w-96 mr-5 border border-base-300 bg-primary/20 card-md shadow-md">
           <div class="card-body">
             <h2 class="card-title">Savings:</h2>
             <p class="text-l">
@@ -94,9 +94,8 @@
 
     {% if pie_category_labels %}
       {% include "partials/_category_pie.html" %}
+      <div class="divider"></div>
     {% endif %}
-
-    <div class="divider"></div>
 
     {% include "budget/partials/_matching_transactions_container.html" %}
 

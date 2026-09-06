@@ -43,6 +43,9 @@ def dashboard(request, view_type="categories"):
 
     cost_totals = calculate_period_totals(costs)
     income_totals = calculate_period_totals(incomes)
+    savings_totals = {
+        key: income_totals[key] - cost_totals.get(key, 0) for key in cost_totals.keys()
+    }
 
     income_dates = []
     income_amounts = []
@@ -71,22 +74,10 @@ def dashboard(request, view_type="categories"):
         "income_titles": income_titles,
         "income_amounts": income_amounts,
         "total_spend_amounts": total_spend_amounts,
-        # Costs
-        "total_yearly": cost_totals["yearly"],
-        "total_monthly": cost_totals["yearly"] / 12,
-        "total_per_budget": cost_totals["per_budget"],
-        "total_per_week": cost_totals["per_week"],
-        # Income
-        "total_income_yearly": income_totals["yearly"],
-        "total_income_monthly": income_totals["yearly"] / 12,
-        "total_income_per_budget": income_totals["per_budget"],
-        "total_income_per_week": income_totals["per_week"],
-        # Savings
-        "total_savings_yearly": income_totals["yearly"] - cost_totals["yearly"],
-        "total_savings_monthly": (income_totals["yearly"] - cost_totals["yearly"]) / 12,
-        "total_savings_per_budget": income_totals["per_budget"]
-        - cost_totals["per_budget"],
-        "total_savings_per_week": income_totals["per_week"] - cost_totals["per_week"],
+        # Totals
+        "cost_totals": cost_totals,
+        "income_totals": income_totals,
+        "savings_totals": savings_totals,
     }
     return render(request, "dashboard.html", context)
 
@@ -138,7 +129,7 @@ def set_preferences(request):
             messages.success(
                 request, "Preferences saved, you can now create your first budget"
             )
-            return HttpResponseRedirect("/budgets/")
+    return HttpResponseRedirect("/budgets/")
 
 
 @login_required
