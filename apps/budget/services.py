@@ -46,6 +46,8 @@ def populate_from_costs(budget_period, user):
             if current_occurrence >= budget_period.start_date:
                 if cost.category is not None:
                     category = cost.category
+                else:
+                    category = None
                 cost_data.append(
                     CostAllocation(
                         budget_period=budget_period,
