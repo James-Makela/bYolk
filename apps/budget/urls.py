@@ -66,4 +66,10 @@ urlpatterns = [
         views.allocate_from_bucket,
         name="allocate-from-bucket",
     ),
+    # Chart urls
+    path(
+        "budget/chart/category-pie-chart/<int:budget_id>",
+        views.category_pie_chart,
+        name="category-pie-chart",
+    ),
 ]
