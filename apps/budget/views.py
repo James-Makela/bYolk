@@ -495,6 +495,7 @@ def allocate_from_bucket(request, budget_id, bucket_id):
     selected_forms = [form for form in formset if form.cleaned_data.get("selected")]
     total = sum(form.cleaned_data["amount"] for form in selected_forms)
 
+    # TODO: Add/remove note as required when allocating from a bucket
     with db_transaction.atomic():
         bucket.balance -= total
         bucket.save()
