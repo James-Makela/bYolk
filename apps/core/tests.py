@@ -1,13 +1,62 @@
 from datetime import datetime
+from decimal import Decimal
 
 from django.contrib.auth import get_user_model
 from django.db import IntegrityError
 from django.test import TestCase
 from django.urls import reverse
 
+from apps.cost.models import Cost
+
 from .models import Category, FrequencyMixin, UserPreferences
+from .services import calculate_period_totals
 
 User = get_user_model()
+
+
+class FinancialTestBase(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        cls.user = User.objects.create_user(
+            email="testuser@example.com",
+            password="testpass123",
+        )
+        cls.preferences = UserPreferences.objects.create(
+            user=cls.user,
+            frequency_value=2,
+            frequency_unit="weeks",
+            first_budget_date=datetime(2026, 1, 1),
+        )
+
+        start_date = datetime(2026, 1, 1)
+        cls.costs = Cost.objects.bulk_create(
+            [
+                Cost(
+                    user=cls.user,
+                    name="Rent",
+                    amount=500.00,
+                    start_date=start_date,
+                    frequency_value=2,
+                    frequency_unit="weeks",
+                ),
+                Cost(
+                    user=cls.user,
+                    name="Groceries",
+                    amount=350.00,
+                    start_date=start_date,
+                    frequency_value=2,
+                    frequency_unit="weeks",
+                ),
+                Cost(
+                    user=cls.user,
+                    name="Petrol",
+                    amount=80.00,
+                    start_date=start_date,
+                    frequency_value=2,
+                    frequency_unit="weeks",
+                ),
+            ]
+        )
 
 
 class CustomUserTests(TestCase):
@@ -188,3 +237,14 @@ class CategoryTests(TestCase):
 
         self.assertEqual(self.category.name, category_two.name)
         self.assertNotEqual(self.category.user, category_two.user)
+
+
+class ServicesTests(FinancialTestBase):
+    def test_calculate_period_totals(self):
+        items = Cost.objects.filter(user=self.user)
+        totals = calculate_period_totals(items)
+
+        self.assertEqual(round(totals["yearly"], 2), round(Decimal(24246.43), 2))
+        self.assertEqual(round(totals["monthly"], 2), round(Decimal(2020.54), 2))
+        self.assertEqual(round(totals["per_budget"], 2), round(Decimal(930), 2))
+        self.assertEqual(round(totals["per_week"], 2), round(Decimal(465), 2))
