@@ -1,0 +1,21 @@
+<div class="card bg-primary/20 min-w-70 grow flex-1 bg-base-100 border border-base-300 card-md shadow-md">
+  <div class="card-body">
+    <h2 class="card-title">{{ title }}</h2>
+    <p class="text-xl flex justify-between">
+      Per Year:
+      <span class="{% if red %}text-error{% else %}text-success{% endif %}">${{ item.yearly|floatformat:2 }}</span>
+    </p>
+    <p class="text-xl flex justify-between">
+      Per Month:
+      <span class="{% if red %}text-error{% else %}text-success{% endif %}">${{ item.monthly|floatformat:2 }}</span>
+    </p>
+    <p class="text-xl flex justify-between">
+      Per Budget:
+      <span class="{% if red %}text-error{% else %}text-success{% endif %}">${{ item.per_budget|floatformat:2 }}</span>
+    </p>
+    <p class="text-xl flex justify-between">
+      Per Week:
+      <span class="{% if red %}text-error{% else %}text-success{% endif %}">${{ item.per_week|floatformat:2 }}</span>
+    </p>
+  </div>
+</div>

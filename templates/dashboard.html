@@ -26,9 +26,11 @@
   <script src="{% static 'js/cashflow_chart.js' %}"></script>
   <script src="{% static 'js/spent_chart.js' %}"></script>
   <div class="flex flex-wrap max-w-6xl mx-auto gap-8 mb-8">
-    {% include "cost/partials/_total_costs_card.html" %}
-    {% include "income/partials/_total_incomes_card.html" %}
-    {% include "partials/_total_savings_card.html" %}
+
+    {% include "partials/_totals_card.html" with title="Cost Totals" item=cost_totals red=True %}
+    {% include "partials/_totals_card.html" with title="Income Totals" item=income_totals %}
+    {% include "partials/_totals_card.html" with title="What's Left" item=savings_totals %}
+
   </div>
   <div class="max-w-6xl mx-auto gap-8 mb-8">
     {% if income_dates %}
