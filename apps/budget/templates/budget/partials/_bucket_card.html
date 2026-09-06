@@ -9,7 +9,7 @@
           class="btn btn-sm btn-primary btn-soft w-25"
           hx-get="{% url 'empty-bucket' budget.id|unlocalize bucket.id|unlocalize %}"
           hx-target="#modal_container"
-          onclick="transaction_picker_modal.showModal()">
+          onclick="picker_modal.showModal()">
           Empty Bucket
         </button>
         <a href="{% url 'fill-bucket' budget.id|unlocalize bucket.id|unlocalize %}" class="btn btn-sm btn-primary btn-soft w-25">Fill Bucket</a>
