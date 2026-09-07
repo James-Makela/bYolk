@@ -4,10 +4,12 @@
     {% if budget_periods %}
       <thead class="bg-base-200 text-base-content">
         <tr>
-          <th class="px-4 py-2">Date Range</th>
-          <th class="px-4 py-2">Total Costs</th>
-          <th class="px-4 py-2">Total Spent</th>
-          <th class="px-4 py-2">Total Income</th>
+          <th class="px-4 py-2 md:hidden">End Date</th>
+          <th class="px-4 py-2 hidden md:table-cell">Date Range</th>
+          <th class="px-4 py-2 hidden md:table-cell">Total Costs</th>
+          <th class="px-4 py-2 hidden md:table-cell">Total Spent</th>
+          <th class="px-4 py-2 hidden md:table-cell">Total Income</th>
+          <th class="px-4 py-2">Balance</th>
           <th class="px-4 py-2"></th>
         </tr>
       </thead>
@@ -15,24 +17,23 @@
       <tbody>
         {% for budget in budget_periods %}
           {% if budget.id == current_budget.id %}
-            <tr class="bg-accent-content hover:bg-accent-content/50">
+            <tr class="bg-accent-content hover:bg-accent-content/50 cursor-pointer" onclick="window.location='{% url "detail" budget.id|unlocalize %}'">
           {% else %}
-            <tr class="hover:bg-base-300">
+            <tr class="hover:bg-base-300 cursor-pointer" onclick="window.location='{% url "detail" budget.id|unlocalize %}'">
           {% endif %}
-          <td>{{ budget.start_date }} - {{ budget.end_date }}</td>
-          <td>${{ budget.get_total_costs|floatformat:2 }}</td>
-          <td class="text-error">${{ budget.annotated_spend|floatformat:2 }}</td>
-          <td class="text-success">${{ budget.annotated_income|floatformat:2 }}</td>
+          <td class="table-cell md:hidden">{{ budget.end_date }}</td>
+          <td class="hidden md:table-cell">{{ budget.start_date }} - {{ budget.end_date }}</td>
+          <td class="hidden md:table-cell">${{ budget.get_total_costs|floatformat:2 }}</td>
+          <td class="text-error hidden md:table-cell">${{ budget.annotated_spend|floatformat:2 }}</td>
+          <td class="text-success hidden md:table-cell">${{ budget.annotated_income|floatformat:2 }}</td>
+          <td class="{% if budget.balance < 0 %}text-error{% else %}text-success{% endif %}">${{ budget.balance|floatformat:2 }}</td>
           <td class="py-3 h-px">
-            <div class="grid grid-cols-2 gap-2 relative z-20 content-center items-center">
-              <a class="btn btn-sm btn-soft" href="/budgets/{{ budget.id|unlocalize }}">View</a>
-              <form class="m-0" action="{% url 'delete-budget' budget.pk %}" method="post" onsubmit="return confirm('Are you sure?')">
-                {% csrf_token %}
-                <button type="submit" class="btn btn-sm btn-soft btn-error cursor-pointer w-full">
-                  Delete
-                </button>
-              </form>
-            </div>
+            <form class="m-0" action="{% url 'delete-budget' budget.pk %}" method="post" onsubmit="return confirm('Are you sure?')">
+              {% csrf_token %}
+              <button type="submit" class="btn btn-sm btn-soft btn-error cursor-pointer w-full">
+                Delete
+              </button>
+            </form>
           </td>
           </tr>
         {% endfor %}
