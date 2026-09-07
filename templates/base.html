@@ -22,7 +22,7 @@
 
       <div class="drawer-content flex flex-col">
         <!-- Navbar -->
-        <nav class="navbar w-full bg-base-300/50 border-b border-base-300 shadow-md sticky top-0 z-30 backdrop-blur-md">
+        <nav class="navbar flex-wrap w-full bg-base-300/50 border-b border-base-300 shadow-md sticky top-0 z-30 backdrop-blur-md">
           <label for="main-drawer" aria-label="open sidebar" class="btn btn-square btn-ghost">
             <svg id="drawer-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
                  stroke-linejoin="round" stroke-linecap="round" stroke-width="2"
@@ -34,7 +34,7 @@
             </svg>
           </label>
           <div class="px-4 text-xl font-semibold flex-1">{% block navbar_title %}My App{% endblock %}</div>
-          <div class="flex-none gap-2">
+          <div class="flex justify-end w-auto gap-2 max-md:has-[>*:nth-child(2)]:justify-between max-md:has-[>*:nth-child(2)]:w-full">
             {% block navbar_actions %}{% endblock %}
           </div>
         </nav>

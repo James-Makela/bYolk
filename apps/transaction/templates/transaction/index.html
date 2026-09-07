@@ -5,7 +5,7 @@
 
 {% block navbar_actions %}
   <div class="dropdown dropdown-end">
-    <div tabindex="0" role="button" class="btn btn-primary btn-sm m-1 mr-8">Upload Transactions</div>
+    <div tabindex="0" role="button" class="btn btn-primary btn-sm m-1 mr-2  md:mr-8">Upload Transactions</div>
     <ul tabindex="-1" class="dropdown-content menu bg-base-100 rounded-box z-1 w-52 p-2 shadow-sm">
       <li>
         <form action="{% url 'upload-csv-ing' %}" method="post" enctype="multipart/form-data" id="csv-form" tabindex="1">
