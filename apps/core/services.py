@@ -1,5 +1,6 @@
 from collections import defaultdict
 from datetime import timedelta
+from decimal import Decimal
 
 from django.db.models import DecimalField, Sum, Value
 from django.db.models.functions import Coalesce
@@ -15,10 +16,10 @@ def calculate_period_totals(financial_items):
     total_week = sum(item.per_week for item in financial_items)
 
     return {
-        "yearly": total_year,
-        "monthly": total_year / 12,
-        "per_budget": total_budget,
-        "per_week": total_week,
+        "yearly": Decimal(total_year),
+        "monthly": Decimal(total_year / 12),
+        "per_budget": Decimal(total_budget),
+        "per_week": Decimal(total_week),
     }
 
 
