@@ -1,11 +1,11 @@
 <div class="overflow-visible rounded-lg border border-base-300 mt-2 bg-base-100">
 
-  <div class="grid grid-cols-10 gap-2 bg-base-200 px-4 py-3 text-xs font-bold uppercase tracking-wider opacity-70 text-base-content">
+  <div class="grid grid-cols-6 md:grid-cols-10 gap-2 bg-base-200 px-4 py-3 text-xs font-bold uppercase tracking-wider opacity-70 text-base-content">
     <div class="col-span-3">Cost Name</div>
-    <div class="col-span-2 text-left">Expected date</div>
-    <div class="col-span-1 text-right">Expected</div>
-    <div class="col-span-1 text-right">Spent</div>
-    <div class="col-span-1 text-right">Remaining</div>
+    <div class="col-span-2 text-left hidden md:block">Expected date</div>
+    <div class="col-span-1 text-right hidden md:block">Expected</div>
+    <div class="col-span-1 text-right hidden md:block">Spent</div>
+    <div class="col-span-1 text-right hidden md:block">Remaining</div>
     <div class="col-span-2"></div>
   </div>
 
@@ -21,8 +21,8 @@
     {% endif %}
   </div>
 
-  <div class="grid grid-cols-10 gap-2 bg-base-200/50 px-4 py-3 font-bold text-base-content border-t border-base-300">
-    <div class="col-span-8 text-right">Total Costs:</div>
+  <div class="grid grid-cols-6 md:grid-cols-10 gap-2 bg-base-200/50 px-4 py-3 font-bold text-base-content border-base-300">
+    <div class="col-span-4 md:col-span-8 text-right">Total Costs:</div>
     <div class="col-span-2 text-left text-error">
       ${{ budget.get_total_costs|floatformat:2 }}
     </div>

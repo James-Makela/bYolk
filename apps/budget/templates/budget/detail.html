@@ -21,7 +21,7 @@
 {% block content %}
   <script src="{% static 'vendor/apexcharts/apexcharts.min.js' %}"></script>
   <script src="{% static 'js/category_pie_chart.js' %}"></script>
-  <div class="max-w-6xl mx-auto p-4">
+  <div class="max-w-6xl mx-auto p-0 md:p-4">
     <div class="relative w-full">
       <progress class="h-[32px] progress progress-primary w-full border border-base-300 shadow-md" value="{{ current_position }}" max="{{ budget_length }}"></progress>
       <div class="absolute font-bold inset-0 flex -top-2 items-center justify-center text-white text-xs">
