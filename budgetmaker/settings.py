@@ -196,23 +196,8 @@ PWA_APP_ORIENTATION = "any"
 PWA_APP_START_URL = "/"
 PWA_APP_STATUS_BAR_COLOR = "default"
 PWA_APP_ICONS = [
-    {"src": "/static/images/favicon.png", "sizes": "192x192"},
-    {"src": "/static/images/favicon.png", "sizes": "512x512"},
+    {"src": "/static/images/egg-192.png", "sizes": "192x192"},
+    {"src": "/static/images/egg-512.png", "sizes": "512x512"},
 ]
-PWA_APP_ICONS_APPLE = [{"src": "/static/images/favicon.png", "sizes": "160x160"}]
 PWA_APP_DIR = "ltr"
 PWA_APP_LANG = "en-AU"
-PWA_APP_SHORTCUTS = [
-    {
-        "name": "Shortcut",
-        "url": "/target",
-        "description": "Shortcut to a page in my application",
-    }
-]
-PWA_APP_SCREENSHOTS = [
-    {
-        "src": "/static/images/icons/splash-750x1334.png",
-        "sizes": "750x1334",
-        "type": "image/png",
-    }
-]
