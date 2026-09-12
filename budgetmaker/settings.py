@@ -195,7 +195,10 @@ PWA_APP_SCOPE = "/"
 PWA_APP_ORIENTATION = "any"
 PWA_APP_START_URL = "/"
 PWA_APP_STATUS_BAR_COLOR = "default"
-PWA_APP_ICONS = [{"src": "/static/images/favicon.png", "sizes": "160x160"}]
+PWA_APP_ICONS = [
+    {"src": "/static/images/favicon.png", "sizes": "192x192"},
+    {"src": "/static/images/favicon.png", "sizes": "512x512"},
+]
 PWA_APP_ICONS_APPLE = [{"src": "/static/images/favicon.png", "sizes": "160x160"}]
 PWA_APP_DIR = "ltr"
 PWA_APP_LANG = "en-AU"
