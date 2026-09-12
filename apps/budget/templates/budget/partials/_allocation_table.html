@@ -21,8 +21,11 @@
         <div class="text-right text-base-content/70 col-span-1 text-sm relative z-0 pointer-events-none hidden md:block">${{ allocation.expected_amount }}</div>
         <div class="text-right font-semibold col-span-1 text-sm relative z-10 pointer-events-none hidden md:block{% if allocation.is_over %} text-error{% endif %}">${{ allocation.total_paid }}</div>
         <div class="col-span-1 relative z-10 pointer-events-none text-right">
-          <span class="span md:hidden stat-title text-sm">Remaining: </span>
-          <span class="text-right font-semibold text-sm {% if allocation.remaining > 0 %}text-success{% elif allocation.remaining == 0 %}text-info{% else %}text-error{% endif %}">${{ allocation.remaining }}</span>
+          <span class="md:hidden stat-title text-sm inline-block w-20 text-right">Spent: </span>
+          <span class="inline-block w-16 text-right font-semibold text-sm relative z-10 md:hidden{% if allocation.is_over %} text-error{% endif %}">${{ allocation.total_paid }}</span>
+          <div></div>
+          <span class="md:hidden stat-title text-sm inline-block w-20 text-right">Remaining: </span>
+          <span class="inline-block w-16 text-right font-semibold text-sm {% if allocation.remaining > 0 %}text-success{% elif allocation.remaining == 0 %}text-info{% else %}text-error{% endif %}">${{ allocation.remaining }}</span>
         </div>
         <div class="flex justify-end md:w-auto md:grid md:grid-cols-2 gap-2 md:col-span-2 relative z-20 content-center items-center md:py-3">
           <button
