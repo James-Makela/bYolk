@@ -4,16 +4,25 @@
 
 {% block title %}{{ budget.start_date }}{% endblock %}
 {% block navbar_title %}
-  <a href="/budgets/{{ previous.id|unlocalize }}" class="btn btn-xs btn-primary btn-soft" {% if not previous %}disabled="disabled"{% endif %}>&larr; Previous</a>
-  Budget for {{ budget.start_date }} -> {{ budget.end_date }}
-  <a href="/budgets/{{ next.id|unlocalize }}" class="btn btn-xs btn-primary btn-soft" {% if not next %}disabled="disabled"{% endif %}>Next &rarr;</a>
+  <a href="/budgets/{{ previous.id|unlocalize }}" class="hidden md:inline-flex btn btn-xs btn-primary btn-soft w-20" {% if not previous %}disabled="disabled"{% endif %}>&larr; Previous</a>
+  <span class="flex md:hidden justify-between mb-2">
+    <a href="/budgets/{{ previous.id|unlocalize }}" class="flex btn btn-xs btn-primary btn-soft w-20" {% if not previous %}disabled="disabled"{% endif %}>&larr;</a>
+    <a href="/budgets/{{ next.id|unlocalize }}" class="flex btn btn-xs btn-primary btn-soft w-20" {% if not next %}disabled="disabled"{% endif %}>&rarr;</a>
+  </span>
+  <div class="inline-flex w-full justify-center md:hidden mb-2">
+    Budget ending {{ budget.end_date }}
+  </div>
+  <div class="hidden md:inline-flex">
+    Budget for {{ budget.start_date }} -> {{ budget.end_date }}
+  </div>
+  <a href="/budgets/{{ next.id|unlocalize }}" class="hidden md:inline-flex btn btn-xs btn-primary btn-soft w-20" {% if not next %}disabled="disabled"{% endif %}>Next &rarr;</a>
 {% endblock %}
 
 {% block navbar_actions %}
-  <a href="{% url 'add-cost-allocation' budget.id|unlocalize %}" class="btn btn-primary btn-sm">
+  <a href="{% url 'add-cost-allocation' budget.id|unlocalize %}" class="btn btn-primary btn-sm ml-2">
     Add one-off cost
   </a>
-  <a href="{% url 'populate-costs' budget.id|unlocalize %}" class="btn btn-primary btn-sm mr-8">
+  <a href="{% url 'populate-costs' budget.id|unlocalize %}" class="btn btn-primary btn-sm mr-2 md:mr-8">
     Populate from costs
   </a>
 {% endblock %}
@@ -21,7 +30,7 @@
 {% block content %}
   <script src="{% static 'vendor/apexcharts/apexcharts.min.js' %}"></script>
   <script src="{% static 'js/category_pie_chart.js' %}"></script>
-  <div class="max-w-6xl mx-auto p-4">
+  <div class="max-w-6xl mx-auto p-0 md:p-4">
     <div class="relative w-full">
       <progress class="h-[32px] progress progress-primary w-full border border-base-300 shadow-md" value="{{ current_position }}" max="{{ budget_length }}"></progress>
       <div class="absolute font-bold inset-0 flex -top-2 items-center justify-center text-white text-xs">
@@ -36,55 +45,60 @@
 
     {% include "budget/partials/_bucket_carousel.html" %}
 
-    <div class="carousel w-full overflow-visible">
+    <div class="carousel h-48 w-full">
 
-      <div class="carousal-item card w-96 mr-5 border border-base-300 bg-primary/20 card-md shadow-md">
-        <div class="card-body">
-          <h2 class="card-title">Left Over:</h2>
-          <p class="text-xl flex justify-between">
-            Theoretical:
-            <span class="{% if budget.theoretical_balance > 0 %}text-success{% elif budget.theoretical_balance == 0 %}text-info{% else %}text-error{% endif %}">${{ budget.theoretical_balance|floatformat:2 }}</span>
-          </p>
-          <p class="text-xl flex justify-between">
-            Actual:
-            <span class="{% if budget.balance > 0 %}text-success{% elif budget.balance == 0 %}text-info{% else %}text-error{% endif %}">${{ budget.balance|floatformat:2 }}</span>
-          </p>
-          <div class="justify-end card-actions">
-            <button class="btn btn-primary">Complete Budget</button>
+      <div class="carousel-item h-full w-full md:w-96 mr-4">
+        <div class="card h-full w-full border border-base-300 bg-primary/20 card-md shadow-md">
+          <div class="card-body">
+            <h2 class="card-title">Left Over:</h2>
+            <p class="text-xl flex justify-between">
+              Theoretical:
+              <span class="{% if budget.theoretical_balance > 0 %}text-success{% elif budget.theoretical_balance == 0 %}text-info{% else %}text-error{% endif %}">${{ budget.theoretical_balance|floatformat:2 }}</span>
+            </p>
+            <p class="text-xl flex justify-between">
+              Actual:
+              <span class="{% if budget.balance > 0 %}text-success{% elif budget.balance == 0 %}text-info{% else %}text-error{% endif %}">${{ budget.balance|floatformat:2 }}</span>
+            </p>
+            <div class="justify-end card-actions">
+              <button class="btn btn-primary btn-sm">Complete Budget</button>
+            </div>
           </div>
         </div>
       </div>
 
       {% if theoretical_predicted_savings and savings  %}
-        <div class="carousel-item card w-96 mr-5 border border-base-300 bg-primary/20 card-md shadow-md">
-          <div class="card-body">
-            <h2 class="card-title">Savings:</h2>
-            <p class="text-xl flex justify-between">
-              Current Amount:
-              <span class="{% if savings.value > 0 %}text-success{% elif savings.value == 0 %}text-info{% else %}text-error{% endif %}">${{ savings.value|floatformat:2 }}</span>
-            </p>
-            <p class="text-xl flex justify-between">
-              Theoretical Predicted:
-              <span class="{% if theoretical_predicted_savings > 0 %}text-success{% elif theoretical_predicted_savings == 0 %}text-info{% else %}text-error{% endif %}">${{ theoretical_predicted_savings|floatformat:2 }}</span>
-            </p>
-            <p class="text-xl flex justify-between">
-              Actual Predicted:
-              <span class="{% if actual_predicted_savings > 0 %}text-success{% elif actual_predicted_savings == 0 %}text-info{% else %}text-error{% endif %}">${{ actual_predicted_savings|floatformat:2 }}</span>
-            </p>
+        <div class="carousel-item h-full w-full md:w-96 mr-4">
+          <div class="card h-full w-full border border-base-300 bg-primary/20 card-md shadow-md">
+            <div class="card-body">
+              <h2 class="card-title">Savings:</h2>
+              <p class="text-xl flex justify-between">
+                Current Amount:
+                <span class="{% if savings.value > 0 %}text-success{% elif savings.value == 0 %}text-info{% else %}text-error{% endif %}">${{ savings.value|floatformat:2 }}</span>
+              </p>
+              <p class="text-xl flex justify-between">
+                Theoretical Predicted:
+                <span class="{% if theoretical_predicted_savings > 0 %}text-success{% elif theoretical_predicted_savings == 0 %}text-info{% else %}text-error{% endif %}">${{ theoretical_predicted_savings|floatformat:2 }}</span>
+              </p>
+              <p class="text-xl flex justify-between">
+                Actual Predicted:
+                <span class="{% if actual_predicted_savings > 0 %}text-success{% elif actual_predicted_savings == 0 %}text-info{% else %}text-error{% endif %}">${{ actual_predicted_savings|floatformat:2 }}</span>
+              </p>
+            </div>
           </div>
         </div>
       {% else %}
-        <div class="carousel-item card w-96 mr-5 border border-base-300 bg-primary/20 card-md shadow-md">
-          <div class="card-body">
-            <h2 class="card-title">Savings:</h2>
-            <p class="text-l">
-              Add a primary savings account to see your savings build.
-            </p>
-            <div class="justify-end card-actions">
-              <a href="{% url 'add-savings' %}" class="btn btn-primary">Add Primary Savings</a>
+        <div class="carousel-item h-full w-full md:w-96 mr-4">
+          <div class="card h-full w-full border border-base-300 bg-primary/20 card-md shadow-md">
+            <div class="card-body">
+              <h2 class="card-title">Savings:</h2>
+              <p class="text-md">
+                Add a primary savings account to see your savings build.
+              </p>
+              <div class="justify-end card-actions">
+                <a href="{% url 'add-savings' %}" class="btn btn-primary btn-sm">Add Primary Savings</a>
+              </div>
             </div>
           </div>
-
         </div>
       {% endif %}
 

@@ -1,39 +1,47 @@
 {% load l10n %}
-{% load color_utils %}
-<div class="flex flex-col bg-base-200/30 rounded-lg overflow-visible">
+<div class="flex flex-col rounded-lg overflow-visible">
   {% for allocation in allocations %}
-    <div class="group relative hover:bg-base-300 focus-within:z-50 border-b border-base-200 last:border-none">
+    <div class="group relative py-2 md:py-0 bg-base-200 hover:bg-base-300 focus-within:z-50 border-b-1 border-base-content/5 last:border-none">
       <input type="checkbox" id="toggle_{{ allocation.id|unlocalize }}_{{ allocation.name}}" class="peer hidden" />
-      <div class="grid grid-cols-10 w-full gap-2 py-0 px-4 items-center cursor-pointer select-none relative">
+      <div class="flex flex-wrap justify-between md:grid grid-cols-6 md:grid-cols-10 w-full gap-2 py-0 px-4 items-center cursor-pointer select-none relative">
         <label for="toggle_{{ allocation.id|unlocalize }}_{{ allocation.name }}" class="absolute inset-0 z-0 cursor-pointer"></label>
-        <div class="flex items-center font-medium truncate col-span-3 text-lg relative z-10 pointer-events-none p-0">
+        <div class="flex items-center w-full md:w-auto font-medium truncate col-span-3 text-lg relative z-10 pointer-events-none p-0">
           {{ allocation.name }}
-          {% if allocation.category %}
-            {% include "partials/_category_badge.html" with category=allocation.category %}
-          {% endif %}
           {% if allocation.note %}
             <div class="mx-2">
               <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-pen-line-icon lucide-pen-line"><path d="M13 21h8"/><path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"/></svg>
             </div>
           {% endif %}
+          {% if allocation.category %}
+            {% include "partials/_category_badge.html" with category=allocation.category %}
+          {% endif %}
         </div>
-        <div class="font-medium col-span-2 text-sm relative z-10 pointer-events-none">{{ allocation.expected_date }}</div>
-        <div class="text-right text-base-content/70 col-span-1 text-sm relative z-0 pointer-events-none">${{ allocation.expected_amount }}</div>
-        <div class="text-right font-semibold col-span-1 text-sm relative z-10 pointer-events-none{% if allocation.is_over %} text-error{% endif %}">${{ allocation.total_paid }}</div>
-        <div class="text-right font-semibold col-span-1 text-sm relative z-10 pointer-events-none {% if allocation.remaining > 0 %}text-success{% elif allocation.remaining == 0 %}text-info{% else %}text-error{% endif %}">
-          ${{ allocation.remaining }}
+        <div class="font-medium col-span-2 text-sm relative z-10 pointer-events-none hidden md:block">{{ allocation.expected_date }}</div>
+        <div class="text-right text-base-content/70 col-span-1 text-sm relative z-0 pointer-events-none hidden md:block">${{ allocation.expected_amount }}</div>
+        <div class="text-right font-semibold col-span-1 text-sm relative z-10 pointer-events-none hidden md:block{% if allocation.is_over %} text-error{% endif %}">${{ allocation.total_paid }}</div>
+        <div class="col-span-1 relative z-10 w-46 md:w-auto pointer-events-none text-right border md:border-0 border-base-300 bg-base-100 md:bg-transparent rounded-lg p-2 px-4 md:p-0">
+          {% if type == "income" %}
+            <span class="md:hidden stat-title text-sm inline-block w-20 text-right">Paid: </span>
+          {% else %}
+            <span class="md:hidden stat-title text-sm inline-block w-20 text-right">Spent: </span>
+          {% endif %}
+          <span class="inline-block w-16 text-right font-semibold text-sm relative z-10 md:hidden{% if allocation.is_over %} text-error{% endif %}">${{ allocation.total_paid }}</span>
+          <div></div>
+          <span class="md:hidden stat-title text-sm inline-block w-20 text-right">Remaining: </span>
+          <span class="inline-block w-16 text-right font-semibold text-sm {% if allocation.remaining > 0 %}text-success{% elif allocation.remaining == 0 %}text-info{% else %}text-error{% endif %}">${{ allocation.remaining }}</span>
         </div>
-        <div class="grid grid-cols-2 gap-2 col-span-2 relative z-20 content-center items-center py-3">
+        <div class="flex justify-end md:w-auto md:grid md:grid-cols-2 gap-2 md:col-span-2 z-20 self-stretch content-center items-end md:items-center md:py-3">
           <button
-            class="btn btn-sm btn-soft w-full"
+            class="btn btn-sm btn-soft md:w-full"
             hx-get="{% url 'get-allocation-picker' type allocation.id|unlocalize %}"
             hx-target="#modal_container"
             onclick="picker_modal.showModal()"
           >
             Allocate
           </button>
-          <div class="dropdown">
-            <div tabindex="0" role="button" class="btn btn-sm btn-soft w-full">Actions</div>
+          <div class="dropdown dropdown-end">
+            <div tabindex="0" role="button" class="btn btn-sm btn-soft w-full hidden md:flex">Actions</div>
+            <div tabindex="0" role="button" class="btn btn-sm btn-soft btn-square md:hidden">...</div>
             <ul tabindex="-1" class="dropdown-content menu bg-base-100 rounded-box z-[100] w-42 p-2 shadow-xl border border-base-200">
               <li>
                 <a href="{% if next %}{% url 'move-cost-allocation' allocation.id|unlocalize next.id|unlocalize %}{% else %}#{% endif %}" class="flex justify-between items-center hover:text-primary {% if not next %}hidden{% endif %}">Move to next Budget</a>
@@ -59,6 +67,7 @@
       <div class="grid grid-rows-[0fr] transition-all duration-300 peer-checked:grid-rows-[1fr]">
         <div class="overflow-hidden">
         <!-- Allocation details -->
+          <div class="m-2 h-0 border-b border-base-300 group-hover:border-base-100"></div>
           <div class="stats stats-xs mx-4 px-4 rounded-lg border border-base-300 bg-base-100">
             <div class="stat">
               <div class="stat-title">
