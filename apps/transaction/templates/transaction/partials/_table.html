@@ -1,22 +1,25 @@
-<div class="overflow-hidden rounded-lg border border-base-300">
-  <table class="table w-full bg-base-100 border-hidden">
+<div class="rounded-lg border border-base-300">
+  <table class="table table-sm md:table-md w-full bg-base-100">
     {% if transactions %}
       <thead class="bg-base-200/50">
         <tr class="text-xs uppercase opacity-60">
           <th>Date</th>
-          <th>Vendor</th>
-          <th>Transaction Type</th>
-          <th>Receipt Details</th>
+          <th class="hidden md:table-cell">Vendor</th>
+          <th class="hidden md:table-cell">Transaction Type</th>
+          <th class="hidden md:table-cell">Receipt Details</th>
+          <th class="table-cell md:hidden">Details</th>
           <th class="text-right">Amount</th>
         </tr>
       </thead>
       <tbody class="[&_tr:last-child]:border-none">
         {% for tx in transactions %}
           <tr class="border-base-200">
-            <td class="whitespace-nowrap">{{ tx.date }}</td>
-            <td>{{ tx.vendor }}</td>
-            <td>{{ tx.purchase_type }}</td>
-            <td>{{ tx.receipt_details }}</td>
+            <td class="md:hidden whitespace-nowrap">{{ tx.date|date:"SHORT_DATE_FORMAT" }}</td>
+            <td class="hidden md:table-cell whitespace-nowrap">{{ tx.date }}</td>
+            <td class="hidden md:table-cell">{{ tx.vendor }}</td>
+            <td class="hidden md:table-cell">{{ tx.purchase_type }}</td>
+            <td class="hidden md:table-cell">{{ tx.receipt_details }}</td>
+            <td class="md-hidden">{{ tx.vendor }} | {{ tx.receipt_details }}</td>
             <td class="text-right font-semibold {% if tx.is_positive %}text-success{% else %}text-error{% endif %}">${{ tx.amount }}</td>
           </tr>
         {% endfor %}

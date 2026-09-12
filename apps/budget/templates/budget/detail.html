@@ -45,55 +45,60 @@
 
     {% include "budget/partials/_bucket_carousel.html" %}
 
-    <div class="carousel w-full overflow-visible">
+    <div class="carousel h-48 w-full">
 
-      <div class="carousal-item card w-96 mr-5 border border-base-300 bg-primary/20 card-md shadow-md">
-        <div class="card-body">
-          <h2 class="card-title">Left Over:</h2>
-          <p class="text-xl flex justify-between">
-            Theoretical:
-            <span class="{% if budget.theoretical_balance > 0 %}text-success{% elif budget.theoretical_balance == 0 %}text-info{% else %}text-error{% endif %}">${{ budget.theoretical_balance|floatformat:2 }}</span>
-          </p>
-          <p class="text-xl flex justify-between">
-            Actual:
-            <span class="{% if budget.balance > 0 %}text-success{% elif budget.balance == 0 %}text-info{% else %}text-error{% endif %}">${{ budget.balance|floatformat:2 }}</span>
-          </p>
-          <div class="justify-end card-actions">
-            <button class="btn btn-primary">Complete Budget</button>
+      <div class="carousel-item h-full w-full md:w-96 mr-4">
+        <div class="card h-full w-full border border-base-300 bg-primary/20 card-md shadow-md">
+          <div class="card-body">
+            <h2 class="card-title">Left Over:</h2>
+            <p class="text-xl flex justify-between">
+              Theoretical:
+              <span class="{% if budget.theoretical_balance > 0 %}text-success{% elif budget.theoretical_balance == 0 %}text-info{% else %}text-error{% endif %}">${{ budget.theoretical_balance|floatformat:2 }}</span>
+            </p>
+            <p class="text-xl flex justify-between">
+              Actual:
+              <span class="{% if budget.balance > 0 %}text-success{% elif budget.balance == 0 %}text-info{% else %}text-error{% endif %}">${{ budget.balance|floatformat:2 }}</span>
+            </p>
+            <div class="justify-end card-actions">
+              <button class="btn btn-primary btn-sm">Complete Budget</button>
+            </div>
           </div>
         </div>
       </div>
 
       {% if theoretical_predicted_savings and savings  %}
-        <div class="carousel-item card w-96 mr-5 border border-base-300 bg-primary/20 card-md shadow-md">
-          <div class="card-body">
-            <h2 class="card-title">Savings:</h2>
-            <p class="text-xl flex justify-between">
-              Current Amount:
-              <span class="{% if savings.value > 0 %}text-success{% elif savings.value == 0 %}text-info{% else %}text-error{% endif %}">${{ savings.value|floatformat:2 }}</span>
-            </p>
-            <p class="text-xl flex justify-between">
-              Theoretical Predicted:
-              <span class="{% if theoretical_predicted_savings > 0 %}text-success{% elif theoretical_predicted_savings == 0 %}text-info{% else %}text-error{% endif %}">${{ theoretical_predicted_savings|floatformat:2 }}</span>
-            </p>
-            <p class="text-xl flex justify-between">
-              Actual Predicted:
-              <span class="{% if actual_predicted_savings > 0 %}text-success{% elif actual_predicted_savings == 0 %}text-info{% else %}text-error{% endif %}">${{ actual_predicted_savings|floatformat:2 }}</span>
-            </p>
+        <div class="carousel-item h-full w-full md:w-96 mr-4">
+          <div class="card h-full w-full border border-base-300 bg-primary/20 card-md shadow-md">
+            <div class="card-body">
+              <h2 class="card-title">Savings:</h2>
+              <p class="text-xl flex justify-between">
+                Current Amount:
+                <span class="{% if savings.value > 0 %}text-success{% elif savings.value == 0 %}text-info{% else %}text-error{% endif %}">${{ savings.value|floatformat:2 }}</span>
+              </p>
+              <p class="text-xl flex justify-between">
+                Theoretical Predicted:
+                <span class="{% if theoretical_predicted_savings > 0 %}text-success{% elif theoretical_predicted_savings == 0 %}text-info{% else %}text-error{% endif %}">${{ theoretical_predicted_savings|floatformat:2 }}</span>
+              </p>
+              <p class="text-xl flex justify-between">
+                Actual Predicted:
+                <span class="{% if actual_predicted_savings > 0 %}text-success{% elif actual_predicted_savings == 0 %}text-info{% else %}text-error{% endif %}">${{ actual_predicted_savings|floatformat:2 }}</span>
+              </p>
+            </div>
           </div>
         </div>
       {% else %}
-        <div class="carousel-item card w-96 mr-5 border border-base-300 bg-primary/20 card-md shadow-md">
-          <div class="card-body">
-            <h2 class="card-title">Savings:</h2>
-            <p class="text-l">
-              Add a primary savings account to see your savings build.
-            </p>
-            <div class="justify-end card-actions">
-              <a href="{% url 'add-savings' %}" class="btn btn-primary">Add Primary Savings</a>
+        <div class="carousel-item h-full w-full md:w-96 mr-4">
+          <div class="card h-full w-full border border-base-300 bg-primary/20 card-md shadow-md">
+            <div class="card-body">
+              <h2 class="card-title">Savings:</h2>
+              <p class="text-md">
+                Add a primary savings account to see your savings build.
+              </p>
+              <div class="justify-end card-actions">
+                <a href="{% url 'add-savings' %}" class="btn btn-primary btn-sm">Add Primary Savings</a>
+              </div>
             </div>
           </div>
-
         </div>
       {% endif %}
 

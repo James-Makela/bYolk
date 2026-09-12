@@ -1,6 +1,6 @@
 {% load l10n %}
-<div class="carousel-item w-64 mb-5 mr-5">
-  <div class="stats border border-base-300 bg-base-200 card-md shadow-sm">
+<div class="carousel-item w-64 mb-4 mr-4">
+  <div class="stats w-full border border-base-300 bg-base-200 card-md shadow-sm">
     <div class="stat">
       <h2 class="stat-title">{{ bucket.name }} Bucket</h2>
       <p class="stat-value {% if bucket.balance > 0 %}text-success{% elif bucket.balance == 0 %}text-info{% else %}text-error{% endif %}">${{ bucket.balance|floatformat:2 }}</p>
