@@ -19,7 +19,7 @@
             <td class="hidden md:table-cell">{{ tx.vendor }}</td>
             <td class="hidden md:table-cell">{{ tx.purchase_type }}</td>
             <td class="hidden md:table-cell">{{ tx.receipt_details }}</td>
-            <td class="md-hidden">{{ tx.vendor }} | {{ tx.receipt_details }}</td>
+            <td class="md:hidden">{{ tx.vendor }} | {{ tx.receipt_details }}</td>
             <td class="text-right font-semibold {% if tx.is_positive %}text-success{% else %}text-error{% endif %}">${{ tx.amount }}</td>
           </tr>
         {% endfor %}

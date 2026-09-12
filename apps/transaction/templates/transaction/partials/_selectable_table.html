@@ -1,54 +1,58 @@
 {% load l10n %}
-<div class="overflow-x-auto rounded-lg border border-base-300">
-  <table class="table w-full">
+<div class="rounded-lg border border-base-300">
+  <table class="table table-sm md:table-md w-full">
     <thead class="bg-base-200 text-base-content">
       <tr>
-        <th class="w-12">Select</th>
-        <th class="">Date</th>
-        <th class="">Vendor</th>
-        <th class="">Purchase Type</th>
-        <th class="text-right">Amount</th>
+        <th class="md:hidden"></th>
+        <th class="hidden md:table-cell">Select</th>
+        <th class="text-xs md:text-sm">Date</th>
+        <th class="text-xs md:text-sm">Vendor</th>
+        <th class="hidden md:table-cell">Purchase Type</th>
+        <th class="text-right text-xs md:text-sm">Amount</th>
       </tr>
     </thead>
     <tbody>
       {% for transaction in transactions %}
         <tr class="hover:bg-base-300 has-[:checked]:bg-primary/10 cursor-pointer"
             onclick="this.querySelector('.transaction-checkbox').click()">
-          <td class="p-1">
+          <td class="p-0">
             <input
               type="checkbox"
               id="check-{{ transaction.id|unlocalize }}"
               name="transaction_ids"
               value="{{ transaction.id|unlocalize }}"
-              class="transaction-checkbox checkbox checkbox-md checkbox-accent m-3"
+              class="transaction-checkbox checkbox checkbox-xs md:checkbox-md checkbox-accent m-3"
               onclick="event.stopPropagation()"
               {% if transaction.is_match %}checked{% endif %}
             >
           </td>
 
-          <td class="p-1">
-            {{ transaction.date }}
+          <td class="p-0">
+            {{ transaction.date|date:"SHORT_DATE_FORMAT" }}
           </td>
 
-          <td class="p-1">
+          <td class="pr-0">
             {{ transaction.vendor }}
           </td>
-          <td class="p-1">
+          <td class="hidden md:table-cell">
             {{ transaction.purchase_type }}
           </td>
-          <td class="p-1 pr-4 text-right {% if transaction.amount > 0 %}text-success{% elif transaction.amount == 0 %}text-info{% else %}text-error{% endif %}">
+          <td class="pl-0 md:pr-4 text-right {% if transaction.amount > 0 %}text-success{% elif transaction.amount == 0 %}text-info{% else %}text-error{% endif %}">
             ${{ transaction.amount|default_if_none:"-" }}
           </td>
         </tr>
       {% empty %}
-        <tr><td colspan="6" class="text-center text-lg p-2">No unallocated transactions 😃</td></tr>
+        <tr><td class="col-span-4 md:col-span-6 text-center text-lg p-2">No unallocated transactions 😃</td></tr>
       {% endfor %}
     </tbody>
     {% if not hide_footer %}
       <tfoot>
         <tr class="bg-base-200/50 font-bold">
-          <td colspan="4" class="text-right">Total Unallocated:</td>
-          <td class="text-right text-error">
+          <td class="hidden md:table-cell"></td>
+          <td></td>
+          <td></td>
+          <td class="text-right text-xs md:text-sm">Total Unallocated:</td>
+          <td class="text-right text-xs md:text-sm text-error">
             ${{ unallocated_balance|floatformat:2 }}
           </td>
         </tr>
