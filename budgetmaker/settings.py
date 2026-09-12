@@ -60,6 +60,7 @@ INSTALLED_APPS = [
     # Third-party
     "allauth",
     "allauth.account",
+    "pwa",
     # Local
     "apps.core",
     "apps.transaction",
@@ -183,3 +184,32 @@ ACCOUNT_EMAIL_VERIFICATION = "none"
 
 # Formatting
 USE_THOUSAND_SEPARATOR = True
+
+# PWA settings
+PWA_APP_NAME = "bYolk"
+PWA_APP_DESCRIPTION = "Your budgeting app"
+PWA_APP_THEME_COLOR = "#0A0302"
+PWA_APP_BACKGROUND_COLOR = "#ffffff"
+PWA_APP_DISPLAY = "standalone"
+PWA_APP_SCOPE = "/"
+PWA_APP_ORIENTATION = "any"
+PWA_APP_START_URL = "/"
+PWA_APP_STATUS_BAR_COLOR = "default"
+PWA_APP_ICONS = [{"src": "/static/images/favicon.png", "sizes": "160x160"}]
+PWA_APP_ICONS_APPLE = [{"src": "/static/images/favicon.png", "sizes": "160x160"}]
+PWA_APP_DIR = "ltr"
+PWA_APP_LANG = "en-AU"
+PWA_APP_SHORTCUTS = [
+    {
+        "name": "Shortcut",
+        "url": "/target",
+        "description": "Shortcut to a page in my application",
+    }
+]
+PWA_APP_SCREENSHOTS = [
+    {
+        "src": "/static/images/icons/splash-750x1334.png",
+        "sizes": "750x1334",
+        "type": "image/png",
+    }
+]
