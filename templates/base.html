@@ -33,8 +33,8 @@
               <path d="M14 10l2 2l-2 2"/>
             </svg>
           </label>
-          <div class="px-4 text-xl font-semibold flex-1">{% block navbar_title %}My App{% endblock %}</div>
-          <div class="flex justify-end w-auto gap-2 max-md:has-[>*:nth-child(2)]:justify-between max-md:has-[>*:nth-child(2)]:w-full">
+          <div class="px-2 md:px-4 text-xl font-semibold flex-1">{% block navbar_title %}My App{% endblock %}</div>
+          <div class="flex justify-end w-auto gap-1 max-md:has-[>*:nth-child(2)]:w-full">
             {% block navbar_actions %}{% endblock %}
           </div>
         </nav>
@@ -233,19 +233,26 @@
     <script>
       const drawer = document.getElementById('main-drawer');
       const icon = document.getElementById('drawer-icon');
+      const isDesktop = () => window.innerWidth >= 768;
 
       function updateIcon() {
         icon.style.transform = drawer.checked ? 'rotate(180deg)' : 'rotate(0deg)';
       }
 
-      const saved = localStorage.getItem('drawer');
-      if (saved !== null) {
-        drawer.checked = saved === 'true';
+      if (isDesktop()) {
+        const saved = localStorage.getItem('drawer');
+        if (saved !== null) {
+          drawer.checked = saved === 'true';
+        }
+      } else {
+        drawer.checked = false;
       }
       updateIcon();
 
       drawer.addEventListener('change', () => {
-        localStorage.setItem('drawer', drawer.checked);
+        if (isDesktop()) {
+          localStorage.setItem('drawer', drawer.checked);
+        }
         updateIcon();
       });
     </script>

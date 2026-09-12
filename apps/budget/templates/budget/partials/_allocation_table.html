@@ -2,7 +2,7 @@
 {% load color_utils %}
 <div class="flex flex-col bg-base-200/30 rounded-lg overflow-visible">
   {% for allocation in allocations %}
-    <div class="group relative py-2 md:py-0 hover:bg-base-300 focus-within:z-50 border-b-1 border-base-300 last:border-none">
+    <div class="group relative py-2 md:py-0 hover:bg-base-300 focus-within:z-50 border-b-1 border-base-content/5 last:border-none">
       <input type="checkbox" id="toggle_{{ allocation.id|unlocalize }}_{{ allocation.name}}" class="peer hidden" />
       <div class="flex flex-wrap justify-between md:grid grid-cols-6 md:grid-cols-10 w-full gap-2 py-0 px-4 items-center cursor-pointer select-none relative">
         <label for="toggle_{{ allocation.id|unlocalize }}_{{ allocation.name }}" class="absolute inset-0 z-0 cursor-pointer"></label>
@@ -21,7 +21,7 @@
         <div class="text-right text-base-content/70 col-span-1 text-sm relative z-0 pointer-events-none hidden md:block">${{ allocation.expected_amount }}</div>
         <div class="text-right font-semibold col-span-1 text-sm relative z-10 pointer-events-none hidden md:block{% if allocation.is_over %} text-error{% endif %}">${{ allocation.total_paid }}</div>
         <div class="col-span-1 relative z-10 pointer-events-none text-right">
-          <span class="span md:hidden font-semibold text-sm">Remaining: </span>
+          <span class="span md:hidden stat-title text-sm">Remaining: </span>
           <span class="text-right font-semibold text-sm {% if allocation.remaining > 0 %}text-success{% elif allocation.remaining == 0 %}text-info{% else %}text-error{% endif %}">${{ allocation.remaining }}</span>
         </div>
         <div class="flex justify-end md:w-auto md:grid md:grid-cols-2 gap-2 md:col-span-2 relative z-20 content-center items-center md:py-3">
