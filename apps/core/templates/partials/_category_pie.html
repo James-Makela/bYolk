@@ -3,9 +3,11 @@
   <div class="card-body">
     <div class="flex items-center justify-between">
       <h2 class="card-title">Category Spends</h2>
-      <div class="card-actions">
-        {% include "partials/_forecast_toggle_button.html" %}
-      </div>
+      {% if show_pie_toggle %}
+        <div class="card-actions">
+          {% include "partials/_forecast_toggle_button.html" %}
+        </div>
+      {% endif %}
     </div>
     <div id="category-pie-chart-wrapper">
       {% include "partials/_category_pie_chart.html" %}

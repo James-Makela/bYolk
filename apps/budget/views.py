@@ -119,6 +119,8 @@ def budget_detail(request, id):
         theoretical_predicted_savings = 0
         actual_predicted_savings = 0
 
+    show_pie_toggle = len(budget.get_categorised_transactions()["outgoing"]) > 0
+
     context = {
         "budget": budget,
         "budget_id": budget.id,
@@ -137,8 +139,7 @@ def budget_detail(request, id):
         "theoretical_predicted_savings": theoretical_predicted_savings,
         "actual_predicted_savings": actual_predicted_savings,
         **get_category_pie_context(request, id),
-        "forecast": False,
-        "next_forecast_value": True,
+        "show_pie_toggle": show_pie_toggle,
     }
 
     return render(
@@ -537,7 +538,7 @@ def category_pie_chart(request, budget_id):
 
 
 @login_required
-def get_category_pie_context(request, budget_id, forecast=False):
+def get_category_pie_context(request, budget_id, forecast=True):
     budget = get_object_or_404(
         BudgetPeriod.objects.filter(user=request.user),
         pk=budget_id,
@@ -582,4 +583,6 @@ def get_category_pie_context(request, budget_id, forecast=False):
         "pie_category_series": pie_category_series,
         "pie_category_colors": pie_category_colors,
         "budget": budget,
+        "forecast": forecast,
+        "next_forecast_value": not forecast,
     }
