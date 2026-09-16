@@ -89,6 +89,7 @@ def cost_edit(request, pk=None):
                 expected_date__gt=timezone.now().date(),
             ).update(
                 amount=-form.cleaned_data["amount"],
+                expected_amount=-form.cleaned_data["amount"],
                 name=form.cleaned_data["name"],
             )
 
