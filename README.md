@@ -7,6 +7,54 @@ Nest Egg -> Egg Yolk + Broke = bYolk
 - Django
 - DaisyUI
 - Docker/Podman
+- PostgreSQL
+
+## Features
+
+##### Dashboard
+
+- Visualise cashflow
+- View allocations and costs over time
+- View cost, income, and remainder totals
+
+##### Budget
+
+- User defined budget period to line up with your pay cycle
+- Auto populate from costs
+- Mark imported transactions against allocations
+- Forecast ahead and see future savings
+
+##### Buckets - WIP
+
+- Manage and track over and under spending
+- Move spare money over to the next budget
+
+##### Income
+
+- Set your regular income to populate budgets
+
+##### Costs
+
+- Set your regular costs to populate budgets
+- Set a category for each cost
+
+##### Transactions
+
+- Import transactions from ING .csv and ANZ+ .pdf statements
+- Ignores duplicates on import, only pulling in new transactions
+- Sets the date to the actual transaction date, not the bank processing date
+- Transactions appear in the corresponding budget period
+
+##### Categories
+
+- Set categories for your costs
+- Choose a colour for each cost
+
+##### Savings and assets
+
+- Set up your current savings and property
+- Primary savings is forecast in each future budget utilising what is left over
+
 
 ## Installation instructions
 
