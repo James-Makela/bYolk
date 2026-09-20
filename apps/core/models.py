@@ -99,6 +99,14 @@ class User(AbstractUser):
 
     objects = UserManager()  # type: ignore
 
+    @property
+    def display_name(self):
+        return self.email.split("@")[0]
+
+    @property
+    def profile_stub(self):
+        return self.email[0].upper()
+
 
 class UserPreferences(FrequencyMixin, models.Model):
     # TODO: remove theme from user preferences

@@ -156,7 +156,7 @@
               <!-- TODO: Add accounts and balances here -->
 
               <!-- Help - ? -->
-              <li class="mt-auto">
+              <li class="mt-auto is-drawer-close:mb-2">
                 <a href="{% url 'core:categories-page' %}"
                    class="is-drawer-close:tooltip is-drawer-close:tooltip-right"
                    data-tip="Help">
@@ -196,8 +196,9 @@
                   </select>
                 </div>
               </li>
+
               <!-- Privacy Toggle -->
-              <li class="is-drawer-close:hidden mb-5">
+              <li class="is-drawer-close:hidden">
                 <form action="{% url 'core:toggle-privacy' %}" method="POST" id="privacy-toggle-form" class="hidden">
                   {% csrf_token %}
                 </form>
@@ -211,6 +212,20 @@
                   />
                 </label>
               </li>
+
+              <div class="divider my-1 is-drawer-close:hidden pointer-events-none"></div>
+
+              <!-- Account -->
+              <div class="flex items-center mb-3 ml-2">
+                <span class="avatar avatar-placeholder">
+                  <div class="bg-neutral text-neutral-content w-8 rounded-full">
+                    <span>{{ user.profile_stub }}</span>
+                  </div>
+                </span>
+                <p class="ml-3 font-semibold is-drawer-close:hidden">
+                  {{ user.display_name }}
+                </p>
+              </div>
 
               <!-- Logout -->
               <li>
