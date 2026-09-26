@@ -120,3 +120,15 @@ def get_running_savings(user, viewed_budget_period):
         theoretical_balance += budget_period.theoretical_balance
 
     return theoretical_balance, predicted_balance
+
+
+def sync_future_allocations(cost: Cost) -> None:
+    """Updates any future allocations when a cost is updated"""
+    CostAllocation.objects.filter(
+        cost=cost,
+        expected_date__gt=timezone.now().date(),
+    ).update(
+        amount=-cost.amount,
+        expected_amount=-cost.amount,
+        name=cost.name,
+    )
