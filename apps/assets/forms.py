@@ -3,7 +3,7 @@ from django import forms
 from .models import PropertyAsset, SavingsAccount
 
 
-class PropertyForm(forms.ModelForm):
+class PropertyForm(forms.ModelForm["PropertyAsset"]):
     class Meta:
         model = PropertyAsset
         fields = [
@@ -22,7 +22,7 @@ class PropertyForm(forms.ModelForm):
         }
 
 
-class SavingsForm(forms.ModelForm):
+class SavingsForm(forms.ModelForm["SavingsAccount"]):
     class Meta:
         model = SavingsAccount
         fields = [
