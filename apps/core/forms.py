@@ -6,7 +6,7 @@ from .models import Category, UserPreferences
 User = get_user_model()
 
 
-class CategoryForm(forms.ModelForm):
+class CategoryForm(forms.ModelForm["Category"]):
     class Meta:
         model = Category
         fields = ["name", "color"]
@@ -16,7 +16,7 @@ class CategoryForm(forms.ModelForm):
         }
 
 
-class InitialUserPreferencesForm(forms.ModelForm):
+class InitialUserPreferencesForm(forms.ModelForm["UserPreferences"]):
     class Meta:
         model = UserPreferences
         fields = ["frequency_value", "frequency_unit", "first_budget_date"]

@@ -1,4 +1,6 @@
 import uuid
+from decimal import Decimal
+from typing import Any
 
 from dateutil.relativedelta import relativedelta
 
@@ -30,11 +32,11 @@ class FrequencyMixin(models.Model):
     class Meta:
         abstract = True
 
-    def get_delta(self):
-        kwargs = {self.frequency_unit: self.frequency_value}
+    def get_delta(self) -> relativedelta:
+        kwargs: dict[str, Any] = {self.frequency_unit: self.frequency_value}
         return relativedelta(**kwargs)
 
-    def get_delta_days(self):
+    def get_delta_days(self) -> int:
         relative_delta = self.get_delta()
         return (
             relative_delta.days
@@ -42,15 +44,15 @@ class FrequencyMixin(models.Model):
             + (relative_delta.years * 365)
         )
 
-    def matches_frequency(self, other):
+    def matches_frequency(self, other: FrequencyMixin) -> bool:
         if not hasattr(other, "get_delta"):
             return False
-        return self.get_delta() == other.get_delta()
+        return bool(self.get_delta() == other.get_delta())
 
-    def frequency_string(self):
-        unit = self.get_frequency_unit_display()  # type: ignore
+    def frequency_string(self) -> str:
+        unit = self.get_frequency_unit_display()  # zuban: ignore
         if self.frequency_value == 1:
-            unit = unit.rstrip("(s)")
+            unit = unit.removesuffix("(s)")
             value = ""
         else:
             unit = unit.replace("(", "").replace(")", "")
@@ -61,7 +63,7 @@ class FrequencyMixin(models.Model):
 class KeywordsMixin:
     keywords: str
 
-    def get_keywords(self):
+    def get_keywords(self) -> list[str]:
         if not self.keywords:
             return []
         return [
@@ -71,8 +73,10 @@ class KeywordsMixin:
         ]
 
 
-class UserManager(BaseUserManager):
-    def create_user(self, email, password=None, **extra_fields):
+class UserManager(BaseUserManager["User"]):
+    def create_user(
+        self, email: str, password: str | None = None, **extra_fields: Any
+    ) -> User:
         if not email:
             raise ValueError("The Email field must be set")
         email = self.normalize_email(email)
@@ -81,7 +85,9 @@ class UserManager(BaseUserManager):
         user.save(using=self._db)
         return user
 
-    def create_superuser(self, email, password=None, **extra_fields):
+    def create_superuser(
+        self, email: str, password: str | None = None, **extra_fields: Any
+    ) -> User:
         extra_fields.setdefault("is_staff", True)
         extra_fields.setdefault("is_superuser", True)
         extra_fields.setdefault("is_active", True)
@@ -93,19 +99,20 @@ class User(AbstractUser):
     username = None  # type: ignore
     email = models.EmailField(unique=True)
     uid = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
+    preferences: "UserPreferences"
 
     USERNAME_FIELD = "email"
     REQUIRED_FIELDS = []
 
-    objects = UserManager()  # type: ignore
+    objects = UserManager()  # type: ignore[assignment, misc]
 
     @property
-    def display_name(self):
-        return self.email.split("@")[0]
+    def display_name(self) -> str:
+        return str(self.email).split("@")[0]
 
     @property
-    def profile_stub(self):
-        return self.email[0].upper()
+    def profile_stub(self) -> str:
+        return str(self.email[0]).upper()
 
 
 class UserPreferences(FrequencyMixin, models.Model):
@@ -123,10 +130,10 @@ class UserPreferences(FrequencyMixin, models.Model):
     class Meta:
         verbose_name_plural = "User Preferences"
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f"Preferences for {self.user.email}"
 
-    def get_all_themes(self):
+    def get_all_themes(self) -> list[tuple[str, str]]:
         return self.THEME_CHOICES
 
 
@@ -145,16 +152,17 @@ class FinancialItem(KeywordsMixin, FrequencyMixin, models.Model):
         ordering = ["-amount"]
 
     @property
-    def per_budget_period(self):
+    def per_budget_period(self) -> Decimal:
         length_of_budget_period = self.user.preferences.get_delta_days()
-        return (self.amount / self.get_delta_days()) * length_of_budget_period
+        per_day = self.amount / self.get_delta_days()
+        return per_day * length_of_budget_period
 
     @property
-    def per_year(self):
+    def per_year(self) -> Decimal:
         return (self.amount / self.get_delta_days()) * 365
 
     @property
-    def per_week(self):
+    def per_week(self) -> Decimal:
         return (self.amount / self.get_delta_days()) * 7
 
 
@@ -183,5 +191,5 @@ class Category(models.Model):
             )
         ]
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f"{self.name}"
