@@ -5,6 +5,7 @@ from django.shortcuts import get_object_or_404, render
 from django.utils import timezone
 
 from apps.budget.models import IncomeAllocation
+from apps.core.constants import ZERO
 from apps.income.models import Income, IncomeChange
 
 from .forms import IncomeForm
@@ -32,7 +33,7 @@ def income_edit(request, pk=None):
 
     if request.method == "POST":
         form = IncomeForm(request.POST, instance=income, user=request.user)
-        old_amount = income.amount if income else None
+        old_amount = income.amount if income else ZERO
         if form.is_valid():
             new_amount = form.cleaned_data["amount"]
             log_change = request.POST.get("log_change")

@@ -1,9 +1,11 @@
+from typing import Any
+
 from django import forms
 
 from .models import Income
 
 
-class IncomeForm(forms.ModelForm):
+class IncomeForm(forms.ModelForm["Income"]):
     class Meta:
         model = Income
         fields = [
@@ -34,7 +36,7 @@ class IncomeForm(forms.ModelForm):
             ),
         }
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args: Any, **kwargs: Any):
         user = kwargs.pop("user", None)
         super(IncomeForm, self).__init__(*args, **kwargs)
         if user and hasattr(user, "preferences"):
