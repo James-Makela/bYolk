@@ -33,17 +33,17 @@ class Transaction(models.Model):
         indexes = [models.Index(fields=["user", "date"], name="tx_user_date_idx")]
 
     @property
-    def is_positive(self):
+    def is_positive(self) -> bool:
         if self.amount > 0:
             return True
         else:
             return False
 
-    def matches_keywords(self, keywords):
+    def matches_keywords(self, keywords: list[str]) -> bool:
         if not keywords or not self.vendor:
             return False
-        ventor_lower = self.vendor.lower()
-        return any(keyword in ventor_lower for keyword in keywords)
+        vendor_lower = self.vendor.lower()
+        return any(keyword in vendor_lower for keyword in keywords)
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f"{self.date}, {self.vendor}"
