@@ -6,6 +6,7 @@ from apps.core.models import User
 from apps.cost.models import Cost, CostChange
 
 
+# TODO: work out applying this to income too
 def save_cost(
     cost: Cost | None,
     old_amount: Decimal | None,
