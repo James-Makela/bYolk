@@ -12,16 +12,18 @@ class Cost(FinancialItem):
     class Meta:
         ordering = ["-amount"]
 
-    def __str__(self):
+    def __str__(self) -> str:
         frequency_string = super().frequency_string()
         if frequency_string:
             frequency_string = frequency_string[0].lower() + frequency_string[1:]
         return f"{self.name}, ${self.amount} {frequency_string}"
 
     @property
-    def passed(self):
+    def passed(self) -> bool:
         if self.end_date and self.end_date < timezone.now().date():
             return True
+        else:
+            return False
 
 
 class CostChange(FinancialChange):

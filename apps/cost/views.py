@@ -34,7 +34,7 @@ def costs_list(request):
 
     costs = active + passed
 
-    totals = calculate_period_totals(costs)
+    totals = calculate_period_totals(raw_costs)
 
     context = {
         "costs": costs,
@@ -122,7 +122,7 @@ def cost_export(request):
             [
                 cost.name,
                 cost.amount,
-                cost.category.name,
+                cost.category.name if cost.category else "",
                 cost.start_date,
                 cost.keywords,
             ]
