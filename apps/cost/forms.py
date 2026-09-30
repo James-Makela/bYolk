@@ -35,10 +35,12 @@ class CostForm(forms.ModelForm):
                 attrs={"class": "select select-bordered w-full"}
             ),
             "start_date": forms.DateInput(
-                attrs={"class": "input input-bordered w-full", "type": "date"}
+                attrs={"class": "input input-bordered w-full", "type": "date"},
+                format="%Y-%m-%d",
             ),
             "end_date": forms.DateInput(
-                attrs={"class": "input input-bordered w-full", "type": "date"}
+                attrs={"class": "input input-bordered w-full", "type": "date"},
+                format="%Y-%m-%d",
             ),
         }
 
