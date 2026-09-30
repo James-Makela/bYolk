@@ -31,6 +31,21 @@ plugins = ["mypy_django_plugin.main"]
 [tool.django-stubs]
 django_settings_module = "budgetmaker.settings"
 
+[tool.zuban]
+mode = "mypy"
+strict = true
+disallow_untyped_defs = true
+warn_unreachable = true
+follow_untyped_imports = true
+exclude_gitignore = true
+untyped_function_return_mode = "inferred"
+warn_unused_ignores = true
+disable_error_code = ["misc"]
+
 [[tool.mypy.overrides]]
-module = "*.migrations.*"
+module = ["*.migrations.*", "*.middleware", "*.manage.*", "*.tests"]
 ignore_errors = true
+
+[[tool.mypy.overrides]]
+module = "*.views"
+disallow_untyped_defs = false
