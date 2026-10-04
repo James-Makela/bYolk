@@ -8,7 +8,12 @@ from apps.income.models import Income
 
 from .forms import CategoryForm, InitialUserPreferencesForm
 from .models import Category
-from .services import calculate_period_totals, get_graph_data, get_total_spend_data
+from .services import (
+    calculate_period_totals,
+    get_graph_data,
+    get_total_spend_data,
+    initialise_session_preferences,
+)
 
 
 # Create your views here.
@@ -27,17 +32,13 @@ def dashboard(request, view_type="categories"):
 
     if view_type == "costs":
         for cost in costs:
-            graph_data = get_graph_data(
-                request.user, cost=cost, time_period=time_period
-            )
+            graph_data = get_graph_data(cost, request.user, time_period=time_period)
             if graph_data:
                 charts.append(graph_data)
 
     if view_type == "categories":
         for category in categories:
-            graph_data = get_graph_data(
-                request.user, category=category, time_period=time_period
-            )
+            graph_data = get_graph_data(category, request.user, time_period=time_period)
             if graph_data:
                 charts.append(graph_data)
 
@@ -52,16 +53,14 @@ def dashboard(request, view_type="categories"):
     income_titles = []
     if incomes:
         for income in incomes:
-            income_data = get_graph_data(
-                request.user, income=income, time_period=time_period
-            )
+            income_data = get_graph_data(income, request.user, time_period=time_period)
             if income_data:
                 income_graph.append(income_data)
 
         income_dates = income_graph[0]["dates"]
-        for income in income_graph:
-            income_amounts.append(income["amounts"])
-            income_titles.append(income["title"])
+        for graph_income in income_graph:
+            income_amounts.append(graph_income["amounts"])
+            income_titles.append(graph_income["title"])
 
     total_spend_amounts = get_total_spend_data(request.user, time_period)
 
@@ -163,20 +162,6 @@ def category_edit(request, pk=None):
             "title": title,
         },
     )
-
-
-@login_required
-def initialise_session_preferences(request):
-    if not request.session.get("theme"):
-        request.session["theme"] = "dark"
-
-    if not request.session.get("privacy_mode"):
-        request.session["privacy_mode"] = False
-
-    if not request.session.get("graph_period"):
-        request.session["graph_period"] = 365
-
-    return redirect(request.META.get("HTTP_REFERER", "/"))
 
 
 @login_required

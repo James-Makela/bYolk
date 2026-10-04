@@ -1,14 +1,17 @@
+from typing import Any
+
 from django import forms
 from django.core.exceptions import ValidationError
 from django.forms import BaseModelFormSet, modelformset_factory
 
 from apps.budget.models import Bucket, CostAllocation, IncomeAllocation
+from apps.core.form_utils import limit_queryset
 from apps.core.models import Category
 from apps.cost.models import Cost
 from apps.income.models import Income
 
 
-class CostAllocationForm(forms.ModelForm):
+class CostAllocationForm(forms.ModelForm["CostAllocation"]):
     class Meta:
         model = CostAllocation
         fields = ["name", "amount", "expected_date", "category"]
@@ -23,14 +26,13 @@ class CostAllocationForm(forms.ModelForm):
             "category": forms.Select(attrs={"class": "select select-bordered w-full"}),
         }
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args: Any, **kwargs: Any):
         user = kwargs.pop("user", None)
-        super(CostAllocationForm, self).__init__(*args, **kwargs)
-        if user:
-            self.fields["category"].queryset = Category.objects.filter(user=user)
+        super().__init__(*args, **kwargs)
+        limit_queryset(self, "category", Category.objects.filter(user=user))
 
 
-class CostAllocationTransactionsForm(forms.ModelForm):
+class CostAllocationTransactionsForm(forms.ModelForm["CostAllocation"]):
     class Meta:
         model = CostAllocation
         fields = [
@@ -56,15 +58,14 @@ class CostAllocationTransactionsForm(forms.ModelForm):
             "cost": forms.Select(attrs={"class": "select select-bordered w-full"}),
         }
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
         user = kwargs.pop("user", None)
-        super(CostAllocationTransactionsForm, self).__init__(*args, **kwargs)
-        if user:
-            self.fields["category"].queryset = Category.objects.filter(user=user)
-            self.fields["cost"].queryset = Cost.objects.filter(user=user)
+        super().__init__(*args, **kwargs)
+        limit_queryset(self, "category", Category.objects.filter(user=user))
+        limit_queryset(self, "cost", Cost.objects.filter(user=user))
 
 
-class IncomeAllocationTransactionsForm(forms.ModelForm):
+class IncomeAllocationTransactionsForm(forms.ModelForm["IncomeAllocation"]):
     class Meta:
         model = IncomeAllocation
         fields = ["name", "amount", "expected_date", "income"]
@@ -79,14 +80,13 @@ class IncomeAllocationTransactionsForm(forms.ModelForm):
             "income": forms.Select(attrs={"class": "select select-bordered w-full"}),
         }
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args: Any, **kwargs: Any):
         user = kwargs.pop("user", None)
-        super(IncomeAllocationTransactionsForm, self).__init__(*args, **kwargs)
-        if user:
-            self.fields["income"].queryset = Income.objects.filter(user=user)
+        super().__init__(*args, **kwargs)
+        limit_queryset(self, "income", Income.objects.filter(user=user))
 
 
-class BucketForm(forms.ModelForm):
+class BucketForm(forms.ModelForm["Bucket"]):
     class Meta:
         model = Bucket
         fields = ["name", "cost"]
@@ -95,30 +95,29 @@ class BucketForm(forms.ModelForm):
             "cost": forms.Select(attrs={"class": "select select-bordered w-full"}),
         }
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args: Any, **kwargs: Any):
         user = kwargs.pop("user", None)
-        super(BucketForm, self).__init__(*args, **kwargs)
-        if user:
-            self.fields["cost"].queryset = Cost.objects.filter(user=user)
+        super().__init__(*args, **kwargs)
+        limit_queryset(self, "cost", Cost.objects.filter(user=user))
 
 
-class BucketEmptyForm(forms.ModelForm):
+class BucketEmptyForm(forms.ModelForm["CostAllocation"]):
     selected = forms.BooleanField(required=False)
     amount = forms.DecimalField(max_digits=10, decimal_places=2, required=False)
 
     class Meta:
         model = CostAllocation
-        fields = []
+        fields = []  # type: ignore
 
-    def clean(self):
+    def clean(self) -> dict[str, Any] | None:
         cleaned = super().clean()
-        if cleaned.get("selected") and cleaned.get("amount") is None:
+        if cleaned and cleaned.get("selected") and cleaned.get("amount") is None:
             raise ValidationError("Amount is required.")
         return cleaned
 
 
-class BaseBucketEmptyFormSet(BaseModelFormSet):
-    def clean(self):
+class BaseBucketEmptyFormSet(BaseModelFormSet["Bucket"]):
+    def clean(self) -> None:
         super().clean()
         if any(self.errors):
             return

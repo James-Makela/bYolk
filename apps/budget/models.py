@@ -1,18 +1,32 @@
+from decimal import Decimal
+from typing import TYPE_CHECKING, Any
+
 from django.db import models
-from django.db.models import Count, DecimalField, OuterRef, Q, Subquery, Sum, Value
+from django.db.models import (
+    Count,
+    OuterRef,
+    Q,
+    QuerySet,
+    Subquery,
+    Sum,
+)
 from django.db.models.functions import Abs, Coalesce
 from django.utils.functional import cached_property
 
+from apps.core.constants import ZERO
 from apps.core.models import Category, User
 from apps.cost.models import Cost
 from apps.income.models import Income
 
+if TYPE_CHECKING:
+    from apps.transaction.models import Transaction
 
-class BudgetQuerySet(models.QuerySet):
-    def with_transaction_stats(self):
+
+class BudgetQuerySet(models.QuerySet["BudgetPeriod"]):
+    def with_transaction_stats(self) -> models.QuerySet["BudgetPeriod"]:
         from apps.transaction.models import Transaction
 
-        base_transactions = Transaction.objects.filter(
+        base_transactions: QuerySet[Transaction] = Transaction.objects.filter(
             user_id=OuterRef("user_id"),
             date__gte=OuterRef("start_date"),
             date__lte=OuterRef("end_date"),
@@ -30,24 +44,22 @@ class BudgetQuerySet(models.QuerySet):
             .values("total")
         )
 
-        costs_total = (
+        costs_total: QuerySet[CostAllocation, dict[str, Decimal]] = (
             CostAllocation.objects.filter(budget_period_id=OuterRef("pk"))
             .values("budget_period_id")
             .annotate(total=Sum("amount"))
             .values("total")
         )
 
-        decimal_zero = Value(0, output_field=DecimalField())
-
         return self.annotate(
-            annotated_costs=Coalesce(Subquery(costs_total), decimal_zero),
-            annotated_spend=Abs(Coalesce(Subquery(spent_total), decimal_zero)),
-            annotated_income=Coalesce(Subquery(income_total), decimal_zero),
+            annotated_costs=Coalesce(Subquery(costs_total), ZERO),
+            annotated_spend=Abs(Coalesce(Subquery(spent_total), ZERO)),
+            annotated_income=Coalesce(Subquery(income_total), ZERO),
         )
 
 
 class CostAllocationQuerySet(models.QuerySet):  # type: ignore
-    def grouped_by_name(self):
+    def grouped_by_name(self) -> list[dict[str, Any]]:
         duplicate_names = (
             self.values("name")
             .annotate(count=Count("id"))
@@ -104,40 +116,40 @@ class BudgetPeriod(models.Model):
         ]
         ordering = ["start_date"]
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f"Budget {self.id} {self.start_date} -> {self.end_date}"
 
     @cached_property
-    def get_total_costs(self):
-        result = self.costallocation_set.aggregate(total=Sum("amount"))  # type: ignore
-        return result["total"] or 0
+    def get_total_costs(self) -> Decimal:
+        result = self.costallocation_set.aggregate(total=Sum("amount"))  # zuban: ignore
+        return result["total"] or ZERO
 
     @cached_property
-    def get_original_costs(self):
-        result = self.costallocation_set.aggregate(  # type: ignore
+    def get_original_costs(self) -> Decimal:
+        result = self.costallocation_set.aggregate(  # zuban: ignore
             total=Sum("expected_amount")
         )
-        return result["total"] or 0
+        return result["total"] or ZERO
 
     @cached_property
-    def get_total_income(self):
-        result = self.incomeallocation_set.aggregate(  # type: ignore
+    def get_total_income(self) -> Decimal:
+        result = self.incomeallocation_set.aggregate(  # zuban: ignore
             total=Sum("amount")
         )
-        return result["total"] or 0
+        return result["total"] or ZERO
 
     @cached_property
-    def theoretical_balance(self):
+    def theoretical_balance(self) -> Decimal:
         return self.get_total_income + self.get_original_costs
 
     @cached_property
-    def balance(self):
+    def balance(self) -> Decimal:
         return self.get_total_income + self.get_total_costs
 
-    def get_categorised_transactions(self):
+    def get_categorised_transactions(self) -> dict[str, list[Transaction]]:
         from apps.transaction.models import Transaction
 
-        all_transactions = (
+        all_transactions: QuerySet[Transaction] = (
             Transaction.objects.filter(
                 user=self.user, date__range=[self.start_date, self.end_date]
             )
@@ -145,7 +157,7 @@ class BudgetPeriod(models.Model):
             .order_by("-date")
         )
 
-        transaction_types = {
+        transaction_types: dict[str, list[Transaction]] = {
             "outgoing": [],
             "incoming": [],
             "unallocated": [],
@@ -174,7 +186,7 @@ class AllocationBase(models.Model):
     name = models.CharField(max_length=50)
     amount = models.DecimalField(max_digits=10, decimal_places=2, blank=True, default=0)
     expected_amount = models.DecimalField(
-        max_digits=10, decimal_places=2, null=True, blank=True
+        max_digits=10, decimal_places=2, blank=True, default=0
     )
     expected_date = models.DateField(null=True, blank=True)
 
@@ -182,19 +194,19 @@ class AllocationBase(models.Model):
         abstract = True
 
     @property
-    def total_paid(self):
+    def total_paid(self) -> Decimal:
         return sum(tx.amount for tx in self.transactions.all())  # type: ignore
 
     @property
-    def remaining(self):
+    def remaining(self) -> Decimal:
         return -self.amount + self.total_paid
 
-    def clean(self):
+    def clean(self) -> None:
         # If the expected amount is not set - set it to the current amount
         if not self.expected_amount:
             self.expected_amount = -self.amount
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f"{self.name} ${self.amount} for Budget {self.budget_period_id}"
 
 
@@ -218,7 +230,7 @@ class CostAllocation(AllocationBase):
         ordering = ["amount"]
 
     @property
-    def is_over(self):
+    def is_over(self) -> bool:
         if not self.cost:
             return False
         return self.total_paid < self.expected_amount

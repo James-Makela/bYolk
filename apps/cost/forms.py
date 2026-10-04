@@ -1,11 +1,14 @@
+from typing import Any
+
 from django import forms
 
+from apps.core.form_utils import limit_queryset
 from apps.core.models import Category
 
 from .models import Cost
 
 
-class CostForm(forms.ModelForm):
+class CostForm(forms.ModelForm["Cost"]):
     class Meta:
         model = Cost
         fields = [
@@ -44,11 +47,9 @@ class CostForm(forms.ModelForm):
             ),
         }
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
         user = kwargs.pop("user", None)
-        super(CostForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
+        limit_queryset(self, "category", Category.objects.filter(user=user))
         if user and hasattr(user, "preferences"):
             self.fields["start_date"].initial = user.preferences.first_budget_date
-
-        if user:
-            self.fields["category"].queryset = Category.objects.filter(user=user)

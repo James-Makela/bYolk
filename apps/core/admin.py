@@ -6,11 +6,11 @@ from apps.core.models import Category, User, UserPreferences
 
 # Register your models here.
 @admin.register(User)
-class CustomUserAdmin(UserAdmin):
+class CustomUserAdmin(UserAdmin["User"]):
     model = User
     list_display = ["email", "is_staff", "is_active"]
     ordering = ["email"]
-    fieldsets = (  # type: ignore
+    fieldsets = (  # zuban: ignore
         (None, {"fields": ("email", "password")}),
         (
             "Permissions",

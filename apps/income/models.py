@@ -7,7 +7,7 @@ class Income(FinancialItem):
     class Meta:
         ordering = ["-amount"]
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f"${self.amount} from {self.name} for {self.user}"
 
 

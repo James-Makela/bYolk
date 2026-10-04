@@ -1,10 +1,11 @@
 #!/nix/store/62fdlzq1x1ak2lsxp4ij7ip5k9nia3hc-python3-3.13.7/bin/python
 """Django's command-line utility for administrative tasks."""
+
 import os
 import sys
 
 
-def main():
+def main() -> None:
     """Run administrative tasks."""
     os.environ.setdefault("DJANGO_SETTINGS_MODULE", "budgetmaker.settings")
     try:

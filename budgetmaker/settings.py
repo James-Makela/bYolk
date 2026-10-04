@@ -13,10 +13,13 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 import os
 from pathlib import Path
 
-import environ
+import django_stubs_ext
+from environ import Env
 
-env = environ.Env(DEBUG=(bool, True))
-environ.Env.read_env(".env")
+django_stubs_ext.monkeypatch()
+
+env = Env(DEBUG=(bool, True))  # type: ignore[no-untyped-call]
+Env.read_env(".env")
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -179,7 +182,7 @@ AUTHENTICATION_BACKENDS = (
 EMAIL_BACKEND = "django.core/mail.backends.console.EmailBackend"
 ACCOUNT_LOGIN_METHODS = {"email"}
 ACCOUNT_SIGNUP_FIELDS = ["email*", "password1*", "password2*"]
-ACCOUNT_USER_MODEL_USERNAME_FIELD = None
+ACCOUNT_USER_MODEL_USERNAME_FIELD: None = None
 ACCOUNT_EMAIL_VERIFICATION = "none"
 
 # Formatting

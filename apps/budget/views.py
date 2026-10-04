@@ -1,10 +1,7 @@
-from decimal import Decimal
-
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.db import transaction as db_transaction
-from django.db.models import BooleanField, Case, Sum, Value, When
-from django.db.models.functions import Coalesce
+from django.db.models import Sum
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render
 from django.template.loader import render_to_string
@@ -25,6 +22,7 @@ from .forms import (
 )
 from .services import (
     generate_next_budget_period,
+    get_category_pie_context,
     get_running_savings,
     populate_from_costs,
 )
@@ -34,27 +32,25 @@ from .services import (
 def budgets_list(request):
     today = timezone.now().date()
     budget_periods = (
-        BudgetPeriod.objects.filter(user=request.user)  # type: ignore
-        .annotate(
-            is_current_period=Case(
-                When(start_date__lte=today, end_date__gte=today, then=Value(True)),
-                default=Value(False),
-                output_field=BooleanField(),
-            )
-        )
-        .order_by("-start_date")
+        BudgetPeriod.objects.filter(user=request.user)  # zuban: ignore
         .with_transaction_stats()
+        .order_by("-start_date")
     )
 
-    current_budget = budget_periods.filter(is_current_period=True).first()
+    current_budget = budget_periods.filter(
+        start_date__lte=today, end_date__gte=today
+    ).first()
+
+    if not hasattr(request.user, "preferences"):
+        form = InitialUserPreferencesForm()
+    else:
+        form = None
 
     context = {
         "budget_periods": budget_periods,
         "current_budget": current_budget,
-        "form": None,
+        "form": form,
     }
-    if not hasattr(request.user, "preferences"):
-        context["form"] = InitialUserPreferencesForm()
     return render(request, "budget/index.html", context)
 
 
@@ -81,7 +77,7 @@ def budget_detail(request, id):
         "transactions"
     )
 
-    grouped_allocations = allocations.grouped_by_name()  # type: ignore
+    grouped_allocations = allocations.grouped_by_name()  # zuban: ignore
     ungrouped_allocations_unsorted = allocations.exclude(
         name__in=[g["name"] for g in grouped_allocations]
     )
@@ -115,9 +111,6 @@ def budget_detail(request, id):
         theoretical_predicted_savings, actual_predicted_savings = get_running_savings(
             request.user, budget
         )
-    else:
-        theoretical_predicted_savings = 0
-        actual_predicted_savings = 0
 
     show_pie_toggle = len(budget.get_categorised_transactions()["outgoing"]) > 0
 
@@ -138,7 +131,7 @@ def budget_detail(request, id):
         "savings": primary_savings,
         "theoretical_predicted_savings": theoretical_predicted_savings,
         "actual_predicted_savings": actual_predicted_savings,
-        **get_category_pie_context(request, id),
+        **get_category_pie_context(request.user, id),
         "show_pie_toggle": show_pie_toggle,
     }
 
@@ -296,7 +289,8 @@ def edit_allocation_with_transactions(request, allocation_type, budget_id, pk=No
         allocation = get_object_or_404(
             TargetModel, pk=pk, budget_period__user=request.user
         )
-        allocation.expected_amount = -allocation.expected_amount
+        if allocation.expected_amount:
+            allocation.expected_amount = -allocation.expected_amount
         allocation.amount = -allocation.amount
         title = "Edit Allocation"
         message = "Allocation updated!"
@@ -521,7 +515,7 @@ def fill_bucket(request, budget_id, bucket_id):
 @login_required
 def category_pie_chart(request, budget_id):
     forecast = request.GET.get("forecast") == "true"
-    chart_context = get_category_pie_context(request, budget_id, forecast=forecast)
+    chart_context = get_category_pie_context(request.user, budget_id, forecast=forecast)
     chart_html = render_to_string(
         "partials/_category_pie_chart.html", chart_context, request=request
     )
@@ -535,54 +529,3 @@ def category_pie_chart(request, budget_id):
         "partials/_forecast_toggle_button.html", button_context, request=request
     )
     return HttpResponse(chart_html + button_html)
-
-
-@login_required
-def get_category_pie_context(request, budget_id, forecast=True):
-    budget = get_object_or_404(
-        BudgetPeriod.objects.filter(user=request.user),
-        pk=budget_id,
-    )
-
-    if forecast:
-        category_totals = (
-            CostAllocation.objects.filter(budget_period=budget)
-            .values("category__name", "category__color")
-            .annotate(total=Coalesce(Sum("expected_amount"), Decimal(0.0)))
-            .order_by("total")
-        )
-    else:
-        category_totals = (
-            CostAllocation.objects.filter(budget_period=budget)
-            .values("category__name", "category__color")
-            .annotate(total=Coalesce(Sum("transactions__amount"), Decimal(0.0)))
-            .order_by("total")
-            .exclude(total=0)
-        )
-
-    pie_category_labels = []
-    pie_category_series = []
-    pie_category_colors = []
-
-    if len(category_totals) > 0:
-        print(category_totals[0])
-
-    if forecast:
-        for item in category_totals:
-            pie_category_labels.append(item["category__name"] or "Uncategorized")
-            pie_category_series.append(abs(float(item["total"])))
-            pie_category_colors.append(item["category__color"] or "#999999")
-    else:
-        for item in category_totals:
-            pie_category_labels.append(item["category__name"] or "Uncategorized")
-            pie_category_series.append(abs(float(item["total"])))
-            pie_category_colors.append(item["category__color"] or "#999999")
-
-    return {
-        "pie_category_labels": pie_category_labels,
-        "pie_category_series": pie_category_series,
-        "pie_category_colors": pie_category_colors,
-        "budget": budget,
-        "forecast": forecast,
-        "next_forecast_value": not forecast,
-    }

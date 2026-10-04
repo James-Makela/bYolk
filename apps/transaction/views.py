@@ -56,7 +56,7 @@ def upload_pdf_anzplus(request):
     if request.method == "POST" and request.FILES.get("pdf_file"):
         uploaded_file = request.FILES["pdf_file"]
         pdf_bytes = uploaded_file.read()
-        doc = pymupdf.open(stream=pdf_bytes, filetype="pdf")
+        doc = pymupdf.open(stream=pdf_bytes, filetype="pdf")  # type: ignore
 
         try:
             created_count = process_transaction_upload_anzplus(request.user, doc)

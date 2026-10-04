@@ -6,11 +6,10 @@ from apps.core.models import User
 from apps.cost.models import Cost, CostChange
 
 
-# TODO: work out applying this to income too
 def save_cost(
     cost: Cost | None,
     old_amount: Decimal | None,
-    field_values: dict,
+    field_values: dict[str, Decimal],
     user: User,
     log_change: bool,
 ) -> Cost:
@@ -35,16 +34,17 @@ def _sync_change_log(
     cost: Cost, old_amount: Decimal | None, new_amount: Decimal, log_change: bool
 ) -> None:
     today = timezone.now().date()
-    existing_change = CostChange.objects.filter(cost=cost, date_changed=today).first()
+    existing_change: CostChange | None = CostChange.objects.filter(
+        cost=cost, date_changed=today
+    ).first()
 
     baseline_amount = existing_change.previous_amount if existing_change else old_amount
 
-    if baseline_amount == new_amount:
+    if baseline_amount is None or not log_change or baseline_amount == new_amount:
         if existing_change:
             existing_change.delete()
         return
-
-    if log_change and old_amount != new_amount:
+    elif log_change:
         print("Creating cost change")
         CostChange.objects.update_or_create(
             cost=cost,
@@ -54,6 +54,6 @@ def _sync_change_log(
             },
             create_defaults={
                 "new_amount": new_amount,
-                "previous_amount": old_amount,
+                "previous_amount": baseline_amount,
             },
         )

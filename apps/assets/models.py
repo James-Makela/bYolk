@@ -1,3 +1,6 @@
+from decimal import Decimal
+from typing import Any
+
 from django.db import models, transaction
 
 from apps.core.models import User
@@ -16,8 +19,11 @@ class PropertyAsset(AssetBase):
     )
 
     @property
-    def net_value(self):
-        return self.value - self.amount_owing
+    def net_value(self) -> Decimal:
+        if self.amount_owing:
+            return self.value - self.amount_owing
+        else:
+            return self.value
 
 
 class SavingsAccount(AssetBase):
@@ -33,7 +39,7 @@ class SavingsAccount(AssetBase):
             name="one_primary_savings_per_user",
         )
 
-    def save(self, *args, **kwargs):
+    def save(self, *args: Any, **kwargs: Any) -> None:
         if self.is_primary:
             with transaction.atomic():
                 SavingsAccount.objects.filter(user=self.user, is_primary=True).exclude(
