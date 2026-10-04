@@ -10,6 +10,7 @@ from django.utils import timezone
 
 from apps.assets.models import SavingsAccount
 from apps.budget.models import Bucket, BudgetPeriod, CostAllocation, IncomeAllocation
+from apps.core.constants import ZERO
 from apps.core.forms import InitialUserPreferencesForm
 from apps.transaction.models import Transaction
 
@@ -103,7 +104,7 @@ def budget_detail(request, id):
     else:
         complete = False
 
-    primary_savings = SavingsAccount.objects.filter(
+    primary_savings: SavingsAccount | None = SavingsAccount.objects.filter(
         user=request.user, is_primary=True
     ).first()
 
@@ -111,6 +112,9 @@ def budget_detail(request, id):
         theoretical_predicted_savings, actual_predicted_savings = get_running_savings(
             request.user, budget
         )
+    else:
+        theoretical_predicted_savings = ZERO
+        actual_predicted_savings = ZERO
 
     show_pie_toggle = len(budget.get_categorised_transactions()["outgoing"]) > 0
 
