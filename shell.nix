@@ -29,5 +29,6 @@ mkShell {
     EOF
 
     podman system service --time=0 unix://$XDG_RUNTIME_DIR/podman/podman.sock &
+    source .venv/bin/activate
   '';
 }
