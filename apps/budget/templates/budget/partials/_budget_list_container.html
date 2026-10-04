@@ -28,12 +28,14 @@
           <td class="text-success hidden md:table-cell">${{ budget.annotated_income|floatformat:2 }}</td>
           <td class="{% if budget.balance < 0 %}text-error{% else %}text-success{% endif %}">${{ budget.balance|floatformat:2 }}</td>
           <td class="py-3 h-px">
-            <form class="m-0" action="{% url 'delete-budget' budget.pk %}" method="post" onsubmit="return confirm('Are you sure?')">
-              {% csrf_token %}
-              <button type="submit" class="btn btn-sm btn-soft btn-error cursor-pointer w-full">
-                Delete
-              </button>
-            </form>
+            {% if budget.id == newest_budget_id %}
+              <form class="m-0" action="{% url 'delete-budget' budget.pk %}" method="post" onsubmit="return confirm('Are you sure?')">
+                {% csrf_token %}
+                <button type="submit" onclick="deleteButton(event)" class="btn btn-sm btn-soft btn-error cursor-pointer w-full">
+                  Delete
+                </button>
+              </form>
+            {% endif %}
           </td>
           </tr>
         {% endfor %}
@@ -48,3 +50,8 @@
   </table>
 
 </div>
+<script>
+  function deleteButton(event) {
+    event.stopPropagation();
+  }
+</script>

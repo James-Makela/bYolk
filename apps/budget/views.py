@@ -47,9 +47,12 @@ def budgets_list(request):
     else:
         form = None
 
+    newest_budget_id = budget_periods.first().id
+
     context = {
         "budget_periods": budget_periods,
         "current_budget": current_budget,
+        "newest_budget_id": newest_budget_id,
         "form": form,
     }
     return render(request, "budget/index.html", context)
