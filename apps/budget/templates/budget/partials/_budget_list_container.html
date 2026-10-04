@@ -17,9 +17,9 @@
       <tbody>
         {% for budget in budget_periods %}
           {% if budget.id == current_budget.id %}
-            <tr class="bg-accent-content hover:bg-accent-content/50 cursor-pointer" onclick="window.location='{% url "detail" budget.id|unlocalize %}'">
+            <tr class="bg-accent-content hover:bg-accent-content/50 cursor-pointer h-14" onclick="window.location='{% url "detail" budget.id|unlocalize %}'">
           {% else %}
-            <tr class="hover:bg-base-300 cursor-pointer" onclick="window.location='{% url "detail" budget.id|unlocalize %}'">
+            <tr class="hover:bg-base-300 cursor-pointer h-14" onclick="window.location='{% url "detail" budget.id|unlocalize %}'">
           {% endif %}
           <td class="table-cell md:hidden">{{ budget.end_date }}</td>
           <td class="hidden md:table-cell">{{ budget.start_date }} - {{ budget.end_date }}</td>
@@ -27,13 +27,15 @@
           <td class="text-error hidden md:table-cell">${{ budget.annotated_spend|floatformat:2 }}</td>
           <td class="text-success hidden md:table-cell">${{ budget.annotated_income|floatformat:2 }}</td>
           <td class="{% if budget.balance < 0 %}text-error{% else %}text-success{% endif %}">${{ budget.balance|floatformat:2 }}</td>
-          <td class="py-3 h-px">
-            <form class="m-0" action="{% url 'delete-budget' budget.pk %}" method="post" onsubmit="return confirm('Are you sure?')">
-              {% csrf_token %}
-              <button type="submit" class="btn btn-sm btn-soft btn-error cursor-pointer w-full">
-                Delete
-              </button>
-            </form>
+          <td>
+            {% if budget.id == newest_budget_id %}
+              <form action="{% url 'delete-budget' budget.pk %}" method="post" onsubmit="return confirm('Are you sure?')">
+                {% csrf_token %}
+                <button type="submit" onclick="deleteButton(event)" class="btn btn-sm btn-soft btn-error cursor-pointer w-full h-full py-1">
+                  Delete
+                </button>
+              </form>
+            {% endif %}
           </td>
           </tr>
         {% endfor %}
@@ -48,3 +50,8 @@
   </table>
 
 </div>
+<script>
+  function deleteButton(event) {
+    event.stopPropagation();
+  }
+</script>
