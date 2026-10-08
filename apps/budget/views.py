@@ -252,7 +252,7 @@ def add_single_allocation(request, budget_id):
     budget_period = get_object_or_404(BudgetPeriod, id=budget_id, user=request.user)
 
     if request.method == "POST":
-        form = CostAllocationForm(request.POST)
+        form = CostAllocationForm(request.POST, user=request.user)
         if form.is_valid():
             new_allocation = form.save(commit=False)
             new_allocation.budget_period = budget_period
@@ -311,7 +311,7 @@ def edit_allocation_with_transactions(request, allocation_type, budget_id, pk=No
         message = "Allocation saved!"
 
     if request.method == "POST":
-        form = TargetFormModel(request.POST, instance=allocation)
+        form = TargetFormModel(request.POST, instance=allocation, user=request.user)
         selected_ids = request.POST.getlist("transaction_ids")
         if form.is_valid():
             new_allocation = form.save(commit=False)
@@ -414,7 +414,7 @@ def delete_budget_period(request, pk):
 @login_required
 def add_bucket(request, budget_id):
     if request.method == "POST":
-        form = BucketForm(request.POST)
+        form = BucketForm(request.POST, user=request.user)
         if form.is_valid():
             new_bucket = form.save(commit=False)
             new_bucket.user = request.user
