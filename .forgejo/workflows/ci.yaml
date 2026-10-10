@@ -8,7 +8,7 @@ jobs:
     container:
       image: python:3.14.8-bookworm 
 
-    environment:
+    env:
         UV_PYTHON_DOWNLOADS: never
 
     services:
