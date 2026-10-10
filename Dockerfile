@@ -1,19 +1,18 @@
-# Pull base image
 FROM python:3.14-slim
+COPY --from=ghcr.io/astral-sh/uv:0.12.22 /uv /uvx /bin/
 
-# Set environment variables
-ENV PIP_DISABLE_PIP_VERSION_CHECK 1
-ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
+ENV UV_COMPILE_BYTECODE=1
+ENV UV_LINK_MODE=copy
+ENV UV_PROJECT_ENVIRONMENT=/opt/venv
+ENV PATH="/opt/venv/bin:$PATH"
 
-# Set work directory
 WORKDIR /code
 
-# Install dependencies
-COPY ./requirements.txt .
-RUN pip install -r requirements.txt
+COPY pyproject.toml uv.lock ./
+ARG UV_SYNC_ARGS="--no-dev"
+RUN uv sync --locked ${UV_SYNC_ARGS}
 
-# Copy project
 COPY . .
 
 ENTRYPOINT ["/code/entrypoint.sh"]
