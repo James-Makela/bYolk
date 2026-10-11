@@ -85,7 +85,7 @@ warn_unused_ignores = true
 disable_error_code = ["misc"]
 
 [[tool.mypy.overrides]]
-module = ["*.migrations.*", "*.middleware", "*.manage.*", "*.tests"]
+module = ["*.migrations.*", "*.middleware", "*.manage.*", "*.tests.*"]
 ignore_errors = true
 
 [[tool.mypy.overrides]]
