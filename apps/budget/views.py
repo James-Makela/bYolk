@@ -258,11 +258,11 @@ def add_single_allocation(request, budget_id):
             new_allocation.budget_period = budget_period
             new_allocation.amount = -new_allocation.amount
             new_allocation.save()
-            messages.success(request, "Cost added!")
+            messages.success(request, "Allocation added!")
             return HttpResponseRedirect(reverse("detail", args=[budget_id]))
 
         else:
-            messages.error(request, "Unable to save cost.")
+            messages.error(request, "Unable to save allocation.")
             return HttpResponseRedirect(reverse("detail", args=[budget_id]))
 
     else:
