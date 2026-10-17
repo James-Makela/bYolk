@@ -20,6 +20,22 @@ from apps.income.models import Income
 
 
 def generate_next_budget_period(user: User) -> BudgetPeriod:
+    """
+    Generate the next budget period.
+
+    Generation is based on either the most recent budget period(if exists),
+    or the first budget date set in the user preferences.
+
+    Parameters
+    ----------
+    user : User
+        The user generating the budget period.
+
+    Returns
+    -------
+    BudgetPeriod
+        The newly generated budget period object.
+    """
     # Get the latest budget period
     latest_budget: BudgetPeriod | None = (
         BudgetPeriod.objects.filter(user=user).order_by("-end_date").first()
@@ -45,6 +61,24 @@ def generate_next_budget_period(user: User) -> BudgetPeriod:
 def populate_from_costs(
     budget_period: BudgetPeriod, user: User
 ) -> dict[str, list[Any]]:
+    # TODO: Review and see if there is a better way to achieve this
+    """
+    Return the cost and income allocations that fit in the given budget.
+
+    Iterates over each cost, incrementing the current_occurrence until the
+    given cost or income fits within the given budget period.
+
+    Parameters
+    ----------
+    budget_period : BudgetPeriod
+        The budget period to add allocations to.
+
+    Returns
+    -------
+    dict
+        A dictionary containing lists of the allocations that fit in the
+        given budget period.
+    """
     costs: QuerySet[Cost] = Cost.objects.filter(user=user)
     incomes: QuerySet[Income] = Income.objects.filter(user=user)
     cost_data = []
@@ -107,6 +141,7 @@ def populate_from_costs(
         income_data, ignore_conflicts=True
     )
 
+    # TODO: Do we need to return here? Should the db be populated here or the view?
     return {
         "cost": cost_allocations,
         "income": income_allocations,
@@ -116,6 +151,26 @@ def populate_from_costs(
 def get_running_savings(
     user: User, viewed_budget_period: BudgetPeriod
 ) -> tuple[Decimal, Decimal]:
+    """
+    Return the theoretical and actual predicted balance.
+
+    Derives the predicted savings values from the users primary savings
+    account for the given budget period.
+
+    Parameters
+    ----------
+    budget_period : BudgetPeriod
+        The budget period we are predicting the savings balance for.
+
+    Returns
+    -------
+    theoretical_balance : Decimal
+        The calculated savings balance for this budget period if there was
+        no deviation from the plan.
+    predicted_balance : Decimal
+        The calculated savings balance for this budget accounting for any
+        deviations from planned spending.
+    """
     today = timezone.now().date()
 
     current_savings: SavingsAccount | None = SavingsAccount.objects.filter(
@@ -142,7 +197,18 @@ def get_running_savings(
 
 
 def sync_future_allocations(cost: Cost) -> None:
-    """Updates any future allocations when a cost is updated"""
+    """
+    Update any future allocations when a cost is updated.
+
+    Parameters
+    ----------
+    cost : Cost
+        The cost that has been updated
+
+    Returns
+    -------
+        None
+    """
     CostAllocation.objects.filter(
         cost=cost,
         expected_date__gt=timezone.now().date(),
@@ -153,9 +219,27 @@ def sync_future_allocations(cost: Cost) -> None:
     )
 
 
+# TODO: Review redundancy of passing in the user here
 def get_category_pie_context(
     user: User, budget_id: int, forecast: bool = True
 ) -> dict[str, Any]:
+    """
+    Tally up the data for the category pie chart.
+
+    Retrieves the total for each category to display in a pie chart.
+    Forecast displays total allocations per category, otherwise returns
+    total spent per category.
+
+    Parameters
+    ----------
+    user : User
+        The user whos budget period we are viewing.
+    budget_id : int
+        The id of the budget you are viewing.
+    forecast : bool, optional
+        Whether you are viewing forecasted totals, if false you are viewing
+        the spent total.
+    """
     budget: BudgetPeriod = get_object_or_404(
         BudgetPeriod.objects.filter(
             user=user,

@@ -525,6 +525,7 @@ def fill_bucket(request, budget_id, bucket_id):
 
 @login_required
 def category_pie_chart(request, budget_id):
+    # Required to swap the category chart without reload of entire page.
     forecast = request.GET.get("forecast") == "true"
     chart_context = get_category_pie_context(request.user, budget_id, forecast=forecast)
     chart_html = render_to_string(
