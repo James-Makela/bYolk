@@ -42,9 +42,8 @@ def generate_next_budget_period(user: User) -> BudgetPeriod:
     )
 
 
-def populate_from_costs(
-    budget_period: BudgetPeriod, user: User
-) -> dict[str, list[Any]]:
+def populate_from_costs(budget_period: BudgetPeriod) -> dict[str, list[Any]]:
+    user = budget_period.user
     costs: QuerySet[Cost] = Cost.objects.filter(user=user)
     incomes: QuerySet[Income] = Income.objects.filter(user=user)
     cost_data = []
@@ -113,10 +112,9 @@ def populate_from_costs(
     }
 
 
-def get_running_savings(
-    user: User, viewed_budget_period: BudgetPeriod
-) -> tuple[Decimal, Decimal]:
+def get_running_savings(viewed_budget_period: BudgetPeriod) -> tuple[Decimal, Decimal]:
     today = timezone.now().date()
+    user = viewed_budget_period.user
 
     current_savings: SavingsAccount | None = SavingsAccount.objects.filter(
         user=user, is_primary=True

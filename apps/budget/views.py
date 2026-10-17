@@ -117,7 +117,7 @@ def budget_detail(request, id):
 
     if not complete or not primary_savings:
         theoretical_predicted_savings, actual_predicted_savings = get_running_savings(
-            request.user, budget
+            budget
         )
     else:
         theoretical_predicted_savings = ZERO
@@ -163,7 +163,7 @@ def start_next_budget(request):
 @login_required
 def populate_costs(request, id):
     budget_period = get_object_or_404(BudgetPeriod, pk=id, user=request.user)
-    populate_from_costs(budget_period, request.user)
+    populate_from_costs(budget_period)
     messages.success(request, "Costs populated")
     return HttpResponseRedirect(reverse("detail", args=[id]))
 
