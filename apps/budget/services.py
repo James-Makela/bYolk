@@ -58,10 +58,8 @@ def generate_next_budget_period(user: User) -> BudgetPeriod:
     )
 
 
-def populate_from_costs(
-    budget_period: BudgetPeriod, user: User
-) -> dict[str, list[Any]]:
-    # TODO: Review and see if there is a better way to achieve this
+# TODO: Review and see if there is a better way to achieve this
+def populate_from_costs(budget_period: BudgetPeriod) -> dict[str, list[Any]]:
     """
     Return the cost and income allocations that fit in the given budget.
 
@@ -79,6 +77,7 @@ def populate_from_costs(
         A dictionary containing lists of the allocations that fit in the
         given budget period.
     """
+    user = budget_period.user
     costs: QuerySet[Cost] = Cost.objects.filter(user=user)
     incomes: QuerySet[Income] = Income.objects.filter(user=user)
     cost_data = []
@@ -148,9 +147,7 @@ def populate_from_costs(
     }
 
 
-def get_running_savings(
-    user: User, viewed_budget_period: BudgetPeriod
-) -> tuple[Decimal, Decimal]:
+def get_running_savings(viewed_budget_period: BudgetPeriod) -> tuple[Decimal, Decimal]:
     """
     Return the theoretical and actual predicted balance.
 
@@ -172,6 +169,7 @@ def get_running_savings(
         deviations from planned spending.
     """
     today = timezone.now().date()
+    user = viewed_budget_period.user
 
     current_savings: SavingsAccount | None = SavingsAccount.objects.filter(
         user=user, is_primary=True
