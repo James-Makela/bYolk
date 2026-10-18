@@ -255,3 +255,6 @@ class Bucket(models.Model):
         max_digits=10, decimal_places=2, blank=True, default=0
     )
     cost = models.ForeignKey(Cost, on_delete=models.SET_NULL, null=True, blank=True)
+
+    class Meta:
+        ordering = ["balance"]
